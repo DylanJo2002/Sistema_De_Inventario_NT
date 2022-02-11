@@ -1,6 +1,8 @@
 package com.nt.Backend_NT.services;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.UserEntity;
 import com.nt.Backend_NT.repositories.UserRepository;
+import com.nt.Backend_NT.util.CustomUserDetails;
 
 @Service
 public class NTUserDetailsService implements UserDetailsService {
@@ -25,49 +28,7 @@ public class NTUserDetailsService implements UserDetailsService {
 			throw new UsernameNotFoundException(String.format("El usuario %s no existe", username));
 		}
 		
-		return new UserDetails() {
-			
-			@Override
-			public boolean isEnabled() {
-				// TODO Auto-generated method stub
-				return true;
-			}
-			
-			@Override
-			public boolean isCredentialsNonExpired() {
-				// TODO Auto-generated method stub
-				return true;
-			}
-			
-			@Override
-			public boolean isAccountNonLocked() {
-				// TODO Auto-generated method stub
-				return true;
-			}
-			
-			@Override
-			public boolean isAccountNonExpired() {
-				// TODO Auto-generated method stub
-				return true;
-			}
-			
-			@Override
-			public String getUsername() {
-				// TODO Auto-generated method stub
-				return user.getUsuario();
-			}
-			
-			@Override
-			public String getPassword() {
-				// TODO Auto-generated method stub
-				return user.getClave();
-			}
-			
-			@Override
-			public Collection<? extends GrantedAuthority> getAuthorities() {
-				return null;
-			}
-		};
+		return new CustomUserDetails(user);
 	}
 
 }

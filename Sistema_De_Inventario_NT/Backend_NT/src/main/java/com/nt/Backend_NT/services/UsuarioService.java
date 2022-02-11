@@ -1,4 +1,4 @@
-package com.nt.Backend_NT;
+package com.nt.Backend_NT.services;
 
 import org.springframework.stereotype.Service;
 

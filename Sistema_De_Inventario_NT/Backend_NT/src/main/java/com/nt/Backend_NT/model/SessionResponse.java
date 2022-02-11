@@ -6,4 +6,11 @@ import lombok.Data;
 public class SessionResponse {
 	
 	private String token;
+
+	public SessionResponse(String token) {
+		super();
+		this.token = token;
+	}
+	
+	
 }

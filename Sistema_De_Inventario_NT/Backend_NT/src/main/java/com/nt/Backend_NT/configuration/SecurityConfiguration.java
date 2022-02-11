@@ -12,7 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.nt.Backend_NT.filters.JwtRequestFilter;
 import com.nt.Backend_NT.services.NTUserDetailsService;
 
 @EnableWebSecurity
@@ -20,26 +22,34 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	
 	@Autowired
 	private NTUserDetailsService userDetailService;
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
+	private AuthenticationManager authenticationManager;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailService);
 	}
 	
+	@Bean
+	public AuthenticationManager getAuthenticationManager(AuthenticationManagerBuilder auth)
+			throws Exception {
+		return authenticationManager();
+	}
+	
 
 	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.httpBasic();
+	protected void configure(HttpSecurity http) throws Exception {	
 		http.csrf().disable()
-		.authorizeRequests()
-		.antMatchers("/sessions")
-		.permitAll()
-		.antMatchers("/user")
-		.permitAll()
-		.anyRequest().authenticated();
+			.authorizeRequests()
+			.antMatchers("/session")
+			.permitAll()
+			.antMatchers("/user")
+			.permitAll()
+			.anyRequest().authenticated()
+			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	@Bean
