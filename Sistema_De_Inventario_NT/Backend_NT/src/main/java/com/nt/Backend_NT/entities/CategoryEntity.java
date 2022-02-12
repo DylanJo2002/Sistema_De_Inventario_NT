@@ -9,16 +9,15 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
-@Entity
-@Table(name="usuarios")
 @Data
-public class UserEntity {
+@Entity
+@Table(name = "categorias")
+public class CategoryEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column
-	private String usuario;
-	@Column
-	private String clave;	
+	private String nombre;
+
 }
