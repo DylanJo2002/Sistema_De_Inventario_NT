@@ -1,6 +1,7 @@
 package com.nt.Backend_NT.filters;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,6 +16,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.google.gson.Gson;
+import com.nt.Backend_NT.model.ErrorResponse;
 import com.nt.Backend_NT.util.CustomUserDetails;
 import com.nt.Backend_NT.util.JwtUtil;
 
@@ -35,9 +38,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		String username = null;
 		String jwt = null;
 		
+		if(authorizationHeader == null) {
+			doNoTokenResponse(response);
+			return;
+		}
+		
 		if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			jwt = authorizationHeader.substring(7);
-			username = jwtutil.extractUsername(jwt);
+			try {
+				username = jwtutil.extractUsername(jwt);
+			}catch(Exception e){
+				doNoTokenResponse(response);
+				return;
+			}
+			
 		}
 		
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -58,4 +72,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	}
 
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+		String uri = request.getRequestURI();
+		return uri.equals("/user")  || uri.equals("/session");
+	}
+	
+	private void doNoTokenResponse(HttpServletResponse response) throws IOException {
+		ErrorResponse error = new ErrorResponse("Token no válido");
+		String errorJson = new Gson().toJson(error);
+		PrintWriter out = response.getWriter(); 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+		response.setStatus(403);
+		out.print(errorJson);
+		out.flush();		
+	}
 }
