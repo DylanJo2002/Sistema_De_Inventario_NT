@@ -16,7 +16,7 @@ public class CategoryService {
 	
 	public CategoryEntity createCategory(CategoryEntity categoryEntity) throws Exception {
 		
-		CategoryEntity categoryInDB = categoryRepository.findCategoryEntityByNombre(
+		CategoryEntity categoryInDB = categoryRepository.findByNombre(
 				categoryEntity.getNombre());
 		
 		if(categoryInDB == null) {
@@ -34,7 +34,7 @@ public class CategoryService {
 	public CategoryEntity updateCategory(int id, CategoryEntity categoryEntity) 
 			throws Exception {
 		
-		CategoryEntity categoryInDB = categoryRepository.findById(id).get();
+		CategoryEntity categoryInDB = categoryRepository.findById(id);
 		
 		if(categoryInDB != null) {
 			categoryInDB.setNombre(categoryEntity.getNombre());
@@ -46,7 +46,7 @@ public class CategoryService {
 	
 	public CategoryEntity deleteCategory(int id) throws Exception {
 		
-		CategoryEntity categoryInDB = categoryRepository.findById(id).get();
+		CategoryEntity categoryInDB = categoryRepository.findById(id);
 		
 		if(categoryInDB != null) {
 			categoryRepository.delete(categoryInDB);

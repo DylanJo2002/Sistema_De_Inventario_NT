@@ -8,6 +8,7 @@ import com.nt.Backend_NT.entities.CategoryEntity;
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
 	
-	public CategoryEntity findCategoryEntityByNombre(String name);
+	public CategoryEntity findByNombre(String name);
+	public CategoryEntity findById(int id);
 
 }
