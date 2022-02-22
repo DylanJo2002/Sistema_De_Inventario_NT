@@ -1,13 +1,13 @@
 package com.nt.Backend_NT.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,5 +46,19 @@ public class ProductController {
 		return new ResponseEntity<ProductEntity>(response, HttpStatus.CREATED);
 	}	
 	
-
+	@PutMapping("/{reference}")
+	public ResponseEntity<ProductEntity> updateProduct(@PathVariable String reference, 
+			@RequestBody ProductEntity product) throws Exception{
+		
+		ProductEntity updatedProduct = productService.updateProductByReference(reference, product);
+		return new ResponseEntity<ProductEntity>(updatedProduct, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{reference}")
+	public ResponseEntity<ProductEntity> deleteProduct(@PathVariable String reference)
+			throws Exception{
+		
+		ProductEntity deletedProduct = productService.deleteProductByReference(reference);
+		return new ResponseEntity<ProductEntity>(deletedProduct, HttpStatus.OK);
+	}	
 }

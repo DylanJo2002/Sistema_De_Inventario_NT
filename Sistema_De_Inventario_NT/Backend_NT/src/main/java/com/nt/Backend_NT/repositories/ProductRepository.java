@@ -15,4 +15,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, String>{
 	public ProductEntity findByReferencia(String reference);
 	public List<ProductEntity> findByCategoriaReference(CategoryEntity category);
 	public List<ProductEntity> findAll();
+	@Query( value = "SELECT count(*) FROM productos p WHERE p.categoria = ?1", 
+			  nativeQuery = true)
+	public int productsAssocietedCategory(int categoryId);
 }

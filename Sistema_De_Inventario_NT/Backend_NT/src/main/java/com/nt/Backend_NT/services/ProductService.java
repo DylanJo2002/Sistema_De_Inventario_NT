@@ -67,4 +67,45 @@ public class ProductService {
 		throw new Exception(String.format("Ya existe un producto con la referencia %s",
 				reference));		
 	}
+
+	public ProductEntity updateProductByReference(String reference, ProductEntity updatedProduct) 
+			throws Exception {
+		ProductEntity productInBD = 
+				productRepository.findByReferencia(reference);
+		CategoryEntity categoryInDB = 
+				categoryRepository.findById(updatedProduct.getCategoria());
+		String message;
+		if(productInBD != null && categoryInDB != null) {
+			productInBD.setNombre(updatedProduct.getNombre());
+			productInBD.setDescripcion(updatedProduct.getDescripcion());
+			productInBD.setCostoxunidad(updatedProduct.getCostoxunidad());
+			productInBD.setUmbral(updatedProduct.getUmbral());
+			productInBD.setCategoriaReference(categoryInDB);
+			productRepository.save(productInBD);
+			return productInBD;
+		}
+		
+		if(productInBD == null) {
+			message = String.format("No existe un producto con la referencia %s",
+					reference);
+		}else {
+			message = String.format("No una categoría con la referencia %o",
+					updatedProduct.getCategoria());
+		}
+		
+		throw new Exception(message);
+	}
+
+	public ProductEntity deleteProductByReference(String reference) throws Exception {
+		ProductEntity productInBD = 
+				productRepository.findByReferencia(reference);
+		
+		if(productInBD != null) {
+			productRepository.delete(productInBD);
+			return productInBD;
+		}
+		
+		throw new Exception(String.format("No existe un producto con la referencia %s",
+				reference));		
+	}	
 }

@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.repositories.CategoryRepository;
+import com.nt.Backend_NT.repositories.ProductRepository;
 
 @Service
 public class CategoryService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
+	@Autowired
+	private ProductRepository productRepository;
 	
 	public CategoryEntity createCategory(CategoryEntity categoryEntity) throws Exception {
 		
@@ -47,13 +50,23 @@ public class CategoryService {
 	public CategoryEntity deleteCategory(int id) throws Exception {
 		
 		CategoryEntity categoryInDB = categoryRepository.findById(id);
-		
+		String message;
 		if(categoryInDB != null) {
-			categoryRepository.delete(categoryInDB);
-			return categoryInDB;
+			int productsAssocietedCategory = 
+					productRepository.productsAssocietedCategory(id);
+			if(productsAssocietedCategory == 0) {
+				categoryRepository.delete(categoryInDB);
+				return categoryInDB;
+			}
 		}
 		
-		throw new Exception("La categoría no existe");
+		if(categoryInDB == null) {
+			message = String.format("La categoría %o no existe",id);
+		}else {
+			message = String.format("Existen productos que utilizan la categoría %o",id);
+		}
+		
+		throw new Exception(message);
 	}	
 
 }
