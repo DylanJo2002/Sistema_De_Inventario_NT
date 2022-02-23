@@ -16,43 +16,31 @@ public class ProductService {
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
-	private CategoryRepository categoryRepository;
+	private CategoryService categoryService;
 	public ProductEntity createProduct(ProductEntity product) throws Exception{
 		String message;
 		ProductEntity productInBD = 
 				productRepository.findByReferencia(product.getReferencia());
 		CategoryEntity categoryInDB = 
-				categoryRepository.findById(product.getCategoria());
+				categoryService.getCategory(product.getCategoria());
 		
-		if(productInBD == null && categoryInDB != null) {
+		if(productInBD == null) {
 			product.setCategoriaReference(categoryInDB);
 			return productRepository.save(product);
 		}
 		
-		if(categoryInDB == null) {
-			message = String.format("No existe la categoría con el id %o",
-					product.getCategoria());
-		} else {
-			message = String.format("Ya existe un producto con la referencia %s",
-					product.getReferencia());
-		}
-		
-		throw new Exception(message);
+		throw new Exception(String.format("Ya existe un producto con la referencia %s",
+				product.getReferencia()));
 	}
 	
-	public List<ProductEntity> getProductsByCategory(int category) {
+	public List<ProductEntity> getProductsByCategory(int category) throws Exception {
 		String message;
 		if(category==0) {
 			return productRepository.findAll();
 		}
 		CategoryEntity categoryInDB = 
-				categoryRepository.findById(category);
+				categoryService.getCategory(category);
 		
-		if(categoryInDB == null) {
-			
-			message = String.format("No existe la categoría con el id %o",
-					category);			
-		}
 		return productRepository.findByCategoriaReference(categoryInDB);
 	}
 
@@ -64,7 +52,7 @@ public class ProductService {
 			return productInBD;
 		}
 		
-		throw new Exception(String.format("Ya existe un producto con la referencia %s",
+		throw new Exception(String.format("No existe un producto con la referencia %s",
 				reference));		
 	}
 
@@ -73,7 +61,7 @@ public class ProductService {
 		ProductEntity productInBD = 
 				productRepository.findByReferencia(reference);
 		CategoryEntity categoryInDB = 
-				categoryRepository.findById(updatedProduct.getCategoria());
+				categoryService.getCategory(updatedProduct.getCategoria());
 		String message;
 		if(productInBD != null && categoryInDB != null) {
 			productInBD.setNombre(updatedProduct.getNombre());
@@ -85,15 +73,8 @@ public class ProductService {
 			return productInBD;
 		}
 		
-		if(productInBD == null) {
-			message = String.format("No existe un producto con la referencia %s",
-					reference);
-		}else {
-			message = String.format("No una categoría con la referencia %o",
-					updatedProduct.getCategoria());
-		}
-		
-		throw new Exception(message);
+		throw new Exception(String.format("No existe un producto con la referencia %s",
+				reference));
 	}
 
 	public ProductEntity deleteProductByReference(String reference) throws Exception {
@@ -108,4 +89,8 @@ public class ProductService {
 		throw new Exception(String.format("No existe un producto con la referencia %s",
 				reference));		
 	}	
+
+	public int getProductQuantityAssociatedCategory(int categoryId) {
+		return productRepository.productsAssocietedCategory(categoryId);
+	}
 }

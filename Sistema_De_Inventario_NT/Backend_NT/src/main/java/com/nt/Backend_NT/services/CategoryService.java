@@ -3,6 +3,7 @@ package com.nt.Backend_NT.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
@@ -14,8 +15,11 @@ public class CategoryService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
+	private ProductService productService;
 	@Autowired
-	private ProductRepository productRepository;
+	public CategoryService(@Lazy ProductService productService) {
+		this.productService = productService;
+	}
 	
 	public CategoryEntity createCategory(CategoryEntity categoryEntity) throws Exception {
 		
@@ -36,7 +40,9 @@ public class CategoryService {
 	
 	public CategoryEntity updateCategory(int id, CategoryEntity categoryEntity) 
 			throws Exception {
-		
+		if(id == 0) {
+			throw new Exception("No se puede editar la categoría primaria");
+		}
 		CategoryEntity categoryInDB = categoryRepository.findById(id);
 		
 		if(categoryInDB != null) {
@@ -48,25 +54,29 @@ public class CategoryService {
 	}	
 	
 	public CategoryEntity deleteCategory(int id) throws Exception {
-		
-		CategoryEntity categoryInDB = categoryRepository.findById(id);
-		String message;
+		if(id == 0) {
+			throw new Exception("No se puede eliminar la categoría primaria");
+		}
+		CategoryEntity categoryInDB = getCategory(id);
 		if(categoryInDB != null) {
 			int productsAssocietedCategory = 
-					productRepository.productsAssocietedCategory(id);
+					productService.getProductQuantityAssociatedCategory(id);
 			if(productsAssocietedCategory == 0) {
 				categoryRepository.delete(categoryInDB);
 				return categoryInDB;
 			}
 		}
-		
-		if(categoryInDB == null) {
-			message = String.format("La categoría %o no existe",id);
-		}else {
-			message = String.format("Existen productos que utilizan la categoría %o",id);
+
+		throw new Exception(String.format("Existen productos que utilizan la categoría %o",id));
+	}	
+	
+	public CategoryEntity getCategory(int id) throws Exception {
+		CategoryEntity category = categoryRepository.findById(id);
+		if(category != null) {
+			return category;
 		}
 		
-		throw new Exception(message);
-	}	
+		throw new Exception(String.format("La categoría %o no existe",id));
+	}
 
 }

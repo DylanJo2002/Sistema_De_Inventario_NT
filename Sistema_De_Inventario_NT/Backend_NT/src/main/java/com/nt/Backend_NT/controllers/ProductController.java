@@ -26,7 +26,8 @@ public class ProductController {
 
 	
 	@GetMapping
-	public ResponseEntity<ProductsResponse> getProductsByCategory(@RequestParam int categoryId){
+	public ResponseEntity<ProductsResponse> getProductsByCategory(@RequestParam int categoryId)
+			throws Exception{
 		ProductsResponse response = new ProductsResponse(
 				productService.getProductsByCategory(categoryId));
 		return new ResponseEntity<ProductsResponse>(response, HttpStatus.OK);

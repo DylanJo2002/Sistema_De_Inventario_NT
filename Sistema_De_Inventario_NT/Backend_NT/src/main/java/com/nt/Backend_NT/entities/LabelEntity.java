@@ -2,6 +2,8 @@ package com.nt.Backend_NT.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -10,25 +12,18 @@ import javax.persistence.Transient;
 
 import lombok.Data;
 
-@Entity
-@Table(name = "productos")
 @Data
-public class ProductEntity {
-
+@Entity
+@Table(name="etiquetas")
+public class LabelEntity {
 	@Id
-	private String referencia;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 	@Column
 	private String nombre;
-	@Column
-	private String descripcion;
-	@Column
-	private int costoxunidad;
-	@Column
-	private int umbral;
-	
 	@ManyToOne
-	@JoinColumn(name="categoria")
-	private CategoryEntity categoriaReference;
+	@JoinColumn(name = "producto")
+	private ProductEntity productReference;
 	@Transient
-	private int categoria;
+	private String producto;
 }
