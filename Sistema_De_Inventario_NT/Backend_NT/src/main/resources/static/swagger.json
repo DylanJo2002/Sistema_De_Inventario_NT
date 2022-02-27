@@ -1,0 +1,91 @@
+{
+  "openapi" : "3.0.0",
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/DylanJo2002/Sistema_De_Inventario_NT/1.0.0"
+  }, {
+    "description" : "Servidor local",
+    "url" : "http://127.0.0.1:8080"
+  } ],
+  "info" : {
+    "description" : "API para el Sistema de Invetario de Nova Technology",
+    "version" : "1.0.0",
+    "title" : "API Sistema de Inventario NT",
+    "contact" : {
+      "email" : "dylan.joel.caicedo@gmail.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "Inicio de sesión",
+    "description" : "Operación para el inicio de sesión mediante JWT."
+  } ],
+  "paths" : {
+    "/session" : {
+      "post" : {
+        "tags" : [ "Inicio de sesión" ],
+        "summary" : "Genera un JWT para el inicio de sesión.",
+        "description" : "Genera JWT para el inicio de sesión o en su defecto valida el error en las credenciales. El JWT expira en 24 horas.",
+        "responses" : {
+          "201" : {
+            "description" : "JWT creado exitosamente.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JWTItem"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Formato no válido."
+          },
+          "401" : {
+            "description" : "Usuario o contraseña incorrectos."
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SesionItem"
+              }
+            }
+          },
+          "description" : "JSON con las credenciales del usuario."
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "SesionItem" : {
+        "type" : "object",
+        "required" : [ "usuario", "clave" ],
+        "properties" : {
+          "usuario" : {
+            "type" : "string",
+            "example" : "juanito"
+          },
+          "clave" : {
+            "type" : "string",
+            "example" : "miClave123"
+          }
+        }
+      },
+      "JWTItem" : {
+        "type" : "object",
+        "required" : [ "token" ],
+        "properties" : {
+          "token" : {
+            "type" : "string",
+            "example" : "xxxxx.yyyyy.zzzzz"
+          }
+        }
+      }
+    }
+  }
+}

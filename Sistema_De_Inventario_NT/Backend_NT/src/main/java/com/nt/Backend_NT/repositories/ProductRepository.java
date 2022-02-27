@@ -18,4 +18,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, String>{
 	@Query( value = "SELECT count(*) FROM productos p WHERE p.categoria = ?1", 
 			  nativeQuery = true)
 	public int productsAssocietedCategory(int categoryId);
+	@Query( value = "select sum(i.cantidad) from inventario i join etiquetas e on i.etiqueta = e.id "
+			+ "where e.producto = ?1", 
+			  nativeQuery = true)
+	public int findProductAmount(String reference);
 }

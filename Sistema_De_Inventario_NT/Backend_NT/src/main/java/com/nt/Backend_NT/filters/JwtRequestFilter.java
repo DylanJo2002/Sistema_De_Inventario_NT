@@ -75,7 +75,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		String uri = request.getRequestURI();
-		return uri.equals("/user")  || uri.equals("/session");
+		return uri.equals("/user")  || uri.equals("/session") || uri.equals("/swagger-ui.html")
+				|| uri.contains("swagger") || uri.contains("api-docs");
 	}
 	
 	private void doNoTokenResponse(HttpServletResponse response) throws IOException {

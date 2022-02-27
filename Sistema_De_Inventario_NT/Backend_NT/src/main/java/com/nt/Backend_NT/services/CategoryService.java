@@ -75,8 +75,8 @@ public class CategoryService {
 		if(category != null) {
 			return category;
 		}
-		
-		throw new Exception(String.format("La categoría %o no existe",id));
+		String message = String.format("La categoría %d no existe",id);
+		throw new Exception(message);
 	}
 
 }

@@ -6,8 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
+import com.nt.Backend_NT.entities.InventoryEntity;
+import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
 import com.nt.Backend_NT.repositories.CategoryRepository;
+import com.nt.Backend_NT.repositories.InventoryRepository;
+import com.nt.Backend_NT.repositories.LabelRepository;
 import com.nt.Backend_NT.repositories.ProductRepository;
 
 @Service
@@ -17,6 +21,10 @@ public class ProductService {
 	private ProductRepository productRepository;
 	@Autowired
 	private CategoryService categoryService;
+	@Autowired
+	private LabelRepository labelRepository;
+	@Autowired
+	private InventoryRepository inventoryRepository;
 	public ProductEntity createProduct(ProductEntity product) throws Exception{
 		String message;
 		ProductEntity productInBD = 
@@ -26,7 +34,16 @@ public class ProductService {
 		
 		if(productInBD == null) {
 			product.setCategoriaReference(categoryInDB);
-			return productRepository.save(product);
+			ProductEntity newProduct = productRepository.save(product);
+			LabelEntity primaryLabel = new LabelEntity();
+			primaryLabel.setNombre("NINGUNA");
+			primaryLabel.setProductReference(newProduct);
+			primaryLabel = labelRepository.save(primaryLabel);	
+			InventoryEntity inventory = new InventoryEntity();
+			inventory.setLabelReference(primaryLabel);
+			inventory.setCantidad(0);
+			inventoryRepository.save(inventory);
+			return newProduct;
 		}
 		
 		throw new Exception(String.format("Ya existe un producto con la referencia %s",

@@ -3,12 +3,15 @@ package com.nt.Backend_NT.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
+import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
 import com.nt.Backend_NT.repositories.CategoryRepository;
+import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.LabelRepository;
 import com.nt.Backend_NT.repositories.ProductRepository;
 
@@ -18,10 +21,19 @@ public class LabelService {
 	private LabelRepository labelRepository;
 	@Autowired
 	private CategoryService categoryService;
-	@Autowired
 	private ProductService productService;
-	
+	@Autowired
+	private InventoryRepository inventoryRepository;
+		
+	@Autowired
+	public void setProductService(@Lazy ProductService productService) {
+		this.productService = productService;
+	}
+
 	public LabelEntity createLabel(LabelEntity label) throws Exception {
+		if(label.getNombre().equals("NINGUNA")) {
+			throw new Exception("No puede crear una etiqueta llamada \"NINGUNA\" ");
+		}
 		ProductEntity productInBD =
 				productService.getProductByReference(label.getProducto());
 		
@@ -30,7 +42,12 @@ public class LabelService {
 		
 		if(labelInDB == null) {
 			label.setProductReference(productInBD);
-			labelRepository.save(label);
+			LabelEntity newLabel = labelRepository.save(label);
+			InventoryEntity inventory = new InventoryEntity();
+			inventory.setCantidad(0);
+			inventory.setLabelReference(newLabel);
+			inventoryRepository.save(inventory);
+			return newLabel;
 		}
 		
 		throw new Exception(String.format("Ya existe la etiqueta %s", label.getNombre()));
@@ -60,17 +77,16 @@ public class LabelService {
 	
 	public LabelEntity updateLabel(int labelId, LabelEntity updatedLabel) 
 			throws Exception {
-		
-		if(labelId == 0) {
-			throw new Exception("No se puede editar la etiqueta primaria");
-		}
-		
+			
 		LabelEntity labelInDB = labelRepository.findById(labelId);
 		
 		if(labelInDB != null) {
-			labelInDB.setNombre(updatedLabel.getNombre());
-			labelRepository.save(labelInDB);
-			return labelInDB;
+			if(!labelInDB.getNombre().equals("NINGUNA")) {
+				labelInDB.setNombre(updatedLabel.getNombre());
+				labelRepository.save(labelInDB);
+				return labelInDB;
+			}
+			throw new Exception("No se puede editar la etiqueta primaria");
 		}
 		
 		
@@ -78,15 +94,24 @@ public class LabelService {
 		
 	}
 	
-	public LabelEntity deleteLabel(int labelId) throws Exception {
-		if(labelId == 0) {
-			throw new Exception("No se puede eliminar la etiqueta primaria");
-		}
+	public LabelEntity getLabel(int labelId) throws Exception {
 		LabelEntity labelInDB = labelRepository.findById(labelId);
 		
 		if(labelInDB != null) {
-			labelRepository.delete(labelInDB);
 			return labelInDB;
+		}
+		
+		throw new Exception(String.format("No existe una etiqueta con el id %o",labelId));			
+	}	
+	public LabelEntity deleteLabel(int labelId) throws Exception {
+		LabelEntity labelInDB = labelRepository.findById(labelId);
+		
+		if(labelInDB != null) {
+			if(!labelInDB.getNombre().equals("NINGUNA")) {
+				labelRepository.delete(labelInDB);
+				return labelInDB;
+			}
+			throw new Exception("No se puede eliminar la etiqueta primaria");
 		}
 		
 		throw new Exception(String.format("No existe una etiqueta con el id %o",labelId));			

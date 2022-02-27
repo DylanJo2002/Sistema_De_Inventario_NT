@@ -49,7 +49,7 @@ public class CategoryController {
 	}
 	
 	@DeleteMapping("/{categoryId}")
-	public ResponseEntity<CategoryEntity> deleteCategory(@PathVariable int categoryId, @RequestBody CategoryEntity category)
+	public ResponseEntity<CategoryEntity> deleteCategory(@PathVariable int categoryId)
 			throws Exception{
 		CategoryEntity deletedCategory = categoryService.deleteCategory(categoryId);
 		return new ResponseEntity<CategoryEntity>(deletedCategory,HttpStatus.OK);

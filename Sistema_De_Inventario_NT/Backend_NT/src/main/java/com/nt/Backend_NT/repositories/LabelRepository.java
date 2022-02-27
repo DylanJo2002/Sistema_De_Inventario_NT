@@ -17,4 +17,7 @@ public interface LabelRepository extends JpaRepository<LabelEntity, Integer> {
 	public List<LabelEntity> findByCategory(int categoryId);
 	public List<LabelEntity> findByProductReference(ProductEntity productReference);
 	public LabelEntity findById(int labelId);
+	@Query( value = "SELECT count(*) FROM etiquetas e WHERE e.producto = ?1", 
+			  nativeQuery = true)
+	public int findQuantityByProductReference(String productReference);
 }
