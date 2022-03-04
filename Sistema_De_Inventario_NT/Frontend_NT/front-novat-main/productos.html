@@ -83,31 +83,31 @@
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
               <div class="col-sm-10">
-                <input type="password" class="form-control" id="inputPassword">
+                <input type="password" class="form-control">
               </div>
             </div>
             <div class="form-group row">
               <label for="inputPassword" class="col-sm-2 col-form-label">Nùmero</label>
               <div class="col-sm-10">
-                <input type="password" class="form-control" id="inputPassword">
+                <input type="password" class="form-control">
               </div>
             </div>
             <div class="form-group row">
               <label for="inputPassword" class="col-sm-2 col-form-label">Descripcion</label>
               <div class="col-sm-10">
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <textarea class="form-control" rows="3"></textarea>
               </div>
             </div>
               <div class="form-group row">
                 <label for="inputPassword" class="col-sm-2 col-form-label">costo por unidad</label>
                 <div class="col-sm-10">
-                  <input type="password" class="form-control" id="inputPassword">
+                  <input type="password" class="form-control">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="inputPassword" class="col-sm-2 col-form-label">categoria</label>
                 <div class="col-sm-10">
-                  <select class="form-control" id="exampleFormControlSelect1">
+                  <select class="form-control">
                     <option>1</option>
                     <option>2</option>
                     <option>3</option>
@@ -142,36 +142,39 @@
           <div class="form-group row">
             <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" id="inputPassword">
+              <input type="text" class="form-control" id="editar-referencia-producto" readonly>
             </div>
           </div>
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Nùmero</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label">Nombre</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" id="inputPassword">
+              <input type="text" class="form-control" id="editar-nombre-producto">
             </div>
           </div>
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Descripcion</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label">Descripción</label>
             <div class="col-sm-10">
-              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+              <textarea class="form-control" rows="3" id="editar-descripcion-producto"></textarea>
             </div>
           </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">costo por unidad</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label">C/U</label>
               <div class="col-sm-10">
-                <input type="password" class="form-control" id="inputPassword">
+                <input type="text" class="form-control" id="editar-cu-producto">
               </div>
             </div>
+
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">categoria</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label">Umbral</label>
               <div class="col-sm-10">
-                <select class="form-control" id="exampleFormControlSelect1">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
+                <input type="text" class="form-control" id="editar-umbral-producto"> 
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label">Categoría</label>
+              <div class="col-sm-10">
+                <select class="form-control" id="editar-categoria-producto">
                 </select>
               </div>
             </div>
@@ -180,7 +183,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">aceptar</button>
+        <button type="button" id="btn_aceptarEdicionProducto" class="btn btn-primary">aceptar</button>
       </div>
     </div>
   </div>
@@ -211,7 +214,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Crear producto</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Información del producto</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -221,31 +224,45 @@
           <div class="form-group row">
             <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
             <div class="col-sm-10">
-              <input class="form-control" type="text" placeholder="informacion" readonly>
+              <input class="form-control" id="mirar-referencia-producto" type="text" 
+              placeholder="informacion" readonly>
             </div>
           </div>
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Nùmero</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label">Nombre</label>
             <div class="col-sm-10">
-              <input class="form-control" type="text" placeholder="informacion" readonly>
+              <input class="form-control" id="mirar-nombre-producto" type="text" 
+              placeholder="informacion" readonly>
             </div>
           </div>
           <div class="form-group row">
             <label for="inputPassword" class="col-sm-2 col-form-label">Descripcion</label>
             <div class="col-sm-10">
-              <input class="form-control" type="text" placeholder="informacion" readonly>
+              <input class="form-control" id="mirar-descripcion-producto" type="text" 
+              placeholder="informacion" readonly>
             </div>
           </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">costo por unidad</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label">C/U</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" placeholder="informacion" readonly>
+                <input class="form-control" id="mirar-cu-producto" type="text" 
+                placeholder="informacion" readonly>
               </div>
             </div>
+
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">categoria</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label">Umbral</label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" placeholder="informacion" readonly>
+                <input class="form-control" id="mirar-umbral-producto" type="text" 
+                placeholder="informacion" readonly>
+              </div>
+            </div>           
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label">Categoría</label>
+              <div class="col-sm-10">
+                <input class="form-control" id="mirar-categoria-producto" type="text" 
+                placeholder="informacion" readonly>
               </div>
             </div>
          

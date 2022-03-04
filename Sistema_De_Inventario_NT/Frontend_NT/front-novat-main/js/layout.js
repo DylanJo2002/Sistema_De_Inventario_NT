@@ -11,6 +11,10 @@ $(document).ready(function () {
             ev.preventDefault();
             obtenerProductosCallBack();
           });
+
+          document.getElementById("btn_aceptarEdicionProducto")
+          .addEventListener('click',editarInformacionProducto);
+
         });
       });
 
@@ -57,6 +61,7 @@ async function obtenerProductosCallBack(){
     obtenerProductos(null, categoria);
     return;
   }
+
 }
 
 async function obtenerCategorias(sinActualizar) {
@@ -73,25 +78,43 @@ async function obtenerCategorias(sinActualizar) {
       categorias.push(categoria);
     }
     llenarCategorias();
+    llenarCategoriaModal($("#editar-categoria-producto")[0]);
     return;
   }
 
 }
 
-function llenarCategorias() {
+function crearFragmentoCategorias(noPermitirTodas){
   const fragment = document.createDocumentFragment();
   for (let categoria of categorias) {
-    const child = document.createElement("option");
-    child.text = categoria.nombre;
-    child.id = categoria.id;
-    console.log(child);
-    fragment.appendChild(child);
+
+    if(categoria.id == 0 || categoria.id == -1){
+      if(!noPermitirTodas){
+        const child = document.createElement("option");
+        child.text = categoria.nombre;
+        child.id = categoria.id;
+        console.log(child);
+        fragment.appendChild(child);
+      }
+    }else{
+      const child = document.createElement("option");
+      child.text = categoria.nombre;
+      child.id = categoria.id;
+      console.log(child);
+      fragment.appendChild(child);
+    }
+
   }
+
+  return fragment;
+}
+
+function llenarCategorias() {
+  const fragment = crearFragmentoCategorias();
   const selectProductos = document.getElementById("select_categoryProduct");
   const selectCategorias = document.getElementById("select_categoryCategory");
   const selectEtiquetas = document.getElementById("select_categoryLabel");
   const selectInventario = document.getElementById("select_categoryInventory");
-
   append(
     selectCategorias || selectProductos || selectEtiquetas || selectInventario,
     fragment
@@ -165,19 +188,29 @@ async function llenarProductos(){
   
   const root = await $('#tableBody_productos');
   append(root,fragment);
+  agregarEventListener(document.getElementsByClassName("btn-info-product"), 
+  llenarInformacionProducto);
+  agregarEventListener(document.getElementsByClassName("btn-edit-product"),
+  llenarEdicionProducto);
 }
 
-
-
 //mensajes = [407_Message]
-async function doFetch(metodo, recurso, mensajes, estadoOk) {
+async function doFetch(metodo, recurso, mensajes, estadoOk,json) {
+
+  const settings = {
+    method: metodo,
+    headers: { Authorization: token, "Access-Control-Allow-Origin": "*" }
+
+  }
+  if(json){
+    settings.headers["Content-Type"]= "application/json";
+    settings.body = JSON.stringify(json);
+  }
+  console.log(domain + recurso+" :",settings)
 
   let body;
   try {
-    const res = await fetch(domain + recurso, {
-      method: metodo,
-      headers: { Authorization: token, "Access-Control-Allow-Origin": "*" },
-    });
+    const res = await fetch(domain + recurso, settings);
   
     if (res.status == 403) {
       alert("Sesión terminada. Vuelva a iniciar sesión.");
@@ -198,3 +231,82 @@ async function doFetch(metodo, recurso, mensajes, estadoOk) {
     alert(`Ocurrió el siguiente error: ${err}`);
   }
 }
+
+function llenarInformacionProducto(ref){
+  const referencia_element = $("#mirar-referencia-producto")[0];
+  const nombre_element = $("#mirar-nombre-producto")[0];
+  const descripcion_element = $("#mirar-descripcion-producto")[0];
+  const costo_element = $("#mirar-cu-producto")[0];
+  const umbral_element = $("#mirar-umbral-producto")[0];
+  const categoria_element = $("#mirar-categoria-producto")[0];
+
+  const producto = productos.find(p=>p.referencia == ref);
+
+  referencia_element.value = producto.referencia;
+  nombre_element.value = producto.nombre;
+  descripcion_element.value = producto.descripcion;
+  costo_element.value = producto.costoxunidad;
+  umbral_element.value = producto.umbral;
+  categoria_element.value = producto.categoriaReference.nombre;
+
+}
+
+function llenarEdicionProducto(ref){
+  const referencia_element = $("#editar-referencia-producto")[0];
+  const nombre_element = $("#editar-nombre-producto")[0];
+  const descripcion_element = $("#editar-descripcion-producto")[0];
+  const costo_element = $("#editar-cu-producto")[0];
+  const umbral_element = $("#editar-umbral-producto")[0];
+  const categoria_element = $("#editar-categoria-producto")[0];
+
+  const producto = productos.find(p=>p.referencia == ref);
+
+  referencia_element.value = producto.referencia;
+  nombre_element.value = producto.nombre;
+  descripcion_element.value = producto.descripcion;
+  costo_element.value = producto.costoxunidad;
+  umbral_element.value = producto.umbral;
+  categoria_element.value = producto.categoriaReference.nombre;
+
+}
+
+function llenarCategoriaModal(select_node){
+  const fragment = crearFragmentoCategorias(true);
+  append(select_node,fragment);
+}
+
+function agregarEventListener(elementos, funcion){
+  const array = Array.from(elementos);
+
+  array.forEach(function (e) {
+    const parentArray = e.parentElement.parentElement.getElementsByTagName("td");
+    const referencia = parentArray[0].innerText;
+    e.addEventListener('click',()=>{
+      funcion(referencia);
+    });
+  });
+}
+
+async function editarInformacionProducto(){
+  const referencia_element = $("#editar-referencia-producto")[0].value;
+  const nombre_element = $("#editar-nombre-producto")[0].value;
+  const descripcion_element = $("#editar-descripcion-producto")[0].value;
+  const costo_element = $("#editar-cu-producto")[0].value;
+  const umbral_element = $("#editar-umbral-producto")[0].value;
+  const categoria_element = $("#editar-categoria-producto option:selected").attr("id")
+
+  let body = {
+    "nombre": nombre_element,
+    "descripcion": descripcion_element,
+    "costoxunidad": costo_element ,
+    "umbral": umbral_element,
+    "categoria": categoria_element
+  }
+
+  body = await doFetch("put","products/"+referencia_element,null,200,body);
+  if(body){
+    alert(`Se editó el producto ${referencia_element} satisfactoriamente.`);
+  }
+}
+
+async
