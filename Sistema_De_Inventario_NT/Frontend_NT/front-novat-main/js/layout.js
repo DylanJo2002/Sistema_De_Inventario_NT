@@ -15,6 +15,12 @@ $(document).ready(function () {
           document.getElementById("btn_aceptarEdicionProducto")
           .addEventListener('click',editarInformacionProducto);
 
+          document.getElementById("btn_aceptarEliminarProducto")
+          .addEventListener('click', eliminarProducto);
+
+          document.getElementById("btn_aceptarCrearProducto")
+          .addEventListener('click', crearProducto);
+          
         });
       });
 
@@ -41,6 +47,7 @@ const domain = "http://localhost:8080/";
 const categorias = new Array();
 const productos = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
+let registroReferencia;
 
 async function obtenerProductosCallBack(){
   const referencia = await $("#search_referenciaProducto")[0].value;
@@ -79,6 +86,7 @@ async function obtenerCategorias(sinActualizar) {
     }
     llenarCategorias();
     llenarCategoriaModal($("#editar-categoria-producto")[0]);
+    llenarCategoriaModal($("#crear-categoria-producto")[0]);
     return;
   }
 
@@ -192,6 +200,8 @@ async function llenarProductos(){
   llenarInformacionProducto);
   agregarEventListener(document.getElementsByClassName("btn-edit-product"),
   llenarEdicionProducto);
+  agregarEventListener(document.getElementsByClassName("btn-delete-product"),
+  almacenarReferenciaProducto)
 }
 
 //mensajes = [407_Message]
@@ -244,7 +254,7 @@ function llenarInformacionProducto(ref){
 
   referencia_element.value = producto.referencia;
   nombre_element.value = producto.nombre;
-  descripcion_element.value = producto.descripcion;
+  descripcion_element.innerText = producto.descripcion;
   costo_element.value = producto.costoxunidad;
   umbral_element.value = producto.umbral;
   categoria_element.value = producto.categoriaReference.nombre;
@@ -277,7 +287,7 @@ function llenarCategoriaModal(select_node){
 
 function agregarEventListener(elementos, funcion){
   const array = Array.from(elementos);
-
+  console.log(`Elementos:`,elementos);
   array.forEach(function (e) {
     const parentArray = e.parentElement.parentElement.getElementsByTagName("td");
     const referencia = parentArray[0].innerText;
@@ -307,6 +317,60 @@ async function editarInformacionProducto(){
   if(body){
     alert(`Se editó el producto ${referencia_element} satisfactoriamente.`);
   }
+  limpiarCamposEditarProducto();
 }
 
-async
+async function eliminarProducto(){
+
+  const body = await doFetch("delete","products/"+registroReferencia,null,200);
+  console.log(`Producto elimnado: ${body}`);
+  if(body){
+    alert(`Se eliminó el producto ${registroReferencia} satisfactoriamente.`);
+  }
+}
+
+
+function almacenarReferenciaProducto(ref){
+  registroReferencia = ref;
+}
+
+async function crearProducto(){
+  const referencia_element = $("#crear-referencia-producto")[0].value;
+  const nombre_element = $("#crear-nombre-producto")[0].value;
+  const descripcion_element = $("#crear-descripcion-producto")[0].value;
+  const costo_element = $("#crear-cu-producto")[0].value;
+  const umbral_element = $("#crear-umbral-producto")[0].value;
+  const categoria_element = $("#crear-categoria-producto option:selected").attr("id");
+
+  let body = {
+    "referencia": referencia_element,
+    "nombre": nombre_element,
+    "descripcion": descripcion_element,
+    "costoxunidad": costo_element ,
+    "umbral": umbral_element,
+    "categoria": categoria_element
+  }
+  
+  body = await doFetch("post","products",null,201,body);
+  if(body){
+    alert(`El producto ${referencia_element} se creó satisfactoriamente`);
+  } 
+  $('#agregar').modal('hide');
+  limpiarCamposCrearProducto();
+}
+
+function limpiarCamposCrearProducto(){
+  const referencia_element = $("#crear-referencia-producto")[0].value = '';
+  const nombre_element = $("#crear-nombre-producto")[0].value = '';
+  const descripcion_element = $("#crear-descripcion-producto")[0].value = '';
+  const costo_element = $("#crear-cu-producto")[0].value = '';
+  const umbral_element = $("#crear-umbral-producto")[0].value = '';
+}
+
+function limpiarCamposEditarProducto(){
+  const referencia_element = $("#editar-referencia-producto")[0].value = '';
+  const nombre_element = $("#editar-nombre-producto")[0].value = '';
+  const descripcion_element = $("#editar-descripcion-producto")[0].value = '';
+  const costo_element = $("#editar-cu-producto")[0].value = '';
+  const umbral_element = $("#editar-umbral-producto")[0].value = '';
+}

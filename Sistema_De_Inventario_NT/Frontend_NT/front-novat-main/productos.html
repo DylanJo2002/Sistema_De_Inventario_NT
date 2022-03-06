@@ -74,7 +74,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="staticBackdropLabel">Crear producto</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" onclick="$('#modal_id').modal('hide');" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -83,36 +83,37 @@
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
               <div class="col-sm-10">
-                <input type="password" class="form-control">
+                <input type="text" class="form-control" id="crear-referencia-producto">
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">Nùmero</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label">Nombre</label>
               <div class="col-sm-10">
-                <input type="password" class="form-control">
+                <input type="text" class="form-control" id="crear-nombre-producto">
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">Descripcion</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label">Descripción</label>
               <div class="col-sm-10">
-                <textarea class="form-control" rows="3"></textarea>
+                <textarea class="form-control" rows="3" id="crear-descripcion-producto"></textarea>
               </div>
             </div>
               <div class="form-group row">
-                <label for="inputPassword" class="col-sm-2 col-form-label">costo por unidad</label>
+                <label for="inputPassword" class="col-sm-2 col-form-label" >C/U</label>
                 <div class="col-sm-10">
-                  <input type="password" class="form-control">
+                  <input type="text" class="form-control" id="crear-cu-producto" pattern="[0-9]">
                 </div>
               </div>
               <div class="form-group row">
-                <label for="inputPassword" class="col-sm-2 col-form-label">categoria</label>
+                <label for="inputPassword" class="col-sm-2 col-form-label">Umbral</label>
                 <div class="col-sm-10">
-                  <select class="form-control">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
+                  <input type="text" class="form-control" id="crear-umbral-producto" pattern="[0-9]">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Categoría</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="crear-categoria-producto">
                   </select>
                 </div>
               </div>
@@ -120,8 +121,8 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary">aceptar</button>
+          <button type="button" class="btn btn-secondary" onclick="$('#agregar').modal('hide');">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarCrearProducto">Aceptar</button>
         </div>
       </div>
     </div>
@@ -133,7 +134,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="staticBackdropLabel">Editar producto</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" onclick="$('#modal_id').modal('hide');" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -182,8 +183,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" id="btn_aceptarEdicionProducto" class="btn btn-primary">aceptar</button>
+        <button type="button" class="btn btn-secondary" onclick="$('#modal_id').modal('hide');">Cancelar</button>
+        <button type="button" id="btn_aceptarEdicionProducto" class="btn btn-primary">Aceptar</button>
       </div>
     </div>
   </div>
@@ -194,7 +195,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="Eliminar">Eliminar</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" onclick="$('#modal_id').modal('hide');" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -202,8 +203,8 @@
         <h5>¿Seguro que quiere elmininar este producto?</h5>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">cancelar</button>
-        <button type="button" class="btn btn-primary">Aceptar</button>
+        <button type="button" class="btn btn-secondary" onclick="$('#modal_id').modal('hide');">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarEliminarProducto">Aceptar</button>
       </div>
     </div>
   </div>
@@ -215,7 +216,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="staticBackdropLabel">Información del producto</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" onclick="$('#modal_id').modal('hide');" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -238,8 +239,8 @@
           <div class="form-group row">
             <label for="inputPassword" class="col-sm-2 col-form-label">Descripcion</label>
             <div class="col-sm-10">
-              <input class="form-control" id="mirar-descripcion-producto" type="text" 
-              placeholder="informacion" readonly>
+              <textarea  class="form-control" id="mirar-descripcion-producto" type="text" 
+                placeholder="informacion" readonly></textarea>
             </div>
           </div>
             <div class="form-group row">
@@ -269,8 +270,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">aceptar</button>
+        <button type="button" class="btn btn-secondary" onclick="$('#modal_id').modal('hide');">Cancelar</button>
+        <button type="button" class="btn btn-primary">Aceptar</button>
       </div>
     </div>
   </div>
