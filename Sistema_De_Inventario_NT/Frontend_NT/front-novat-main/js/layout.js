@@ -63,6 +63,21 @@ $(document).ready(function () {
             .addEventListener("click", () => {
               crearCategoria();
             });
+
+            document
+            .getElementById("btn_aceptarEditarCategoria")
+            .addEventListener("click", () => {
+              editarCategoria();
+            });
+
+
+            document
+            .getElementById("btn_aceptarEliminarCategoria")
+            .addEventListener("click", () => {
+              eliminarCategoria();
+            });
+
+            
         });
       });
       document.getElementById("inventario").addEventListener("click", (ev) => {
@@ -79,6 +94,7 @@ const categorias = new Array();
 const productos = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
+let registroCategoria;
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -301,12 +317,10 @@ async function llenarTablaCategorias() {
   const root = await $("#tableBody_categorias");
   console.log("root", root);
   append(root, fragment);
-  // agregarEventListener(document.getElementsByClassName("btn-info-product"),
-  // llenarInformacionProducto);
-  // agregarEventListener(document.getElementsByClassName("btn-edit-product"),
-  // llenarEdicionProducto);
-  // agregarEventListener(document.getElementsByClassName("btn-delete-product"),
-  // almacenarReferenciaProducto)
+  agregarEventListener(document.getElementsByClassName("btn-edit-category"),
+  llenarEdicionCategoria);
+  agregarEventListener(document.getElementsByClassName("btn-delete-category"),
+  almacenarCategoria)
 }
 
 //mensajes = [407_Message,404_Message]
@@ -384,6 +398,15 @@ function llenarEdicionProducto(ref) {
   categoria_element.value = producto.categoriaReference.nombre;
 }
 
+function llenarEdicionCategoria(ref) {
+  const nombre = $("#editar-nombre-categoria")[0];
+  const categoria = categorias.find(c => c.id == ref);
+  nombre.value = categoria.nombre;
+  nombre.name = categoria.id;
+  console.log("CATEGORIA ID : ",nombre);
+
+}
+
 function llenarCategoriaModal(select_node) {
   const fragment = crearFragmentoCategorias(true);
   append(select_node, fragment);
@@ -455,7 +478,16 @@ async function eliminarProducto() {
 }
 
 function almacenarReferenciaProducto(ref) {
+  const confirmacion = $("#confirmacion-del-producto")[0];
   registroReferencia = ref;
+  confirmacion.innerText = `¿Seguro que quiere elmininar el producto ${ref}?`;
+
+}
+
+function almacenarCategoria(ref){
+  const confirmacion = $("#confirmacion-del-categoria")[0];
+  registroCategoria = ref;
+  confirmacion.innerText = `¿Seguro que quiere elmininar la categoria ${registroCategoria}?`;
 }
 
 async function crearProducto() {
@@ -522,6 +554,46 @@ async function crearCategoria(){
   }
 }
 
+async function editarCategoria(){
+  if (!validarCamposEditarEtiqueta()) {
+    alert("Debe editar una etiqueta con un nombre válido");
+    return;
+  }
+  const nombre = $("#editar-nombre-categoria")[0];
+  let body = {
+    nombre : nombre.value.trim()
+  } 
+
+  body = await doFetch(
+    "put",
+    "categories/"+nombre.name,
+    [`Ya existe una categoria con el nombre ${body.nombre}`],
+    200,
+    body
+  );
+  if (body != -1) {
+    alert(`La categoria ${nombre.name} se editó satisfactoriamente`);
+    $("#modal_editarCategoria").modal("hide");
+    limpiarCamposCrearCategoria();
+    actualizarRegistroCategorias();
+    
+  }
+}
+
+async function eliminarCategoria(){
+  const body = await doFetch(
+    "delete",
+    "categories/" + registroCategoria,
+    [`Existen productos que utilizan la categoría ${registroCategoria}`],
+    200
+  );
+  if (body != -1) {
+    alert(`Se eliminó la categoría ${registroCategoria} satisfactoriamente.`);
+    actualizarRegistroCategorias();
+  }
+  $("#modal_eliminarCategoria").modal("hide");
+}
+
 function limpiarCamposCrearProducto() {
   const referencia_element = ($("#crear-referencia-producto")[0].value = "");
   const nombre_element = ($("#crear-nombre-producto")[0].value = "");
@@ -544,6 +616,11 @@ function limpiarCamposEditarProducto() {
 
 function validarCamposCrearEtiqueta(){
   const nombre = $("#crear-nombre-categoria")[0].value.trim();
+  return nombre;
+}
+
+function validarCamposEditarEtiqueta(){
+  const nombre = $("#editar-nombre-categoria")[0].value.trim();
   return nombre;
 }
 

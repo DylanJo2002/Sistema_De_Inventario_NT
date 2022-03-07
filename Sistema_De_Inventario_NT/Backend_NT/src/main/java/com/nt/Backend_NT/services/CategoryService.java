@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.exceptions.ConflictException;
+import com.nt.Backend_NT.exceptions.NotFoundException;
 import com.nt.Backend_NT.repositories.CategoryRepository;
 import com.nt.Backend_NT.repositories.ProductRepository;
 
@@ -46,12 +47,17 @@ public class CategoryService {
 		}
 		CategoryEntity categoryInDB = categoryRepository.findById(id);
 		
-		if(categoryInDB != null) {
-			categoryInDB.setNombre(categoryEntity.getNombre());
-			return categoryRepository.save(categoryInDB);
+		try {
+			if(categoryInDB != null) {
+				categoryInDB.setNombre(categoryEntity.getNombre());
+				return categoryRepository.save(categoryInDB);
+			}
+		}catch(Exception e) {
+			throw new ConflictException("La categoría no existe");
+
 		}
 		
-		throw new Exception("La categoría no existe");
+		throw new NotFoundException("La categoría no existe");
 	}	
 	
 	public CategoryEntity deleteCategory(int id) throws Exception {
@@ -68,7 +74,7 @@ public class CategoryService {
 			}
 		}
 
-		throw new Exception(String.format("Existen productos que utilizan la categoría %o",id));
+		throw new ConflictException(String.format("Existen productos que utilizan la categoría %o",id));
 	}	
 	
 	public CategoryEntity getCategory(int id) throws Exception {
