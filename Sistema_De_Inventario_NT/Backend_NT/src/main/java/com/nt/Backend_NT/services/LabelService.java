@@ -10,6 +10,7 @@ import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
+import com.nt.Backend_NT.exceptions.ConflictException;
 import com.nt.Backend_NT.repositories.CategoryRepository;
 import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.LabelRepository;
@@ -50,7 +51,7 @@ public class LabelService {
 			return newLabel;
 		}
 		
-		throw new Exception(String.format("Ya existe la etiqueta %s", label.getNombre()));
+		throw new ConflictException(String.format("Ya existe la etiqueta %s", label.getNombre()));
 	}
 	
 	public List<LabelEntity> getLabelsByCategory(int categoryId) throws Exception{

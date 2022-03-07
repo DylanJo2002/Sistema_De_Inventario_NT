@@ -46,7 +46,7 @@ public class LabelController {
 	public ResponseEntity<LabelEntity> createLabel(@RequestBody LabelEntity label)
 			throws Exception{
 		LabelEntity response = labelService.createLabel(label);
-		return new ResponseEntity<LabelEntity>(response,HttpStatus.OK);
+		return new ResponseEntity<LabelEntity>(response,HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{labelId}")
