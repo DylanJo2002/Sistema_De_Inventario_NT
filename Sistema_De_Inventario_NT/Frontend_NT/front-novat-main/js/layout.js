@@ -4,7 +4,7 @@ $(document).ready(function () {
     $("#seccion").load("./index.html", () => {
       document.getElementById("productos").addEventListener("click", (ev) => {
         $("#indexContent").load("./productos.html", () => {
-          obtenerCategorias(true);
+          obtenerCategorias(true,1);
           document
           .getElementById("btn_buscarProducto")
           .addEventListener("click", (ev)=>{
@@ -34,7 +34,7 @@ $(document).ready(function () {
       });
       document.getElementById("categorias").addEventListener("click", (ev) => {
         $("#indexContent").load("./categorias.html", () =>
-          obtenerCategorias(true)
+          obtenerCategorias(true,2)
         );
       });
       document.getElementById("inventario").addEventListener("click", (ev) => {
@@ -77,12 +77,17 @@ async function obtenerProductosCallBack(){
   }
 
 }
-
-async function obtenerCategorias(sinActualizar) {
+/**Seccion 1=productos, 2=categorias */
+async function obtenerCategorias(sinActualizar,seccion) {
   if (categorias.length > 0 && sinActualizar) {
     llenarCategorias();
-    llenarCategoriaModal($("#editar-categoria-producto")[0]);
-    llenarCategoriaModal($("#crear-categoria-producto")[0]);
+    if(seccion == 1){
+      llenarCategoriaModal($("#editar-categoria-producto")[0]);
+      llenarCategoriaModal($("#crear-categoria-producto")[0]);
+    }
+    if(seccion==2){
+      llenarTablaCategorias();
+    }
     return;
   }
   const body = await doFetch('get','categories',null,200);
@@ -93,8 +98,13 @@ async function obtenerCategorias(sinActualizar) {
       categorias.push(categoria);
     }
     llenarCategorias();
-    llenarCategoriaModal($("#editar-categoria-producto")[0]);
-    llenarCategoriaModal($("#crear-categoria-producto")[0]);
+    if(seccion == 1){
+      llenarCategoriaModal($("#editar-categoria-producto")[0]);
+      llenarCategoriaModal($("#crear-categoria-producto")[0]);
+    }
+    if(seccion==2){
+      llenarTablaCategorias();
+    }
     return;
   }
 
@@ -128,13 +138,15 @@ function crearFragmentoCategorias(noPermitirTodas){
 function llenarCategorias() {
   const fragment = crearFragmentoCategorias();
   const selectProductos = document.getElementById("select_categoryProduct");
-  const selectCategorias = document.getElementById("select_categoryCategory");
   const selectEtiquetas = document.getElementById("select_categoryLabel");
   const selectInventario = document.getElementById("select_categoryInventory");
-  append(
-    selectCategorias || selectProductos || selectEtiquetas || selectInventario,
-    fragment
-  );
+
+  if(selectProductos || selectEtiquetas || selectInventario){
+    append(
+      selectProductos || selectEtiquetas || selectInventario,
+      fragment
+    );
+  }
 }
 
 function append(root, fragment) {
@@ -211,6 +223,47 @@ async function llenarProductos(){
   llenarEdicionProducto);
   agregarEventListener(document.getElementsByClassName("btn-delete-product"),
   almacenarReferenciaProducto)
+}
+
+async function llenarTablaCategorias(){
+
+  const childs = new Array();
+  const fragment = document.createDocumentFragment();
+  for (let categoria of categorias) {
+    if(categoria.id != -1 && categoria.id != 0){
+      const child = document.createElement('tr');
+      const id = document.createElement('td');
+      const nombre = document.createElement('td');
+  
+      id.textContent = categoria.id;
+      nombre.textContent = categoria.nombre;
+      child.appendChild(id);
+      child.appendChild(nombre);
+      childs.push(child);
+      fragment.appendChild(child);
+    }
+  }
+  console.log("FRAGMENTO: ",categorias);
+  try {
+    await Promise.all(childs.map(async (child)=> {
+      const acciones = await $.get('./accionesCategorias.html');
+      const newChild = document.createElement('td');
+      newChild.innerHTML = acciones;
+      child.appendChild(newChild);
+    }));
+  }catch(err){
+    console.log(`Error: ${err.message}`);
+  };
+
+  const root = await $('#tableBody_categorias');
+  console.log("root",root);
+  append(root,fragment);
+  // agregarEventListener(document.getElementsByClassName("btn-info-product"), 
+  // llenarInformacionProducto);
+  // agregarEventListener(document.getElementsByClassName("btn-edit-product"),
+  // llenarEdicionProducto);
+  // agregarEventListener(document.getElementsByClassName("btn-delete-product"),
+  // almacenarReferenciaProducto)
 }
 
 //mensajes = [407_Message,403_Message]
