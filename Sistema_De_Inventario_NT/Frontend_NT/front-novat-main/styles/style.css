@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap');
 /*Style login*/
 :root {
   --bs-aqua: #47faf7;
@@ -12,6 +14,7 @@
 .abs-center {
   display: flex;
   justify-content: center;
+  align-items: center;
   min-height: 10vh;
 }
 
@@ -29,18 +32,37 @@
   border-radius: 30px;
 }
 
+.btn-product-add {
+  background-color: #47faf7!important;
+  color: #808080 !important;
+  font-family: 'IBM Plex Sans', sans-serif;
+  border-radius: 2rem;
+}
+
+.img_add {
+  height: 2rem;
+}
+
 .btn-info {
   background-color: #47faf7 !important;
   color: #fff !important;
 }
 
+.btn-info:hover {
+  color: black !important;
+}
+
+.hr_inventario {
+    border: 5px solid black;
+    border-radius: 5px;
+}
+
+
 /*Style login*/
 
 /* BASIC */
 
-html {
-  background-color: #47faf7;
-}
+
 
 body {
   font-family: "Poppins", sans-serif;
@@ -352,4 +374,48 @@ input[type="text"]:placeholder {
 }
 .table-wrapper-scroll-y {
   display: block;
+}
+
+/*6-3-2022*/
+.li_item{
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+.a_li {
+  font-size: 1.2rem;
+  color: #808080!important;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.a_li:hover {
+  color: black!important;
+}
+
+
+.logo{
+   margin-left: -5rem;
+
+}
+
+.font_regular{
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.font_bold{
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.font_initial {
+    font-size: initial!important;
+}
+
+.inputWitdh{
+  width: 22rem!important;
+}
+
+.paddingText {
+  padding-left: 0.4rem!important;
+}
+
+.paddingSelect {
+  padding-left: 0.3rem!important;
 }

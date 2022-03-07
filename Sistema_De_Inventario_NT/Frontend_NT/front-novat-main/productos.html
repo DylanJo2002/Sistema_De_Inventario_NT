@@ -17,10 +17,10 @@
 </head>
 
 <body>
-<div class="container" style="background-color: #F1F1F1; border-radius: 10px;">
+<div class="container px-0" style="background-color: #F1F1F1; border-radius: 10px;">
   <div class="table-wrapper-scroll-y my-custom-scrollbar">
-    <table class="table table-bordered table-striped mb-0" id="table_products">
-        <thead class="thead-dark ">
+    <table class="table table-bordered table-striped mb-0 text-center" id="table_products">
+        <thead class="thead-dark font_bold">
           <tr>
             <th scope="col">Referencia</th>
             <th scope="col">Nombre</th>
@@ -29,24 +29,24 @@
             <th scope="col">Acciones</th>
           </tr>
         </thead>
-        <tbody id="tableBody_productos">
+        <tbody id="tableBody_productos" class="font_regular">
         </tbody>
       </table>
     </div>
         
 </div>
-<div class ="container justify-content-center">
+<div class ="container justify-content-center font_regular px-0">
   <div class="abs-center ">
 <div class="row">
   <div class="col-md-auto">
-<div class="container-h" style="background-color: #FFFFFF;">
+<div class="container-h px-0" style="background-color: #FFFFFF;">
 <div class="col-sm">
 <form class="form-inline my-2 my-lg-0">
 <label for="exampleFormControlInput1" class="mr-sm-2">Referencia del producto</label>
 <input class="form-control mr-sm-2" id ="search_referenciaProducto" type="search" placeholder="Referencia" aria-label="Search">
 <label for="exampleFormControlInput1" class="mr-sm-2">ó</label>
 <label for="exampleFormControlInput1"class="mr-sm-2">Categoría</label>
-<select id="select_categoryProduct" class="form-control form-control-lg mr-sm-2 selectCategory">
+<select id="select_categoryProduct" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
 </select>
 <button class="btn btn-outline-success my-2 my-sm-0" id="btn_buscarProducto"  type="submit">Buscar</button>
 </form>
@@ -55,10 +55,10 @@
 </div>
 
 </div>
-<div class="col-auto">
+<div class="col-auto px-0 ml-auto">
 <div class="abs-end ">
 <form class="form-inline my-2 my-lg-0 ">
-<button type="button" class="btn btn-info" style="border-radius: 10px; " data-toggle="modal" data-target="#agregar"><h3>+</h3></button>
+<button type="button" class="btn-product-add" data-toggle="modal" data-target="#agregar"><img class="img_add" src="./img/anadir.png" alt=""></button>
 </form>
 </div>
 </div>
@@ -72,48 +72,48 @@
 <div class="modal fade" id="agregar" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Crear producto</h5>
-          <button type="button" class="close" onclick="$('#modal_id').modal('hide');" aria-label="Close">
+        <div class="modal-header font_bold">
+          <h5 class="modal-title" id="staticBackdropLabel">CREAR UN NUEVO PRODUCTO</h5>
+          <button type="button" class="close" onclick="$('#agregar').modal('hide');" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <form>
             <div class="form-group row">
-              <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="crear-referencia-producto">
+              <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+              <div class="col-sm-9 px-0 ">
+                <input type="text" class="form-control inputWitdh" id="crear-referencia-producto">
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">Nombre</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="crear-nombre-producto">
+              <label for="inputPassword" class="col-sm-3 col-form-label">Nombre</label>
+              <div class="col-sm-9 px-0">
+                <input type="text" class="form-control inputWitdh" id="crear-nombre-producto">
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label">Descripción</label>
-              <div class="col-sm-10">
-                <textarea class="form-control" rows="3" id="crear-descripcion-producto"></textarea>
+              <label for="inputPassword" class="col-sm-3 col-form-label">Descripción</label>
+              <div class="col-sm-9  paddingText">
+                <textarea class="form-control inputWitdh" rows="3" id="crear-descripcion-producto"></textarea>
               </div>
             </div>
               <div class="form-group row">
-                <label for="inputPassword" class="col-sm-2 col-form-label" >C/U</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" id="crear-cu-producto" pattern="[0-9]">
+                <label for="inputPassword" class="col-sm-3 col-form-label" >C/U</label>
+                <div class="col-sm-9 px-0 ">
+                  <input type="text" class="form-control inputWitdh" id="crear-cu-producto" pattern="[0-9]">
                 </div>
               </div>
               <div class="form-group row">
-                <label for="inputPassword" class="col-sm-2 col-form-label">Umbral</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" id="crear-umbral-producto" pattern="[0-9]">
+                <label for="inputPassword" class="col-sm-3 col-form-label">Umbral</label>
+                <div class="col-sm-9 px-0 ">
+                  <input type="text" class="form-control inputWitdh" id="crear-umbral-producto" pattern="[0-9]">
                 </div>
               </div>
               <div class="form-group row">
-                <label for="inputPassword" class="col-sm-2 col-form-label">Categoría</label>
-                <div class="col-sm-10">
-                  <select class="form-control" id="crear-categoria-producto">
+                <label for="inputPassword" class="col-sm-3 col-form-label">Categoría</label>
+                <div class="col-sm-9  paddingSelect">
+                  <select class="form-control inputWitdh" id="crear-categoria-producto">
                   </select>
                 </div>
               </div>
@@ -276,11 +276,7 @@
     </div>
   </div>
 </div>
-	<script src="js/jquery.min.js"></script>
-  <script src="js/popper.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/busqueda.js"></script>
+
 
 </body>
 

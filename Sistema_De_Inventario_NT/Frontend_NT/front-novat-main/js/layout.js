@@ -48,6 +48,10 @@ const categorias = new Array();
 const productos = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
 async function obtenerProductosCallBack(){
   const referencia = await $("#search_referenciaProducto")[0].value;
@@ -73,7 +77,6 @@ async function obtenerProductosCallBack(){
 
 async function obtenerCategorias(sinActualizar) {
   if (categorias.length > 0 && sinActualizar) {
-    categorias.splice(0,categorias.length);
     llenarCategorias();
     return;
   }
@@ -130,12 +133,13 @@ function llenarCategorias() {
 }
 
 function append(root, fragment) {
+  console.log("THIS IS THE ROOT ",root)
+  console.log("THIS IS THE fragment ",fragment)
   root.append(fragment);
 }
 
 async function obtenerProductos(referencia, categoria) {
   productos.splice(0,productos.length);
-  console.log(await $("#table_products").find("tr:gt(0)"));
   await $("#table_products > tbody").empty();
   let body;
   if (referencia) {
@@ -171,7 +175,7 @@ async function llenarProductos(){
 
     referencia.textContent = producto.referencia;
     nombre.textContent = producto.nombre;
-    costo.textContent = producto.costoxunidad;
+    costo.textContent = formatter.format(producto.costoxunidad);
     categoria.textContent = producto.categoriaReference.nombre;
 
     child.appendChild(referencia);
@@ -193,7 +197,6 @@ async function llenarProductos(){
     console.log(`Error: ${err.message}`);
   };
 
-  
   const root = await $('#tableBody_productos');
   append(root,fragment);
   agregarEventListener(document.getElementsByClassName("btn-info-product"), 
@@ -356,6 +359,8 @@ async function crearProducto(){
     alert(`El producto ${referencia_element} se creó satisfactoriamente`);
   } 
   $('#agregar').modal('hide');
+  $('#agregar')[0].visibility = hidden;
+
   limpiarCamposCrearProducto();
 }
 
