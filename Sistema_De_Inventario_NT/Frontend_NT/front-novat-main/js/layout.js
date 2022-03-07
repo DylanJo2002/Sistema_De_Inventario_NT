@@ -306,6 +306,12 @@ function agregarEventListener(elementos, funcion){
 }
 
 async function editarInformacionProducto(){
+
+  if(!validarCamposEditarProducto()){
+    alert("Debe editar un producto con campos válidos");
+    return;
+  }
+  
   const referencia_element = $("#editar-referencia-producto")[0].value;
   const nombre_element = $("#editar-nombre-producto")[0].value;
   const descripcion_element = $("#editar-descripcion-producto")[0].value;
@@ -322,10 +328,12 @@ async function editarInformacionProducto(){
   }
 
   body = await doFetch("put","products/"+referencia_element,null,200,body);
-  if(body){
+  if(body != -1){
     alert(`Se editó el producto ${referencia_element} satisfactoriamente.`);
+    limpiarCamposEditarProducto();
+    $('#modal_editarProducto').modal('hide');
   }
-  limpiarCamposEditarProducto();
+  
 }
 
 async function eliminarProducto(){
@@ -397,5 +405,14 @@ function validarCamposCrearProducto(){
   const costo_element = $("#crear-cu-producto")[0].value.trim();
   const umbral_element = $("#crear-umbral-producto")[0].value.trim();
   return referencia_element && nombre_element && descripcion_element
+   && Number.parseInt(costo_element)>0 && Number.parseInt(umbral_element)>0;
+}
+
+function validarCamposEditarProducto(){
+  const nombre_element = $("#editar-nombre-producto")[0].value.trim();
+  const descripcion_element = $("#editar-descripcion-producto")[0].value.trim();
+  const costo_element = $("#editar-cu-producto")[0].value.trim();
+  const umbral_element = $("#editar-umbral-producto")[0].value.trim();
+  return nombre_element && descripcion_element
    && Number.parseInt(costo_element)>0 && Number.parseInt(umbral_element)>0;
 }
