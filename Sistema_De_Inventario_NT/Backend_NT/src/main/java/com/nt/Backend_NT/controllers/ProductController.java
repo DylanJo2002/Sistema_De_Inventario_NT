@@ -34,7 +34,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/{reference}")
-	public ResponseEntity<ProductEntity> getProductsByCategory(@PathVariable String reference)
+	public ResponseEntity<ProductEntity> getProductsByReference(@PathVariable String reference)
 			throws Exception{
 		ProductEntity response = productService.getProductByReference(reference);
 		return new ResponseEntity<ProductEntity>(response, HttpStatus.OK);

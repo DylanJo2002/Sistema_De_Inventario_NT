@@ -57,7 +57,7 @@ const formatter = new Intl.NumberFormat('en-US', {
 });
 
 async function obtenerProductosCallBack(){
-  const referencia = await $("#search_referenciaProducto")[0].value;
+  const referencia = await $("#search_referenciaProducto")[0].value.trim();
   const categoria = await $("#select_categoryProduct option:selected").attr("id") || false;
   if(referencia != 0 && categoria != -1){
     alert('No puede hacer una búsqueda por referencia y categoría al mismo tiempo.');
@@ -145,10 +145,11 @@ function append(root, fragment) {
 
 async function obtenerProductos(referencia, categoria) {
   productos.splice(0,productos.length);
+  const message = [null,`No existe un producto con la referencia ${referencia}`]
   await $("#table_products > tbody").empty();
   let body;
   if (referencia) {
-    body = await doFetch('get','products/' + referencia,null,200);
+    body = await doFetch('get','products/' + referencia,message,200);
     if(body){
       productos.push(body);
       llenarProductos();
@@ -156,7 +157,7 @@ async function obtenerProductos(referencia, categoria) {
     return;
   }
   if (categoria) {
-     body = await doFetch('get','products?categoryId=' +categoria,null,200);
+     body = await doFetch('get','products?categoryId=' +categoria,message,200);
      if(body){
         for(let producto of body.products){
           productos.push(producto);
@@ -212,7 +213,7 @@ async function llenarProductos(){
   almacenarReferenciaProducto)
 }
 
-//mensajes = [407_Message]
+//mensajes = [407_Message,403_Message]
 async function doFetch(metodo, recurso, mensajes, estadoOk,json) {
   const settings = {
     method: metodo,
@@ -232,6 +233,9 @@ async function doFetch(metodo, recurso, mensajes, estadoOk,json) {
     if (res.status == 403) {
       alert("Sesión terminada. Vuelva a iniciar sesión.");
       window.open("../login.html", "_self");
+    }
+    if(res.status == 404){
+      alert(mensajes[1]);
     }
     if (res.status == 409) {
       alert(mensajes[0]);

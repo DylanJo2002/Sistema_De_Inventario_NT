@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.nt.Backend_NT.exceptions.ConflictException;
+import com.nt.Backend_NT.exceptions.NotFoundException;
 import com.nt.Backend_NT.model.ErrorResponse;
 
 @RestControllerAdvice
@@ -22,6 +23,12 @@ public class AdviseController {
 	public ResponseEntity<ErrorResponse> conflictExceptioMessage(Exception ex) {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse(ex.getMessage())
 				,HttpStatus.CONFLICT);
+	}
+	
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<ErrorResponse> notFoundExceptioMessage(Exception ex) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse(ex.getMessage())
+				,HttpStatus.NOT_FOUND);
 	}
 	
 }
