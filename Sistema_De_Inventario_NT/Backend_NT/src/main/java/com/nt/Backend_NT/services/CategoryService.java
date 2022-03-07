@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
+import com.nt.Backend_NT.exceptions.ConflictException;
 import com.nt.Backend_NT.repositories.CategoryRepository;
 import com.nt.Backend_NT.repositories.ProductRepository;
 
@@ -30,7 +31,7 @@ public class CategoryService {
 			return categoryRepository.save(categoryEntity);
 		}
 		
-		throw new Exception("La categoría ya existe");
+		throw new ConflictException("La categoría ya existe");
 	}
 	
 	public List<CategoryEntity> getCategories(){

@@ -36,7 +36,7 @@
 </div>
 <div class ="container searchBar px-0 d-flex justify-content-end">
   <div>
-    <button type="button" class="btn-product-add" data-toggle="modal" data-target="#"><img class="img_add" src="./img/anadir.png" alt=""></button>
+    <button type="button" class="btn-product-add" data-toggle="modal" data-target="#modal_agregarCategoria"><img class="img_add" src="./img/anadir.png" alt=""></button>
   </div>
 </div>
 <!--modales-->
@@ -61,12 +61,12 @@
   </div>
   </div>
 <!-- Modal -->
-<div class="modal fade" id="agregar" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade" id="modal_agregarCategoria" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Crear Categoría</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title" id="staticBackdropLabel">CREAR UNA NUEVA CATEGORÍA</h5>
+        <button type="button" class="close" id="btn_cerrarCrearCategoria" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -75,15 +75,15 @@
           <div class="form-group row">
             <label for="inputPassword" class="col-sm-2 col-form-label">Nombre</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" id="inputPassword">
+              <input type="text" class="form-control" id="crear-nombre-categoria">
             </div>
           </div>
           
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">aceptar</button>
+        <button type="button" class="btn btn-secondary" id="btn_cancelarCrearCategoria">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarCrearCategoria">Aceptar</button>
       </div>
     </div>
   </div>
