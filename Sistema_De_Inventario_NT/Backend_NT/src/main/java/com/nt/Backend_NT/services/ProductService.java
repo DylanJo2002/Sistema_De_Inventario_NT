@@ -9,6 +9,7 @@ import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
+import com.nt.Backend_NT.exceptions.ConflictException;
 import com.nt.Backend_NT.repositories.CategoryRepository;
 import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.LabelRepository;
@@ -46,7 +47,7 @@ public class ProductService {
 			return newProduct;
 		}
 		
-		throw new Exception(String.format("Ya existe un producto con la referencia %s",
+		throw new ConflictException(String.format("Ya existe un producto con la referencia %s",
 				product.getReferencia()));
 	}
 	

@@ -17,10 +17,13 @@ $(document).ready(function () {
 
           document.getElementById("btn_aceptarEliminarProducto")
           .addEventListener('click', eliminarProducto);
-
           document.getElementById("btn_aceptarCrearProducto")
           .addEventListener('click', crearProducto);
-          
+          document.getElementById("btn_cancelarCrearProducto")
+          .addEventListener('click',()=>{limpiarCamposCrearProducto(); $('#agregar').modal('hide');});
+          document.getElementById("btn_cerrarCrearProducto")
+          .addEventListener('click',()=>{limpiarCamposCrearProducto(); $('#agregar').modal('hide');});
+
         });
       });
 
@@ -78,6 +81,8 @@ async function obtenerProductosCallBack(){
 async function obtenerCategorias(sinActualizar) {
   if (categorias.length > 0 && sinActualizar) {
     llenarCategorias();
+    llenarCategoriaModal($("#editar-categoria-producto")[0]);
+    llenarCategoriaModal($("#crear-categoria-producto")[0]);
     return;
   }
   const body = await doFetch('get','categories',null,200);
@@ -209,7 +214,6 @@ async function llenarProductos(){
 
 //mensajes = [407_Message]
 async function doFetch(metodo, recurso, mensajes, estadoOk,json) {
-
   const settings = {
     method: metodo,
     headers: { Authorization: token, "Access-Control-Allow-Origin": "*" }
@@ -221,28 +225,29 @@ async function doFetch(metodo, recurso, mensajes, estadoOk,json) {
   }
   console.log(domain + recurso+" :",settings)
 
-  let body;
+  let body = -1;
   try {
     const res = await fetch(domain + recurso, settings);
-  
+    
     if (res.status == 403) {
       alert("Sesión terminada. Vuelva a iniciar sesión.");
       window.open("../login.html", "_self");
     }
-    if (res.status == 407) {
+    if (res.status == 409) {
       alert(mensajes[0]);
     }
     if (res.status >= 500) {
       alert("Error interno en el servidor. Contacte a soporte.");
     }
-    if(res.status = estadoOk){
+    if(res.status == estadoOk){
       body = await res.json();
       return body;
     } 
-    return body;
+    
   }catch(err){
     alert(`Ocurrió el siguiente error: ${err}`);
   }
+  return body;
 }
 
 function llenarInformacionProducto(ref){
@@ -327,9 +332,11 @@ async function eliminarProducto(){
 
   const body = await doFetch("delete","products/"+registroReferencia,null,200);
   console.log(`Producto elimnado: ${body}`);
-  if(body){
+  if(body != -1 ){
     alert(`Se eliminó el producto ${registroReferencia} satisfactoriamente.`);
   }
+
+  $('#modal_eliminarProducto').modal('hide');
 }
 
 
@@ -338,13 +345,17 @@ function almacenarReferenciaProducto(ref){
 }
 
 async function crearProducto(){
+  if(!validarCamposCrearProducto()){
+    alert("Debe crear un producto con campos válidos");
+    return;
+  }
   const referencia_element = $("#crear-referencia-producto")[0].value;
   const nombre_element = $("#crear-nombre-producto")[0].value;
   const descripcion_element = $("#crear-descripcion-producto")[0].value;
   const costo_element = $("#crear-cu-producto")[0].value;
   const umbral_element = $("#crear-umbral-producto")[0].value;
   const categoria_element = $("#crear-categoria-producto option:selected").attr("id");
-
+  
   let body = {
     "referencia": referencia_element,
     "nombre": nombre_element,
@@ -354,14 +365,13 @@ async function crearProducto(){
     "categoria": categoria_element
   }
   
-  body = await doFetch("post","products",null,201,body);
-  if(body){
+  body = await doFetch("post","products",[`Ya existe un producto con la referencia ${referencia_element}`]
+    ,201,body);
+  if(body != -1){
     alert(`El producto ${referencia_element} se creó satisfactoriamente`);
-  } 
-  $('#agregar').modal('hide');
-  $('#agregar')[0].visibility = hidden;
-
-  limpiarCamposCrearProducto();
+    $('#agregar').modal('hide');
+    limpiarCamposCrearProducto();
+  }
 }
 
 function limpiarCamposCrearProducto(){
@@ -378,4 +388,14 @@ function limpiarCamposEditarProducto(){
   const descripcion_element = $("#editar-descripcion-producto")[0].value = '';
   const costo_element = $("#editar-cu-producto")[0].value = '';
   const umbral_element = $("#editar-umbral-producto")[0].value = '';
+}
+
+function validarCamposCrearProducto(){
+  const referencia_element = $("#crear-referencia-producto")[0].value.trim();
+  const nombre_element = $("#crear-nombre-producto")[0].value.trim();
+  const descripcion_element = $("#crear-descripcion-producto")[0].value.trim();
+  const costo_element = $("#crear-cu-producto")[0].value.trim();
+  const umbral_element = $("#crear-umbral-producto")[0].value.trim();
+  return referencia_element && nombre_element && descripcion_element
+   && Number.parseInt(costo_element)>0 && Number.parseInt(umbral_element)>0;
 }

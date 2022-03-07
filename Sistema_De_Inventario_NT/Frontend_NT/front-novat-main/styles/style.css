@@ -419,3 +419,7 @@ input[type="text"]:placeholder {
 .paddingSelect {
   padding-left: 0.3rem!important;
 }
+
+textarea {
+  resize: none!important;
+}
