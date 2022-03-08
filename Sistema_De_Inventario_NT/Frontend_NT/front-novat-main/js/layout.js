@@ -63,7 +63,17 @@ $(document).ready(function () {
             crearEtiqueta();
           })
 
+          document
+          .getElementById("btn_buscarEtiqueta")
+          .addEventListener("click", (e) => {
+            e.preventDefault();
+            obtenerEtiquetasCallBack();
+          })
           
+          document
+          .getElementById("btn_editarEtiqueta")
+          .addEventListener("click",editarEtiqueta);
+
         });
       });
       document.getElementById("categorias").addEventListener("click", (ev) => {
@@ -115,9 +125,11 @@ $(document).ready(function () {
 const domain = "http://localhost:8080/";
 const categorias = new Array();
 const productos = new Array();
+const etiquetas = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
 let registroCategoria;
+let registroEtiqueta;
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -145,6 +157,98 @@ async function obtenerProductosCallBack() {
     obtenerProductos(null, categoria);
     return;
   }
+}
+
+async function obtenerEtiquetasCallBack(){
+  const referencia = $("#busqueda-referencia-etiqueta")[0].value.trim();
+  const categoria =  (await $("#select_categoryLabel option:selected").attr("id")) || false;
+
+  if (referencia != 0 && categoria != -1) {
+    alert(
+      "No puede hacer una búsqueda por referencia y categoría al mismo tiempo."
+    );
+    return;
+  }
+  if (referencia == 0 && categoria == -1) {
+    alert("Debe hacer una búsqueda por referencia o categoría.");
+    return;
+  }
+
+  if(referencia){
+    obtenerEtiquetas(referencia);
+    return;
+  }
+  
+  if(categoria){
+    obtenerEtiquetas(null,categoria);
+  }
+
+}
+
+async function obtenerEtiquetas(referencia, categoria){
+  let recurso;
+  if(referencia){
+    recurso = 'labels/reference?reference='+referencia;
+  }else{
+    recurso = 'labels/categories?categoryId='+categoria;
+  }
+
+  const body = await doFetch('get',recurso,[null,`No existe un producto con la referencia ${referencia}`],200);
+
+  if(body != -1){
+    etiquetas.splice(0,etiquetas.length);
+    for(etiqueta of body.labels){
+      etiquetas.push(etiqueta);
+    }
+    llenarEtiquetas();
+  }
+}
+
+async function llenarEtiquetas(){
+  const root = $("#tableBody_etiquetas")[0];
+  const fragment = document.createDocumentFragment();
+  await $("#table_labels > tbody").empty();
+  const childs = new Array();
+  for(let eti of etiquetas){
+    if(eti.nombre != "NINGUNA"){
+      const child = document.createElement("tr");
+      const id = document.createElement("td");
+      const referencia = document.createElement("td");
+      const producto = document.createElement("td");
+      const etiqueta = document.createElement("td");
+  
+      id.innerText = eti.id;
+      referencia.innerText = eti.productReference.referencia;
+      producto.innerText = eti.productReference.nombre; 
+      etiqueta.innerText = eti.nombre;
+  
+      child.appendChild(id);
+      child.appendChild(referencia);
+      child.appendChild(producto);
+      child.appendChild(etiqueta);
+      childs.push(child);
+      fragment.appendChild(child);
+    }
+  }
+
+  try {
+    await Promise.all(
+      childs.map(async (child) => {
+        const acciones = await $.get("./accionesEtiquetas.html");
+        const newChild = document.createElement("td");
+        newChild.innerHTML = acciones;
+        child.appendChild(newChild);
+      })
+    );
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+  }
+
+  append(root, fragment);
+  agregarEventListener(document.getElementsByClassName("btn-edit-label"),
+  llenarEdicionEtiqueta);
+  agregarEventListener(document.getElementsByClassName("btn-delete-label"),
+  ()=>console.log("btn eliminar label"))
 }
 /**Seccion 1=productos, 2=categorias */
 async function obtenerCategorias(sinActualizar, seccion) {
@@ -179,6 +283,7 @@ async function obtenerCategorias(sinActualizar, seccion) {
     return;
   }
 }
+
 
 function crearFragmentoCategorias(noPermitirTodas) {
   const fragment = document.createDocumentFragment();
@@ -435,6 +540,17 @@ function llenarCategoriaModal(select_node) {
   append(select_node, fragment);
 }
 
+function llenarEdicionEtiqueta(ref){
+
+  const nombre = $("#editar-nombre-etiqueta")[0];
+
+  const etiqueta = etiquetas.find(e => e.id == ref);
+
+  nombre.value = etiqueta.nombre;
+  registroEtiqueta = etiqueta.id;
+
+}
+
 function agregarEventListener(elementos, funcion) {
   const array = Array.from(elementos);
   console.log(`Elementos:`, elementos);
@@ -551,7 +667,7 @@ async function crearProducto() {
 }
 
 async function crearCategoria(){
-  if (!validarCamposCrearEtiqueta()) {
+  if (!validarCamposCrearCategoria()) {
     alert("Debe crear una categoría con un nombre válido");
     return;
   }
@@ -607,7 +723,7 @@ async function crearEtiqueta(){
 }
 
 async function editarCategoria(){
-  if (!validarCamposEditarEtiqueta()) {
+  if (!validarCamposEditarCategoria()) {
     alert("Debe editar una etiqueta con un nombre válido");
     return;
   }
@@ -646,6 +762,30 @@ async function eliminarCategoria(){
   $("#modal_eliminarCategoria").modal("hide");
 }
 
+async function editarEtiqueta(){
+  if (!validarCamposEditarEtiqueta()) {
+    alert("Debe editar una etiqueta con un nombre válido");
+    return;
+  }
+  const nombre = $("#editar-nombre-etiqueta")[0];
+  let body = {
+    nombre : nombre.value.trim()
+  } 
+
+  body = await doFetch(
+    "put",
+    "labels/"+registroEtiqueta,
+    [`Ya existe una etiqueta con el nombre ${body.nombre}`],
+    200,
+    body
+  );
+  if (body != -1) {
+    alert(`La etiqueta ${nombre.name} se editó satisfactoriamente`);
+    $("#modal_editarEtiqueta").modal("hide");
+    
+  }
+}
+
 function limpiarCamposCrearProducto() {
   const referencia_element = ($("#crear-referencia-producto")[0].value = "");
   const nombre_element = ($("#crear-nombre-producto")[0].value = "");
@@ -671,12 +811,12 @@ function limpiarCamposCrearEtiqueta() {
   const nombre_element = ($("#crear-nombre-etiqueta")[0].value = "");
 }
 
-function validarCamposCrearEtiqueta(){
+function validarCamposCrearCategoria(){
   const nombre = $("#crear-nombre-categoria")[0].value.trim();
   return nombre;
 }
 
-function validarCamposEditarEtiqueta(){
+function validarCamposEditarCategoria(){
   const nombre = $("#editar-nombre-categoria")[0].value.trim();
   return nombre;
 }
@@ -715,6 +855,12 @@ function validarCamposCrearEtiqueta(){
 
   return referencia_element && nombre_element;
 }
+
+function validarCamposEditarEtiqueta(){
+  const nombre = $("#editar-nombre-etiqueta")[0].value.trim();
+  return nombre;
+}
+
 async function actualizarRegistroCategorias(){
   await obtenerCategorias(false);
   llenarTablaCategorias();

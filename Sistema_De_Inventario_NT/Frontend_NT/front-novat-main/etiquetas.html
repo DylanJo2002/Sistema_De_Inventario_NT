@@ -44,12 +44,12 @@
 <div class="col-sm">
 <form class="form-inline my-2 my-lg-0">
 <label for="exampleFormControlInput1" class="mr-sm-2">Referencia del producto</label>
-<input class="form-control mr-sm-2" type="search" placeholder="Referencia" aria-label="Search">
+<input id="busqueda-referencia-etiqueta" class="form-control mr-sm-2" type="search" placeholder="Referencia" aria-label="Search">
 <label for="exampleFormControlInput1" class="mr-sm-2">ó</label>
 <label for="exampleFormControlInput1"class="mr-sm-2">Categoría</label>
 <select id="select_categoryLabel" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
 </select>
-<button class="btn btn-outline-success my-2 my-sm-0"  type="submit">Buscar</button>
+<button class="btn btn-outline-success my-2 my-sm-0"  type="submit" id="btn_buscarEtiqueta">Buscar</button>
 </form>
 </div>
 </div>
@@ -68,7 +68,7 @@
 </div>
 <!--modales-->
 <!-- Modal  Eliminar-->
-<div class="modal fade" id="EliminarEtiqueta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal_eliminarEtiqueta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -125,11 +125,11 @@
 </div>
 
 <!-- Modal  Editar-->
-<div class="modal fade" id="EditarEtiqueta" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade" id="modal_editarEtiqueta" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 <div class="modal-dialog">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title" id="staticBackdropLabel">Editar Etiqueta</h5>
+      <h5 class="modal-title" id="staticBackdropLabel">EDITAR ETIQUETA</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -139,7 +139,7 @@
         <div class="form-group row">
           <label for="inputPassword" class="col-sm-2 col-form-label">Nombre</label>
           <div class="col-sm-10">
-            <input type="password" class="form-control" id="inputPassword">
+            <input type="text" class="form-control" id="editar-nombre-etiqueta">
           </div>
         </div>
         
@@ -149,7 +149,7 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-      <button type="button" class="btn btn-primary">aceptar</button>
+      <button type="button" class="btn btn-primary" id="btn_editarEtiqueta">Aceptar</button>
     </div>
   </div>
 </div>

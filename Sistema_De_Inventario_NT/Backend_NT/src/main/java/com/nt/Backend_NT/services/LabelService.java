@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.Conflict;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.entities.InventoryEntity;
@@ -80,12 +81,20 @@ public class LabelService {
 			throws Exception {
 			
 		LabelEntity labelInDB = labelRepository.findById(labelId);
-		
 		if(labelInDB != null) {
+			LabelEntity labelInDBSameName = 
+					labelRepository.findByNombreAndProductReference(updatedLabel.getNombre()
+							, labelInDB.getProductReference());
+
 			if(!labelInDB.getNombre().equals("NINGUNA")) {
-				labelInDB.setNombre(updatedLabel.getNombre());
-				labelRepository.save(labelInDB);
-				return labelInDB;
+				if(labelInDBSameName == null) {
+					labelInDB.setNombre(updatedLabel.getNombre());
+					labelRepository.save(labelInDB);
+					return labelInDB;
+				}
+				
+				throw new ConflictException("Ya existe la etiqueta "+labelInDB.getNombre()
+						+" para el producto "+labelInDB.getProductReference().getReferencia());
 			}
 			throw new Exception("No se puede editar la etiqueta primaria");
 		}
