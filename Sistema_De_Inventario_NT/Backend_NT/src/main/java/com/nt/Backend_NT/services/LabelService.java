@@ -117,14 +117,26 @@ public class LabelService {
 		LabelEntity labelInDB = labelRepository.findById(labelId);
 		
 		if(labelInDB != null) {
+
 			if(!labelInDB.getNombre().equals("NINGUNA")) {
+				LabelEntity labelNinguna = labelRepository.
+						findByNombreAndProductReference("NINGUNA",labelInDB.getProductReference());
+				InventoryEntity inventoryNinguna = inventoryRepository.
+						findByLabelReference(labelNinguna);
+				InventoryEntity inventoryLabel = inventoryRepository.
+						findByLabelReference(labelInDB);
+				
+				inventoryNinguna.setCantidad(
+						inventoryNinguna.getCantidad()+inventoryLabel.getCantidad());
+				
 				labelRepository.delete(labelInDB);
+				inventoryRepository.save(inventoryNinguna);
 				return labelInDB;
 			}
 			throw new Exception("No se puede eliminar la etiqueta primaria");
 		}
 		
-		throw new Exception(String.format("No existe una etiqueta con el id %o",labelId));			
+		throw new Exception(String.format("No existe una etiqueta con el id %n",labelId));			
 	}
 	
 }

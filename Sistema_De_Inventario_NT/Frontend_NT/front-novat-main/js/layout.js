@@ -74,6 +74,10 @@ $(document).ready(function () {
           .getElementById("btn_editarEtiqueta")
           .addEventListener("click",editarEtiqueta);
 
+          document
+          .getElementById("btn_aceptarEliminarEtiqueta")
+          .addEventListener("click",eliminarEtiqueta);
+          
         });
       });
       document.getElementById("categorias").addEventListener("click", (ev) => {
@@ -248,7 +252,7 @@ async function llenarEtiquetas(){
   agregarEventListener(document.getElementsByClassName("btn-edit-label"),
   llenarEdicionEtiqueta);
   agregarEventListener(document.getElementsByClassName("btn-delete-label"),
-  ()=>console.log("btn eliminar label"))
+  almacenarEtiqueta)
 }
 /**Seccion 1=productos, 2=categorias */
 async function obtenerCategorias(sinActualizar, seccion) {
@@ -629,6 +633,12 @@ function almacenarCategoria(ref){
   confirmacion.innerText = `¿Seguro que quiere elmininar la categoria ${registroCategoria}?`;
 }
 
+function almacenarEtiqueta(ref){
+  const confirmacion = $("#confirmacion-del-etiqueta")[0];
+  registroEtiqueta = ref;
+  confirmacion.innerText = `Al eliminar la etiqueta ${registroEtiqueta} su inventario asignado estará sin clasificar. ¿Está seguro?`;
+}
+
 async function crearProducto() {
   if (!validarCamposCrearProducto()) {
     alert("Debe crear un producto con campos válidos");
@@ -720,6 +730,19 @@ async function crearEtiqueta(){
     
   }
 
+}
+
+async function eliminarEtiqueta(){
+  const body = await doFetch(
+    "delete",
+    "labels/" + registroEtiqueta,
+    null,
+    200
+  );
+  if (body != -1) {
+    alert(`Se eliminó la etiqueta ${registroEtiqueta} satisfactoriamente. Su inventario asignado está sin clasificar.`);
+  }
+  $("#modal_eliminarEtiqueta").modal("hide");
 }
 
 async function editarCategoria(){
