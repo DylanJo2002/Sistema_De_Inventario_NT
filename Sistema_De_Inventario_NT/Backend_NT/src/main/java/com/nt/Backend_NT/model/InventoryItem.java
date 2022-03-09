@@ -8,6 +8,7 @@ import lombok.Data;
 public class InventoryItem {
 	private String referencia;
 	private String producto;
+	private String categoria;
 	private int cantidadTotal;
 	private int cantidadEtiquetas;
 	private List<LabelInventoryResponse> etiquetas;

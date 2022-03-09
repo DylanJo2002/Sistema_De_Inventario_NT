@@ -38,46 +38,42 @@ $(document).ready(function () {
       });
 
       document.getElementById("etiquetas").addEventListener("click", (ev) => {
-        $("#indexContent").load("./etiquetas.html", () =>{
+        $("#indexContent").load("./etiquetas.html", () => {
           obtenerCategorias(true);
           document
-          .getElementById("btn_cerrarCrearEtiqueta")
-          .addEventListener("click", () => {
-            limpiarCamposCrearEtiqueta();
-            $("#modal_agregarEtiqueta").modal("hide");
-
-          });
-
+            .getElementById("btn_cerrarCrearEtiqueta")
+            .addEventListener("click", () => {
+              limpiarCamposCrearEtiqueta();
+              $("#modal_agregarEtiqueta").modal("hide");
+            });
 
           document
-          .getElementById("btn_cancelarCrearEtiqueta")
-          .addEventListener("click", () => {
-            limpiarCamposCrearEtiqueta();
-            $("#modal_agregarEtiqueta").modal("hide");
-
-          })
-
-          document
-          .getElementById("btn_aceptarCrearEtiqueta")
-          .addEventListener("click", () => {
-            crearEtiqueta();
-          })
+            .getElementById("btn_cancelarCrearEtiqueta")
+            .addEventListener("click", () => {
+              limpiarCamposCrearEtiqueta();
+              $("#modal_agregarEtiqueta").modal("hide");
+            });
 
           document
-          .getElementById("btn_buscarEtiqueta")
-          .addEventListener("click", (e) => {
-            e.preventDefault();
-            obtenerEtiquetasCallBack();
-          })
-          
-          document
-          .getElementById("btn_editarEtiqueta")
-          .addEventListener("click",editarEtiqueta);
+            .getElementById("btn_aceptarCrearEtiqueta")
+            .addEventListener("click", () => {
+              crearEtiqueta();
+            });
 
           document
-          .getElementById("btn_aceptarEliminarEtiqueta")
-          .addEventListener("click",eliminarEtiqueta);
-          
+            .getElementById("btn_buscarEtiqueta")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              obtenerEtiquetasCallBack();
+            });
+
+          document
+            .getElementById("btn_editarEtiqueta")
+            .addEventListener("click", editarEtiqueta);
+
+          document
+            .getElementById("btn_aceptarEliminarEtiqueta")
+            .addEventListener("click", eliminarEtiqueta);
         });
       });
       document.getElementById("categorias").addEventListener("click", (ev) => {
@@ -96,31 +92,36 @@ $(document).ready(function () {
               $("#modal_agregarCategoria").modal("hide");
             });
 
-            document
+          document
             .getElementById("btn_aceptarCrearCategoria")
             .addEventListener("click", () => {
               crearCategoria();
             });
 
-            document
+          document
             .getElementById("btn_aceptarEditarCategoria")
             .addEventListener("click", () => {
               editarCategoria();
             });
 
-
-            document
+          document
             .getElementById("btn_aceptarEliminarCategoria")
             .addEventListener("click", () => {
               eliminarCategoria();
             });
-            
         });
       });
       document.getElementById("inventario").addEventListener("click", (ev) => {
-        $("#indexContent").load("./inventario.html", () =>
-          obtenerCategorias(true)
-        );
+        $("#indexContent").load("./inventario.html", () => {
+          obtenerCategorias(true);
+
+          document
+            .getElementById("btn_buscarInventario")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              obtenerInventarioCallBack();
+            });
+        });
       });
     });
   });
@@ -130,6 +131,7 @@ const domain = "http://localhost:8080/";
 const categorias = new Array();
 const productos = new Array();
 const etiquetas = new Array();
+const inventario = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
 let registroCategoria;
@@ -163,9 +165,10 @@ async function obtenerProductosCallBack() {
   }
 }
 
-async function obtenerEtiquetasCallBack(){
+async function obtenerEtiquetasCallBack() {
   const referencia = $("#busqueda-referencia-etiqueta")[0].value.trim();
-  const categoria =  (await $("#select_categoryLabel option:selected").attr("id")) || false;
+  const categoria =
+    (await $("#select_categoryLabel option:selected").attr("id")) || false;
 
   if (referencia != 0 && categoria != -1) {
     alert(
@@ -178,54 +181,108 @@ async function obtenerEtiquetasCallBack(){
     return;
   }
 
-  if(referencia){
+  if (referencia) {
     obtenerEtiquetas(referencia);
     return;
   }
-  
-  if(categoria){
-    obtenerEtiquetas(null,categoria);
-  }
 
+  if (categoria) {
+    obtenerEtiquetas(null, categoria);
+  }
 }
 
-async function obtenerEtiquetas(referencia, categoria){
-  let recurso;
-  if(referencia){
-    recurso = 'labels/reference?reference='+referencia;
-  }else{
-    recurso = 'labels/categories?categoryId='+categoria;
+async function obtenerInventarioCallBack() {
+  const referencia = $("#busqueda-referencia-inventario")[0].value.trim();
+  const categoria =
+    (await $("#select_categoryInventory option:selected").attr("id")) || false;
+
+  if (referencia != 0 && categoria != -1) {
+    alert(
+      "No puede hacer una búsqueda por referencia y categoría al mismo tiempo."
+    );
+    return;
+  }
+  if (referencia == 0 && categoria == -1) {
+    alert("Debe hacer una búsqueda por referencia o categoría.");
+    return;
   }
 
-  const body = await doFetch('get',recurso,[null,`No existe un producto con la referencia ${referencia}`],200);
+  if (referencia) {
+    obtenerInventario(referencia);
+    return;
+  }
 
-  if(body != -1){
-    etiquetas.splice(0,etiquetas.length);
-    for(etiqueta of body.labels){
+  if (categoria) {
+    obtenerInventario(null, categoria);
+  }
+}
+
+async function obtenerInventario(referencia, categoria) {
+  let recurso;
+  if (referencia) {
+    recurso = "inventory/reference?reference=" + referencia;
+  } else {
+    recurso = "inventory/categories?categoryId=" + categoria;
+  }
+
+  const body = await doFetch(
+    "get",
+    recurso,
+    [null, `No existe un producto con la referencia ${referencia}`],
+    200
+  );
+
+  if (body != -1) {
+    inventario.splice(0, inventario.length);
+    for (item of body.inventario) {
+      inventario.push(item);
+    }
+    llenarInventario();
+  }
+}
+
+async function obtenerEtiquetas(referencia, categoria) {
+  let recurso;
+  if (referencia) {
+    recurso = "labels/reference?reference=" + referencia;
+  } else {
+    recurso = "labels/categories?categoryId=" + categoria;
+  }
+
+  const body = await doFetch(
+    "get",
+    recurso,
+    [null, `No existe un producto con la referencia ${referencia}`],
+    200
+  );
+
+  if (body != -1) {
+    etiquetas.splice(0, etiquetas.length);
+    for (etiqueta of body.labels) {
       etiquetas.push(etiqueta);
     }
     llenarEtiquetas();
   }
 }
 
-async function llenarEtiquetas(){
+async function llenarEtiquetas() {
   const root = $("#tableBody_etiquetas")[0];
   const fragment = document.createDocumentFragment();
   await $("#table_labels > tbody").empty();
   const childs = new Array();
-  for(let eti of etiquetas){
-    if(eti.nombre != "NINGUNA"){
+  for (let eti of etiquetas) {
+    if (eti.nombre != "NINGUNA") {
       const child = document.createElement("tr");
       const id = document.createElement("td");
       const referencia = document.createElement("td");
       const producto = document.createElement("td");
       const etiqueta = document.createElement("td");
-  
+
       id.innerText = eti.id;
       referencia.innerText = eti.productReference.referencia;
-      producto.innerText = eti.productReference.nombre; 
+      producto.innerText = eti.productReference.nombre;
       etiqueta.innerText = eti.nombre;
-  
+
       child.appendChild(id);
       child.appendChild(referencia);
       child.appendChild(producto);
@@ -249,11 +306,69 @@ async function llenarEtiquetas(){
   }
 
   append(root, fragment);
-  agregarEventListener(document.getElementsByClassName("btn-edit-label"),
-  llenarEdicionEtiqueta);
-  agregarEventListener(document.getElementsByClassName("btn-delete-label"),
-  almacenarEtiqueta)
+  agregarEventListener(
+    document.getElementsByClassName("btn-edit-label"),
+    llenarEdicionEtiqueta
+  );
+  agregarEventListener(
+    document.getElementsByClassName("btn-delete-label"),
+    almacenarEtiqueta
+  );
 }
+
+async function llenarInventario() {
+  const root = $("#tableBody_inventario")[0];
+  const fragment = document.createDocumentFragment();
+  await $("#table_inventory > tbody").empty();
+  const childs = new Array();
+  for (let item of inventario) {
+    const child = document.createElement("tr");
+    const referencia = document.createElement("td");
+    const producto = document.createElement("td");
+    const categoria = document.createElement("td");
+    const cantidadTotal = document.createElement("td");
+    const numeroEtiquetas = document.createElement("td");
+
+    referencia.innerText = item.referencia;
+    producto.innerText = item.producto;
+    categoria.innerText = item.categoria;
+    cantidadTotal.innerText = item.cantidadTotal;
+    numeroEtiquetas.innerText = item.cantidadEtiquetas;
+
+    child.appendChild(referencia);
+    child.appendChild(producto);
+    child.appendChild(categoria);
+    child.appendChild(cantidadTotal);
+    child.appendChild(numeroEtiquetas);
+    childs.push(child);
+    fragment.appendChild(child);
+  }
+
+  try {
+    await Promise.all(
+      childs.map(async (child) => {
+        const acciones = await $.get("./accionesInventario.html");
+        const newChild = document.createElement("td");
+        newChild.innerHTML = acciones;
+        child.appendChild(newChild);
+      })
+    );
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+  }
+
+  append(root, fragment);
+
+  // agregarEventListener(
+  //   document.getElementsByClassName(" btn-info-inventory"),
+  //   null
+  // );
+  // agregarEventListener(
+  //   document.getElementsByClassName(" btn-edit-inventory"),
+  //   null
+  // );
+}
+
 /**Seccion 1=productos, 2=categorias */
 async function obtenerCategorias(sinActualizar, seccion) {
   if (categorias.length > 0 && sinActualizar) {
@@ -267,7 +382,7 @@ async function obtenerCategorias(sinActualizar, seccion) {
     }
     return;
   }
-  
+
   categorias.splice(0, categorias.length);
   const body = await doFetch("get", "categories", null, 200);
 
@@ -287,7 +402,6 @@ async function obtenerCategorias(sinActualizar, seccion) {
     return;
   }
 }
-
 
 function crearFragmentoCategorias(noPermitirTodas) {
   const fragment = document.createDocumentFragment();
@@ -449,10 +563,14 @@ async function llenarTablaCategorias() {
   const root = await $("#tableBody_categorias");
   console.log("root", root);
   append(root, fragment);
-  agregarEventListener(document.getElementsByClassName("btn-edit-category"),
-  llenarEdicionCategoria);
-  agregarEventListener(document.getElementsByClassName("btn-delete-category"),
-  almacenarCategoria)
+  agregarEventListener(
+    document.getElementsByClassName("btn-edit-category"),
+    llenarEdicionCategoria
+  );
+  agregarEventListener(
+    document.getElementsByClassName("btn-delete-category"),
+    almacenarCategoria
+  );
 }
 
 //mensajes = [407_Message,404_Message]
@@ -532,11 +650,10 @@ function llenarEdicionProducto(ref) {
 
 function llenarEdicionCategoria(ref) {
   const nombre = $("#editar-nombre-categoria")[0];
-  const categoria = categorias.find(c => c.id == ref);
+  const categoria = categorias.find((c) => c.id == ref);
   nombre.value = categoria.nombre;
   nombre.name = categoria.id;
-  console.log("CATEGORIA ID : ",nombre);
-
+  console.log("CATEGORIA ID : ", nombre);
 }
 
 function llenarCategoriaModal(select_node) {
@@ -544,15 +661,13 @@ function llenarCategoriaModal(select_node) {
   append(select_node, fragment);
 }
 
-function llenarEdicionEtiqueta(ref){
-
+function llenarEdicionEtiqueta(ref) {
   const nombre = $("#editar-nombre-etiqueta")[0];
 
-  const etiqueta = etiquetas.find(e => e.id == ref);
+  const etiqueta = etiquetas.find((e) => e.id == ref);
 
   nombre.value = etiqueta.nombre;
   registroEtiqueta = etiqueta.id;
-
 }
 
 function agregarEventListener(elementos, funcion) {
@@ -624,16 +739,15 @@ function almacenarReferenciaProducto(ref) {
   const confirmacion = $("#confirmacion-del-producto")[0];
   registroReferencia = ref;
   confirmacion.innerText = `¿Seguro que quiere elmininar el producto ${ref}?`;
-
 }
 
-function almacenarCategoria(ref){
+function almacenarCategoria(ref) {
   const confirmacion = $("#confirmacion-del-categoria")[0];
   registroCategoria = ref;
   confirmacion.innerText = `¿Seguro que quiere elmininar la categoria ${registroCategoria}?`;
 }
 
-function almacenarEtiqueta(ref){
+function almacenarEtiqueta(ref) {
   const confirmacion = $("#confirmacion-del-etiqueta")[0];
   registroEtiqueta = ref;
   confirmacion.innerText = `Al eliminar la etiqueta ${registroEtiqueta} su inventario asignado estará sin clasificar. ¿Está seguro?`;
@@ -676,16 +790,15 @@ async function crearProducto() {
   }
 }
 
-async function crearCategoria(){
+async function crearCategoria() {
   if (!validarCamposCrearCategoria()) {
     alert("Debe crear una categoría con un nombre válido");
     return;
   }
 
   let body = {
-    nombre : $("#crear-nombre-categoria")[0].value.trim()
-
-  } 
+    nombre: $("#crear-nombre-categoria")[0].value.trim(),
+  };
 
   body = await doFetch(
     "post",
@@ -699,27 +812,27 @@ async function crearCategoria(){
     $("#modal_agregarCategoria").modal("hide");
     limpiarCamposCrearCategoria();
     actualizarRegistroCategorias();
-    
   }
 }
 
-async function crearEtiqueta(){
+async function crearEtiqueta() {
   if (!validarCamposCrearEtiqueta()) {
     alert("Debe crear una etiqueta con nombre y referencia válidos");
     return;
   }
 
   let body = {
-    producto :  $("#crear-referencia-etiqueta")[0].value.trim(),
-    nombre : $("#crear-nombre-etiqueta")[0].value.trim()
-
-  } 
+    producto: $("#crear-referencia-etiqueta")[0].value.trim(),
+    nombre: $("#crear-nombre-etiqueta")[0].value.trim(),
+  };
 
   body = await doFetch(
     "post",
     "labels",
-    [`Ya existe una categoria con el nombre ${body.nombre} para el producto con la referencia ${body.producto}`, 
-     `No existe un producto con la referencia ${body.producto}`],
+    [
+      `Ya existe una categoria con el nombre ${body.nombre} para el producto con la referencia ${body.producto}`,
+      `No existe un producto con la referencia ${body.producto}`,
+    ],
     201,
     body
   );
@@ -727,37 +840,32 @@ async function crearEtiqueta(){
     alert(`La etiqueta ${body.nombre} se creó satisfactoriamente`);
     $("#modal_agregarEtiqueta").modal("hide");
     limpiarCamposCrearEtiqueta();
-    
   }
-
 }
 
-async function eliminarEtiqueta(){
-  const body = await doFetch(
-    "delete",
-    "labels/" + registroEtiqueta,
-    null,
-    200
-  );
+async function eliminarEtiqueta() {
+  const body = await doFetch("delete", "labels/" + registroEtiqueta, null, 200);
   if (body != -1) {
-    alert(`Se eliminó la etiqueta ${registroEtiqueta} satisfactoriamente. Su inventario asignado está sin clasificar.`);
+    alert(
+      `Se eliminó la etiqueta ${registroEtiqueta} satisfactoriamente. Su inventario asignado está sin clasificar.`
+    );
   }
   $("#modal_eliminarEtiqueta").modal("hide");
 }
 
-async function editarCategoria(){
+async function editarCategoria() {
   if (!validarCamposEditarCategoria()) {
     alert("Debe editar una etiqueta con un nombre válido");
     return;
   }
   const nombre = $("#editar-nombre-categoria")[0];
   let body = {
-    nombre : nombre.value.trim()
-  } 
+    nombre: nombre.value.trim(),
+  };
 
   body = await doFetch(
     "put",
-    "categories/"+nombre.name,
+    "categories/" + nombre.name,
     [`Ya existe una categoria con el nombre ${body.nombre}`],
     200,
     body
@@ -767,11 +875,10 @@ async function editarCategoria(){
     $("#modal_editarCategoria").modal("hide");
     limpiarCamposCrearCategoria();
     actualizarRegistroCategorias();
-    
   }
 }
 
-async function eliminarCategoria(){
+async function eliminarCategoria() {
   const body = await doFetch(
     "delete",
     "categories/" + registroCategoria,
@@ -785,19 +892,19 @@ async function eliminarCategoria(){
   $("#modal_eliminarCategoria").modal("hide");
 }
 
-async function editarEtiqueta(){
+async function editarEtiqueta() {
   if (!validarCamposEditarEtiqueta()) {
     alert("Debe editar una etiqueta con un nombre válido");
     return;
   }
   const nombre = $("#editar-nombre-etiqueta")[0];
   let body = {
-    nombre : nombre.value.trim()
-  } 
+    nombre: nombre.value.trim(),
+  };
 
   body = await doFetch(
     "put",
-    "labels/"+registroEtiqueta,
+    "labels/" + registroEtiqueta,
     [`Ya existe una etiqueta con el nombre ${body.nombre}`],
     200,
     body
@@ -805,7 +912,6 @@ async function editarEtiqueta(){
   if (body != -1) {
     alert(`La etiqueta ${nombre.name} se editó satisfactoriamente`);
     $("#modal_editarEtiqueta").modal("hide");
-    
   }
 }
 
@@ -817,7 +923,7 @@ function limpiarCamposCrearProducto() {
   const umbral_element = ($("#crear-umbral-producto")[0].value = "");
 }
 
-function limpiarCamposCrearCategoria(){
+function limpiarCamposCrearCategoria() {
   const nombre = ($("#crear-nombre-categoria")[0].value = "");
 }
 
@@ -834,12 +940,12 @@ function limpiarCamposCrearEtiqueta() {
   const nombre_element = ($("#crear-nombre-etiqueta")[0].value = "");
 }
 
-function validarCamposCrearCategoria(){
+function validarCamposCrearCategoria() {
   const nombre = $("#crear-nombre-categoria")[0].value.trim();
   return nombre;
 }
 
-function validarCamposEditarCategoria(){
+function validarCamposEditarCategoria() {
   const nombre = $("#editar-nombre-categoria")[0].value.trim();
   return nombre;
 }
@@ -872,19 +978,19 @@ function validarCamposEditarProducto() {
   );
 }
 
-function validarCamposCrearEtiqueta(){
+function validarCamposCrearEtiqueta() {
   const referencia_element = $("#crear-referencia-etiqueta")[0].value.trim();
   const nombre_element = $("#crear-nombre-etiqueta")[0].value.trim();
 
   return referencia_element && nombre_element;
 }
 
-function validarCamposEditarEtiqueta(){
+function validarCamposEditarEtiqueta() {
   const nombre = $("#editar-nombre-etiqueta")[0].value.trim();
   return nombre;
 }
 
-async function actualizarRegistroCategorias(){
+async function actualizarRegistroCategorias() {
   await obtenerCategorias(false);
   llenarTablaCategorias();
 }

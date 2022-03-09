@@ -112,14 +112,20 @@ public class InventoryService {
 
 	public InventoryResponse getInventoryByCategory(int category) throws Exception {
 		CategoryEntity categoryInDB = categoryService.getCategory(category);
+		List<ProductEntity> products;
+		if(category == 0) {
+			products  = productRepository.findAll();
+		}else {
+			products  = productRepository.findByCategoriaReference(categoryInDB);
+		}
 		
-		List<ProductEntity> products = productRepository.findByCategoriaReference(categoryInDB);
 		InventoryResponse inventory = new InventoryResponse();
 		List<InventoryItem> inventoryItems = new ArrayList<InventoryItem>();
 		for(ProductEntity product : products) {
 			InventoryItem item = new InventoryItem();
 			item.setReferencia(product.getReferencia());
 			item.setProducto(product.getNombre());
+			item.setCategoria(product.getCategoriaReference().getNombre());
 			item.setCantidadTotal(getProductAmount(item.getReferencia()));
 			item.setCantidadEtiquetas(getLabelQuantityByProduct(item.getReferencia()));
 			item.setEtiquetas(getLabelInventoryResponses(item.getReferencia()));
@@ -130,15 +136,20 @@ public class InventoryService {
 		return inventory;
 	}
 
-	public InventoryItem getInventoryByReference(String referece) throws Exception {
+	public InventoryResponse getInventoryByReference(String referece) throws Exception {
 		ProductEntity productInDB = productService.getProductByReference(referece);
 		InventoryItem inventory = new InventoryItem();
 		inventory.setReferencia(productInDB.getReferencia());
 		inventory.setProducto(productInDB.getNombre());
+		inventory.setCategoria(productInDB.getCategoriaReference().getNombre());
 		inventory.setCantidadTotal(getProductAmount(productInDB.getReferencia()));
 		inventory.setCantidadEtiquetas(getLabelQuantityByProduct(inventory.getReferencia()));
 		inventory.setEtiquetas(getLabelInventoryResponses(inventory.getReferencia()));
-		return inventory;
+		InventoryResponse inventoryResponse = new InventoryResponse();
+		List<InventoryItem> lista = new ArrayList<InventoryItem>();
+		lista.add(inventory);
+		inventoryResponse.setInventario(lista);
+		return inventoryResponse;
 	}
 	
  	public int getLabelQuantityByProduct(String reference) {

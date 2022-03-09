@@ -38,10 +38,10 @@ public class InventoryController {
 		return new ResponseEntity<InventoryResponse>(inventory,HttpStatus.OK);
 	}
 	@GetMapping("/reference")
-	public ResponseEntity<InventoryItem> getInventoryByReference(@RequestParam String reference) 
+	public ResponseEntity<InventoryResponse> getInventoryByReference(@RequestParam String reference) 
 			throws Exception{
-		InventoryItem inventory = inventoryService.getInventoryByReference(reference);
-		return new ResponseEntity<InventoryItem>(inventory,HttpStatus.OK);
+		InventoryResponse inventory = inventoryService.getInventoryByReference(reference);
+		return new ResponseEntity<InventoryResponse>(inventory,HttpStatus.OK);
 	}
 	
 	@PostMapping
