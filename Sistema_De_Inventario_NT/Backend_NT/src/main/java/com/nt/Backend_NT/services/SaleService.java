@@ -86,6 +86,31 @@ public class SaleService {
 		throw new NotFoundException(String.format("La venta con el id %o no existe", saleId));
 	}
 
+	public SaleEntity deleteSale(int saleId) throws Exception {
+		SaleEntity saleEntity = saleRepository.findById(saleId);
+
+		if (saleEntity != null) {
+			List<SaleXLabelEntity> salesXLabelEntities =
+					saleXLabelRepository.findByVenta(saleEntity);
+				for (SaleXLabelEntity label : salesXLabelEntities) {
+
+					InventoryEntity inventoryEntity = inventoryService.getInventoryEntity(
+							label.getEtiqueta());
+					
+					int updatedAmount = inventoryEntity.getCantidad() + label.getCantidad();
+
+					inventoryEntity.setCantidad(updatedAmount);
+
+					inventoryRepository.save(inventoryEntity);
+					saleXLabelRepository.delete(label);
+				}
+				saleRepository.delete(saleEntity);
+			
+				return saleEntity;
+		}
+		throw new NotFoundException(String.format("La venta con el id %o no existe", saleId));
+	}
+	
 	public int totalAmount(List<LabelInventoryRequest> labels) {
 		return labels.stream().mapToInt(l -> l.getCantidad()).sum();
 	}
