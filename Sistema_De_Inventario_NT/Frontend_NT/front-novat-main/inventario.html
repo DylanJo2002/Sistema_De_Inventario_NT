@@ -64,7 +64,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Editar inventario</h5>
+        <h5 class="modal-title text-center" id="staticBackdropLabel">EDITAR INVENTARIO</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -72,37 +72,41 @@
       <div class="modal-body">
         <form>
           <div class="form-group row">
+            <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
+            <div class="col-sm-10">
+              <input class="form-control w-100" type="text" id="editar-referencia-inventario" placeholder="informacion" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-2 col-form-label">Producto</label>
+            <div class="col-sm-10">
+              <input class="form-control w-100" type="text" id="editar-producto-inventario" placeholder="informacion" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
             <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
-            <div class="col-sm-10">
-        
-                <select class="form-control" id="exampleFormControlSelect1">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
-             
+            <div class="col-sm-4">
+              <select id="editar-etiqueta-inventario" class="form-control form-control-lg selectCategory font_initial">            
+              </select>
+             </div> 
+            
+            <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
+            <div class="col-sm-4">
+              <input class="form-control mx-0 w-100" id="editar-cantidad-inventario" type="number" min="0">
+
             </div>
           </div>
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Cantidad</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" id="inputPassword">
+              <input class="form-control w-100" type="text" id="editar-cantidadTotal-inventario" placeholder="informacion" readonly>
             </div>
           </div>
-          <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Cantidad total</label>
-            <div class="col-sm-10">
-              <input type="password" class="form-control" id="inputPassword">
-            </div>
-          </div>
-          
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">aceptar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarEditarInventario">Aceptar</button>
       </div>
     </div>
   </div>
@@ -112,7 +116,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">INFORMACIÓN DEL INVENTARIO</h5>
+        <h5 class="modal-title text-center" id="staticBackdropLabel">INFORMACIÓN DEL INVENTARIO</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -120,9 +124,15 @@
       <div class="modal-body">
         <form>
           <div class="form-group row">
+            <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
+            <div class="col-sm-10">
+              <input class="form-control w-100" type="text" id="mostrar-referencia-inventario" placeholder="informacion" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
             <label for="staticEmail" class="col-sm-2 col-form-label">Producto</label>
             <div class="col-sm-10">
-              <input class="form-control" type="text" placeholder="informacion" readonly>
+              <input class="form-control w-100" type="text" id="mostrar-producto-inventario" placeholder="informacion" readonly>
             </div>
           </div>
           <div class="form-group row">
@@ -134,21 +144,20 @@
             
             <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
             <div class="col-sm-4">
-              <input class="form-control mx-0" type="text" readonly>
+              <input class="form-control mx-0 w-100" id="mostrar-cantidad-inventario" type="text" readonly>
 
             </div>
           </div>
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Cantidad total</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
             <div class="col-sm-10">
-              <input class="form-control" type="text" placeholder="informacion" readonly>
+              <input class="form-control w-100" type="text" id="mostrar-cantidadTotal-inventario" placeholder="informacion" readonly>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">aceptar</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
       </div>
     </div>
   </div>

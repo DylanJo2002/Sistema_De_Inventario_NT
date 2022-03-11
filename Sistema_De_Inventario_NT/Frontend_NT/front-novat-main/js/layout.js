@@ -121,6 +121,10 @@ $(document).ready(function () {
               e.preventDefault();
               obtenerInventarioCallBack();
             });
+
+          document
+            .getElementById("btn_aceptarEditarInventario")
+            .addEventListener('click',actualizarInventario)
         });
       });
     });
@@ -131,6 +135,7 @@ const domain = "http://localhost:8080/";
 const categorias = new Array();
 const productos = new Array();
 const etiquetas = new Array();
+const etiquetasEditadas = new Array();
 const inventario = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
@@ -318,6 +323,10 @@ async function llenarEtiquetas() {
 
 async function llenarInventario() {
   const root = $("#tableBody_inventario")[0];
+  const etiquetasInfo = $("#mostrar-etiqueta-inventario")[0];
+  const etiquetasEdit = $("#editar-etiqueta-inventario")[0];
+  const cantidadEdit = $("#editar-cantidad-inventario")[0];
+
   const fragment = document.createDocumentFragment();
   await $("#table_inventory > tbody").empty();
   const childs = new Array();
@@ -359,14 +368,58 @@ async function llenarInventario() {
 
   append(root, fragment);
 
-  // agregarEventListener(
-  //   document.getElementsByClassName(" btn-info-inventory"),
-  //   null
-  // );
-  // agregarEventListener(
-  //   document.getElementsByClassName(" btn-edit-inventory"),
-  //   null
-  // );
+  agregarEventListener(
+    document.getElementsByClassName("btn-info-inventory"),
+    llenarInformacionInventario
+  );
+  agregarEventListener(
+    document.getElementsByClassName("btn-edit-inventory"),
+    llenarEdicionInventario
+  );
+
+  etiquetasInfo.addEventListener('click', (ev)=>{
+    eventoLlenarCantidadEtiqueta($( "#mostrar-etiqueta-inventario option:selected")
+    .attr('id'),"mostrar-referencia-inventario","mostrar-cantidad-inventario");
+  });
+ 
+  etiquetasEdit.addEventListener('click', (ev)=>{
+      eventoLlenarCantidadEtiqueta($("#editar-etiqueta-inventario option:selected")
+      .attr('id'),"editar-referencia-inventario","editar-cantidad-inventario",true);
+    });
+
+  cantidadEdit.addEventListener('keydown',(e)=>{
+      //const valor = e.target.value;
+      if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+      && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+        e.preventDefault();
+      }
+      // else {
+        
+      //   if(valor.length == 1 && (e.keyCode == 8 || e.keyCode == 46)){
+      //     cantidadEdit.value = '00';
+
+      //   }
+      // }
+  })
+  cantidadEdit.addEventListener('input', (e)=>{
+    const valorString = e.target.value+'';
+    let valor = 0;
+    if(valorString.length > 0){
+      valor = Number.parseInt(valorString);
+
+    }
+    const idEtiqueta = $("#editar-etiqueta-inventario option:selected").attr('id');
+    const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+    const inputCantidadTotal = $("#editar-cantidadTotal-inventario")[0];
+    const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+    inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+    etiquetaEditar.cantidad = Number.parseInt(valor);
+
+    console.log("EVENTO INPUT, valor actual: "+valor+" ETIQUETA: ",etiquetaEditar);
+
+    //e.target.value=  99;
+    // etiquetaEditar.cantidad = valor;
+  })
 }
 
 /**Seccion 1=productos, 2=categorias */
@@ -612,6 +665,87 @@ async function doFetch(metodo, recurso, mensajes, estadoOk, json) {
   return body;
 }
 
+function llenarInformacionInventario(ref){
+  const referencia = $("#mostrar-referencia-inventario")[0];
+  const producto = $("#mostrar-producto-inventario")[0];
+  const etiqueta = $("#mostrar-etiqueta-inventario")[0];
+  $('#mostrar-etiqueta-inventario').empty()
+  const cantidad = $("#mostrar-cantidad-inventario")[0];
+  const cantidadTotal = $("#mostrar-cantidadTotal-inventario")[0];
+
+  const item = inventario.find((i) => i.referencia == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidadTotal;
+
+  const fragment = document.createDocumentFragment();
+  // etiqueta.addEventListener('click', (ev)=>{
+  //   eventoLlenarCantidadEtiqueta($( "#mostrar-etiqueta-inventario option:selected")
+  //   .attr('id'),"mostrar-referencia-inventario","mostrar-cantidad-inventario");
+  // });
+  for(eti of etiquetas){
+    
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+}
+
+function llenarEdicionInventario(ref){
+  etiquetasEditadas.splice(0,etiquetasEditadas.length);
+  const referencia = $("#editar-referencia-inventario")[0];
+  const producto = $("#editar-producto-inventario")[0];
+  const etiqueta = $("#editar-etiqueta-inventario")[0];
+  $('#editar-etiqueta-inventario').empty()
+  const cantidad = $("#editar-cantidad-inventario")[0];
+  const cantidadTotal = $("#editar-cantidadTotal-inventario")[0];
+
+  const item = inventario.find((i) => i.referencia == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidadTotal;
+
+  const fragment = document.createDocumentFragment();
+  // etiqueta.addEventListener('click', (ev)=>{
+  //   eventoLlenarCantidadEtiqueta($( "#editar-etiqueta-inventario option:selected")
+  //   .attr('id'),"editar-referencia-inventario","editar-cantidad-inventario");
+  // });
+  for(eti of etiquetas){
+    etiquetasEditadas.push({id:eti.id,cantidad:eti.cantidad});
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+}
+
+function eventoLlenarCantidadEtiqueta(id,idReferencia,idCantidad, etiquetasTemporales){
+  const referencia = $(`#${idReferencia}`)[0].value;
+  const cantidadEtiqueta = $(`#${idCantidad}`)[0];
+  let item;
+  let etiquetas;
+  let etiqueta;
+  if(etiquetasTemporales){
+    etiqueta = etiquetasEditadas.find(eti => eti.id == id);
+  }else {
+    item = inventario.find(item => item.referencia == referencia);
+    etiquetas = item.etiquetas;
+    etiqueta = etiquetas.find(eti => eti.id == id);
+  }
+  cantidadEtiqueta.value = etiqueta.cantidad;
+}
+
 function llenarInformacionProducto(ref) {
   const referencia_element = $("#mirar-referencia-producto")[0];
   const nombre_element = $("#mirar-nombre-producto")[0];
@@ -751,6 +885,26 @@ function almacenarEtiqueta(ref) {
   const confirmacion = $("#confirmacion-del-etiqueta")[0];
   registroEtiqueta = ref;
   confirmacion.innerText = `Al eliminar la etiqueta ${registroEtiqueta} su inventario asignado estará sin clasificar. ¿Está seguro?`;
+}
+
+async function actualizarInventario(){
+  const ref = $("#editar-referencia-inventario")[0].value;
+  body = {
+    etiquetas: etiquetasEditadas
+  }
+  body = await doFetch(
+    "put",
+    "inventory",
+    [null,"No se encontró una etiqueta."],
+    200,
+    body
+  );
+  if (body != -1) {
+    alert(`El inventario del producto ${ref} se editó satisfactoriamente`);
+    $("#modal_editarInventario").modal("hide");
+    // limpiarCamposCrearCategoria();
+    // actualizarRegistroCategorias();
+  }
 }
 
 async function crearProducto() {
