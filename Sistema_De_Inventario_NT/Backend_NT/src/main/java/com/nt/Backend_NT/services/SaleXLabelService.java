@@ -1,4 +1,4 @@
-package com.nt.Backend_NT.controllers;
+package com.nt.Backend_NT.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import com.nt.Backend_NT.entities.SaleEntity;
 import com.nt.Backend_NT.entities.SaleXLabelEntity;
 import com.nt.Backend_NT.model.LabelInventoryRequest;
 import com.nt.Backend_NT.repositories.SaleXLabelRepository;
-import com.nt.Backend_NT.services.LabelService;
 
 @Service
 public class SaleXLabelService {
@@ -33,5 +32,9 @@ public class SaleXLabelService {
 
 		
 		return salesXLabelEntities;
+	}
+
+	public List<SaleXLabelEntity> getSalesXLabelBySales(SaleEntity sale){
+		return saleXLabelRepository.findByVenta(sale);
 	}
 }

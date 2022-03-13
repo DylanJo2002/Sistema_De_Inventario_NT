@@ -1,20 +1,29 @@
 package com.nt.Backend_NT.services;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nt.Backend_NT.controllers.SaleXLabelService;
+import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
 import com.nt.Backend_NT.entities.SaleEntity;
 import com.nt.Backend_NT.entities.SaleXLabelEntity;
+import com.nt.Backend_NT.exceptions.BadRequestException;
 import com.nt.Backend_NT.exceptions.ConflictException;
 import com.nt.Backend_NT.exceptions.NotFoundException;
 import com.nt.Backend_NT.model.LabelInventoryRequest;
+import com.nt.Backend_NT.model.LabelInventoryResponse;
+import com.nt.Backend_NT.model.Sale;
 import com.nt.Backend_NT.model.SaleUpdateRequest;
+import com.nt.Backend_NT.model.SaleXLabelRequest;
+import com.nt.Backend_NT.model.Sales;
 import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.LabelRepository;
 import com.nt.Backend_NT.repositories.SaleRepository;
@@ -36,6 +45,9 @@ public class SaleService {
 	private SaleXLabelService saleXLabelService;
 	@Autowired
 	private LabelService labelService;
+	@Autowired
+	private CategoryService categoryService;
+	
 
 	public SaleEntity createSale(SaleEntity sale) throws Exception {
 
@@ -170,4 +182,91 @@ public class SaleService {
 		}
 	}
 
+	public Sales getSalesByCategoryAndDateBetween(int categoryId, String startD, String endD)
+			throws Exception{
+		
+		CategoryEntity categoryInD = categoryService.getCategory(categoryId);
+		
+		if(startD.isBlank() && endD.isBlank()) {
+			List<SaleEntity> sales;
+			if(categoryId != 0) {
+				sales = saleRepository.findByCategory(categoryId);
+			}else {
+	
+				sales = saleRepository.findAll();
+			}
+			return mapSalesXLabels(sales);
+		}
+		
+		if(!startD.isBlank() && !endD.isBlank()) {
+			List<SaleEntity>  sales;
+			
+			if(categoryId != 0) {
+				sales = saleRepository.findByCategoryAndDateBetween(categoryId,
+						startD, endD);	
+			}else {
+				Date dateS = new SimpleDateFormat("yyyy-MM-dd").parse(startD);  
+				Date dateE = new SimpleDateFormat("yyyy-MM-dd").parse(endD);
+				
+				sales = saleRepository.findByFechaBetween(dateS, dateE);
+			}
+		
+			return mapSalesXLabels(sales);
+		}
+		
+		throw new BadRequestException("Para la búsqueda de ventas entre fechas determinadas debe indicarlas.");
+	}
+
+	public Sales mapSalesXLabels(List<SaleEntity> sales){
+		Sales mappedTo = new Sales();
+		List<Sale> salesList = new ArrayList<Sale>();
+		sales.forEach(s -> {
+			Sale sale = new Sale();
+			List<SaleXLabelEntity> salesXLabel = saleXLabelService.getSalesXLabelBySales(s);
+			List<LabelInventoryResponse> salesInventory = new ArrayList<LabelInventoryResponse>();
+			sale.setId(s.getId());
+			sale.setFecha(s.getFecha());
+			sale.setHora(s.getHora());
+			sale.setProducto(s.getProductReference().getNombre());
+			sale.setReferencia(s.getProductReference().getReferencia());
+			sale.setCantidadTotal(s.getCantidadtotal());
+			salesXLabel.forEach(label -> {
+				LabelInventoryResponse labelInventory = new LabelInventoryResponse();
+				labelInventory.setId(label.getId());
+				labelInventory.setNombre(label.getEtiqueta().getNombre());
+				labelInventory.setCantidad(label.getCantidad());
+				salesInventory.add(labelInventory);
+			});
+			
+			sale.setEtiquetas(salesInventory);
+			salesList.add(sale);
+		});
+		
+		mappedTo.setVentas(salesList);
+		
+		return mappedTo;
+	}
+
+	public Sales getSalesByProductAndCategoryAndDateBetween(String reference
+			, String startD, String endD) throws Exception {
+		ProductEntity productInD = productService.getProductByReference(reference);
+		
+		if(startD.isBlank() && endD.isBlank()) {
+			List<SaleEntity> sales;
+			sales = saleRepository.findByProductReference(productInD);
+
+			return mapSalesXLabels(sales);
+		}
+		
+		if(!startD.isBlank() && !endD.isBlank()) {
+			List<SaleEntity>  sales;
+			Date dateS = new SimpleDateFormat("yyyy-MM-dd").parse(startD);  
+			Date dateE = new SimpleDateFormat("yyyy-MM-dd").parse(endD);
+			
+			sales = saleRepository.findByProductReferenceAndFechaBetween(productInD, dateS, dateE);
+			return mapSalesXLabels(sales);
+		}
+		
+		throw new BadRequestException("Para la búsqueda de ventas entre fechas determinadas debe indicarlas.");		
+	}
 }
