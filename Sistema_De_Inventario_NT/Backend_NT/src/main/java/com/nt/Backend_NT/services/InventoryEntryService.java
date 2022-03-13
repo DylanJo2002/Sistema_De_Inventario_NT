@@ -1,5 +1,8 @@
 package com.nt.Backend_NT.services;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +15,14 @@ import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
 import com.nt.Backend_NT.exceptions.BadRequestException;
 import com.nt.Backend_NT.exceptions.NotFoundException;
+import com.nt.Backend_NT.model.InventoriesEntryResponse;
 import com.nt.Backend_NT.model.InventoryEntryRequest;
+import com.nt.Backend_NT.model.InventoryEntryResponse;
 import com.nt.Backend_NT.model.InventoryEntryUpdateRequest;
 import com.nt.Backend_NT.model.LabelInventoryRequest;
+import com.nt.Backend_NT.model.LabelInventoryResponse;
 import com.nt.Backend_NT.repositories.InventoryEntryRepository;
+import com.nt.Backend_NT.repositories.InventoryEntryXLabelRepository;
 import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.ProductRepository;
 
@@ -119,7 +126,84 @@ public class InventoryEntryService {
 		throw new NotFoundException(String.format("No existe el ingreso con el id %d",entryId));
 	}
 	
- 	public boolean isValidLabels(List<LabelInventoryRequest> labels) throws Exception {
+ 	public InventoriesEntryResponse getEntryByProductAndDate(String reference, String dateStart, String dateEnd)
+ 			throws Exception {
+ 		
+ 		ProductEntity productEntity = productService.getProductByReference(reference);
+ 		
+ 		
+ 		
+ 		if(dateStart.isBlank() && dateStart.isBlank()) {
+ 			List<InventoryEntryEntity> inventoriesEntry = inventoryEntryRepository
+ 					.findByProducto(productEntity);
+ 		
+ 			return mappeToInventoriesEntryResponse(inventoriesEntry);
+ 		}
+ 		
+ 		if(!dateStart.isBlank() &&  !dateStart.isBlank()) {
+ 			
+			Date dateS = new SimpleDateFormat("yyyy-MM-dd").parse(dateStart);  
+			Date dateE = new SimpleDateFormat("yyyy-MM-dd").parse(dateEnd);
+			
+ 			List<InventoryEntryEntity> inventoriesEntry = inventoryEntryRepository
+ 					.findByProductoAndFechaBetween(productEntity,dateS, dateE);
+
+			
+ 			return mappeToInventoriesEntryResponse(inventoriesEntry);
+ 		}
+ 		
+ 		throw new BadRequestException("Debe proporcionar una fecha inicio y una "
+ 				.concat("fecha fin para la búsqueda de ingresos entre fechas,"));
+
+ 	}
+
+ 	public InventoriesEntryResponse mappeToInventoriesEntryResponse(List<InventoryEntryEntity> inventoriesEntry) {
+ 		
+ 		InventoriesEntryResponse response = new InventoriesEntryResponse();
+ 		List<InventoryEntryResponse> inventoryEntryList = new ArrayList<InventoryEntryResponse>();
+ 		
+ 		for(InventoryEntryEntity entry :inventoriesEntry) {
+ 			InventoryEntryResponse entryResponse = new InventoryEntryResponse();
+ 			ProductEntity productInDB = entry.getProducto();
+ 			entryResponse.setId(entry.getId());
+ 			entryResponse.setReferencia(productInDB.getReferencia());
+ 			entryResponse.setProducto(productInDB.getNombre());
+ 			entryResponse.setProveedor(entry.getProveedor());
+ 			entryResponse.setCantidadTotal(entry.getCantidadtotal());
+ 			entryResponse.setCostoxunidad(entry.getCostoxunidad());
+ 			entryResponse.setFecha(entry.getFecha());
+ 			entryResponse.setHora(entry.getHora());
+ 			
+ 			entryResponse.setEtiquetas(mappetToLabelInventoryResponses(entry));
+ 			
+ 			inventoryEntryList.add(entryResponse);
+ 		}
+ 		
+ 		response.setIngresos(inventoryEntryList); 		
+ 		return response;
+ 	}
+ 	
+ 	public List<LabelInventoryResponse> mappetToLabelInventoryResponses(InventoryEntryEntity entry){
+ 		
+ 		List<LabelInventoryResponse> mappedTo = new ArrayList<LabelInventoryResponse>();
+ 		List<InventoryEntryXLabelEntity> entriesXLabels = 
+ 				inventoryEntryXLabelService .getInventoryEntryXLabelsByInventoryEntry(entry);
+ 		
+ 		entriesXLabels.forEach(l -> {
+ 			LabelInventoryResponse labelEntryResponse = new LabelInventoryResponse();
+ 			
+ 			labelEntryResponse.setId(l.getId());
+ 			labelEntryResponse.setNombre(l.getEtiqueta().getNombre());
+ 			labelEntryResponse.setCantidad(l.getCantidad());
+ 			
+ 			mappedTo.add(labelEntryResponse);
+ 			
+ 		});
+ 		
+ 		return mappedTo;
+ 	}
+ 	
+	public boolean isValidLabels(List<LabelInventoryRequest> labels) throws Exception {
 		for(LabelInventoryRequest label : labels) {
 			if(label.getCantidad() < 1 ) {
 				throw new Exception(String.format(

@@ -84,4 +84,6 @@ public class InventoryEntryXLabelService {
 	public List<InventoryEntryXLabelEntity> getInventoryEntryXLabelsByInventoryEntry(InventoryEntryEntity entry){
 		return inventoryEntryXLabelRepository.findByInventoryEntryReference(entry);
 	}
+	
+	
 }
