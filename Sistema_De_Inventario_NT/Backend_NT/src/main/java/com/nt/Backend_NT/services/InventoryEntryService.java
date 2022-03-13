@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.InventoryEntryEntity;
 import com.nt.Backend_NT.entities.InventoryEntryXLabelEntity;
@@ -22,7 +23,6 @@ import com.nt.Backend_NT.model.InventoryEntryUpdateRequest;
 import com.nt.Backend_NT.model.LabelInventoryRequest;
 import com.nt.Backend_NT.model.LabelInventoryResponse;
 import com.nt.Backend_NT.repositories.InventoryEntryRepository;
-import com.nt.Backend_NT.repositories.InventoryEntryXLabelRepository;
 import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.ProductRepository;
 
@@ -40,6 +40,10 @@ public class InventoryEntryService {
 	private ProductRepository productRepository;
 	@Autowired
 	private InventoryRepository inventoryRepository;
+	@Autowired
+	private CategoryService categoryService;
+	
+
 	public InventoryEntryEntity createInventoryEntry(InventoryEntryRequest entry)
 			throws Exception {
 		
@@ -157,6 +161,56 @@ public class InventoryEntryService {
 
  	}
 
+ 	public InventoriesEntryResponse getEntryByCategoryAndDate(int categoryId, String dateStart, String dateEnd)
+ 			throws Exception {
+ 		
+ 		CategoryEntity categoryInDB = categoryService.getCategory(categoryId);
+ 		
+ 		if(dateStart.isBlank() && dateStart.isBlank()) {
+ 			
+ 			if(categoryId != 0) {
+ 				
+ 				List<InventoryEntryEntity> inventoriesEntry = 
+ 						inventoryEntryRepository.findByCategory(categoryId);
+ 				
+ 				return mappeToInventoriesEntryResponse(inventoriesEntry);
+ 				
+ 				
+ 			}else {
+ 				
+ 				List<InventoryEntryEntity> inventoriesEntry =
+ 						inventoryEntryRepository.findAll();
+ 				
+ 				return mappeToInventoriesEntryResponse(inventoriesEntry);
+ 			}
+ 			
+ 		}
+ 		
+ 		if(!dateStart.isBlank() &&  !dateStart.isBlank()) {
+ 			
+			Date dateS = new SimpleDateFormat("yyyy-MM-dd").parse(dateStart);  
+			Date dateE = new SimpleDateFormat("yyyy-MM-dd").parse(dateEnd);
+			
+			if(categoryId != 0) {
+				
+				List<InventoryEntryEntity> inventoriesEntry = 
+						inventoryEntryRepository.findByCategoryAndDates(categoryId
+								, dateStart, dateEnd);
+				return mappeToInventoriesEntryResponse(inventoriesEntry);
+			}else {
+				
+				List<InventoryEntryEntity> inventoriesEntry =
+						inventoryEntryRepository.findByFechaBetween(dateS, dateE);
+				return mappeToInventoriesEntryResponse(inventoriesEntry);
+			}
+
+ 		}
+ 		
+ 		throw new BadRequestException("Debe proporcionar una fecha inicio y una "
+ 				.concat("fecha fin para la búsqueda de ingresos entre fechas,"));
+ 	}
+ 	
+ 	
  	public InventoriesEntryResponse mappeToInventoriesEntryResponse(List<InventoryEntryEntity> inventoriesEntry) {
  		
  		InventoriesEntryResponse response = new InventoriesEntryResponse();

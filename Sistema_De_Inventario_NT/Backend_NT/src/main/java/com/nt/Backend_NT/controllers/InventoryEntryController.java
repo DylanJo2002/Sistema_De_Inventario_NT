@@ -20,6 +20,8 @@ import com.nt.Backend_NT.model.InventoryEntryResponse;
 import com.nt.Backend_NT.model.InventoryEntryUpdateRequest;
 import com.nt.Backend_NT.services.InventoryEntryService;
 
+import io.swagger.models.Response;
+
 @RestController
 @RequestMapping("inventory-entries")
 public class InventoryEntryController {
@@ -57,5 +59,16 @@ public class InventoryEntryController {
 				.getEntryByProductAndDate(reference, dateStart, dateEnd);
 		return new ResponseEntity<InventoriesEntryResponse>(response, HttpStatus.OK);
 		
+	}
+	
+	@GetMapping
+	public ResponseEntity<InventoriesEntryResponse> getEntryByCategoryAndDates(@RequestParam int categoryId,
+			@RequestParam String dateStart, @RequestParam  String  dateEnd) throws Exception{
+	
+		InventoriesEntryResponse response = 
+				inventoryEntryService.getEntryByCategoryAndDate(categoryId, dateStart, dateEnd);
+		
+		return new ResponseEntity<InventoriesEntryResponse>(response, HttpStatus.OK);
+
 	}
 }
