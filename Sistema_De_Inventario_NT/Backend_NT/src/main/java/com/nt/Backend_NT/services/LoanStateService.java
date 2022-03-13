@@ -34,4 +34,8 @@ public class LoanStateService {
 		
 		return response;
 	}
+
+    public LoanStatesEntity getLoanByState(String state) {
+    	return loanStatesRepository.findByEstado(state);
+    }
 }
