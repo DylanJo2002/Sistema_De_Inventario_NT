@@ -80,4 +80,8 @@ public class InventoryEntryXLabelService {
 		throw new NotFoundException(String.format("En el ingreso %o no existe la etiqueta %o",
 				entry.getId(),label.getId()));
 	}
+
+	public List<InventoryEntryXLabelEntity> getInventoryEntryXLabelsByInventoryEntry(InventoryEntryEntity entry){
+		return inventoryEntryXLabelRepository.findByInventoryEntryReference(entry);
+	}
 }

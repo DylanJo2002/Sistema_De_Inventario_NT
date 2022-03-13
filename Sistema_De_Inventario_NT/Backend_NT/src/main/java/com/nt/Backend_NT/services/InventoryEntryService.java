@@ -93,7 +93,33 @@ public class InventoryEntryService {
 		throw new NotFoundException(String.format("No existe el ingreso con el id %o", entryId));
 	}
 	
-	public boolean isValidLabels(List<LabelInventoryRequest> labels) throws Exception {
+	public InventoryEntryEntity deleteInventoryEntry(int entryId) throws NotFoundException, BadRequestException {
+		InventoryEntryEntity entry = inventoryEntryRepository.findById(entryId);
+		
+		if(entry != null) {
+			List<InventoryEntryXLabelEntity> entryxlabels = 
+					inventoryEntryXLabelService.getInventoryEntryXLabelsByInventoryEntry(entry);	
+			
+			if(isValidToDelete(entryxlabels)) {
+				for(InventoryEntryXLabelEntity entryLabel : entryxlabels) {
+					LabelEntity labelInDB = entryLabel.getEtiqueta();
+					InventoryEntity inventoryLabel = inventoryRepository.findByLabelReference(labelInDB);
+					int updatedAmount = inventoryLabel.getCantidad() - entryLabel.getCantidad();
+					
+					inventoryLabel.setCantidad(updatedAmount);
+					inventoryRepository.save(inventoryLabel);
+				}
+				
+				inventoryEntryRepository.delete(entry);
+				return entry;
+			}
+			
+		}
+
+		throw new NotFoundException(String.format("No existe el ingreso con el id %d",entryId));
+	}
+	
+ 	public boolean isValidLabels(List<LabelInventoryRequest> labels) throws Exception {
 		for(LabelInventoryRequest label : labels) {
 			if(label.getCantidad() < 1 ) {
 				throw new Exception(String.format(
@@ -127,5 +153,22 @@ public class InventoryEntryService {
 			}
 		}
 		return true;	
+	}
+
+	public boolean isValidToDelete(List<InventoryEntryXLabelEntity> entryxlabels) throws BadRequestException {
+		
+		for(InventoryEntryXLabelEntity entryLabel : entryxlabels) {
+			LabelEntity labelInDB = entryLabel.getEtiqueta();
+			InventoryEntity inventoryLabel = inventoryRepository.findByLabelReference(labelInDB);
+			int updatedAmount = inventoryLabel.getCantidad() - entryLabel.getCantidad();
+			
+			if(updatedAmount < 0) {
+				throw new BadRequestException(String.format(
+						"El inventario actual no permite eliminar el ingreso con la etiqueta %s",
+						labelInDB.getNombre()));
+			}
+		}
+
+		return true;
 	}
 }

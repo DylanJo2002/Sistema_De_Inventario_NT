@@ -7,5 +7,5 @@ import com.nt.Backend_NT.entities.InventoryEntryEntity;
 
 @Repository
 public interface InventoryEntryRepository extends JpaRepository<InventoryEntryEntity, Integer> {
-
+	public InventoryEntryEntity findById(int entryId) ;
 }

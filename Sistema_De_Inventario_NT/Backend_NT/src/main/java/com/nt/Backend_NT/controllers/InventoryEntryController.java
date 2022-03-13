@@ -3,6 +3,7 @@ package com.nt.Backend_NT.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,6 +34,14 @@ public class InventoryEntryController {
 	public ResponseEntity<InventoryEntryEntity> updateInventoryEntry(@PathVariable int entryId,@RequestBody InventoryEntryUpdateRequest entry)
 			throws Exception{
 		InventoryEntryEntity inventoryEntry = inventoryEntryService.updateInventoryEntry(entryId,entry);
+		
+		return new ResponseEntity<InventoryEntryEntity>(inventoryEntry, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{entryId}")
+	public ResponseEntity<InventoryEntryEntity> deleteInventoryEntry(@PathVariable int entryId)
+			throws Exception{
+		InventoryEntryEntity inventoryEntry = inventoryEntryService.deleteInventoryEntry(entryId);
 		
 		return new ResponseEntity<InventoryEntryEntity>(inventoryEntry, HttpStatus.OK);
 	}
