@@ -26,7 +26,7 @@ public class InventoryEntryEntity {
 	private int id;
 	@ManyToOne
 	@JoinColumn(name="producto")
-	private ProductEntity productReference;
+	private ProductEntity producto;
 	private String proveedor;
 	private int costoxunidad;
 	private int cantidadtotal;

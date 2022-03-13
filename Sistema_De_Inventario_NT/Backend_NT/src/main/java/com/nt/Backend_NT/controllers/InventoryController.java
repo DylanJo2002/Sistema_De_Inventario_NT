@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nt.Backend_NT.entities.InventoryDeletedResponse;
 import com.nt.Backend_NT.entities.InventoryEntity;
+import com.nt.Backend_NT.model.InventoryDeletedResponse;
 import com.nt.Backend_NT.model.InventoryItem;
 import com.nt.Backend_NT.model.InventoryRequest;
 import com.nt.Backend_NT.model.InventoryResponse;

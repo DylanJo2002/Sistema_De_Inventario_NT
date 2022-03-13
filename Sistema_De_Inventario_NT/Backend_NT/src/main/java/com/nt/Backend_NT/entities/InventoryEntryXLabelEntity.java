@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name="ingresosxetiqueta")
-public class InventoryEntryXLabel {
+public class InventoryEntryXLabelEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;

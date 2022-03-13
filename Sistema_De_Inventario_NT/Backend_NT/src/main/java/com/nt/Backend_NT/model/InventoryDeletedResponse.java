@@ -1,4 +1,4 @@
-package com.nt.Backend_NT.entities;
+package com.nt.Backend_NT.model;
 
 import lombok.Data;
 
