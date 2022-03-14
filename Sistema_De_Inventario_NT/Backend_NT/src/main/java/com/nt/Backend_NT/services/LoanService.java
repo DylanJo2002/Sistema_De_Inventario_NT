@@ -1,15 +1,22 @@
 package com.nt.Backend_NT.services;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.LoanEntity;
+import com.nt.Backend_NT.entities.LoanStatesEntity;
 import com.nt.Backend_NT.entities.LoanXLabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
+import com.nt.Backend_NT.entities.SaleEntity;
+import com.nt.Backend_NT.entities.SaleXLabelEntity;
 import com.nt.Backend_NT.exceptions.BadRequestException;
 import com.nt.Backend_NT.exceptions.ConflictException;
 import com.nt.Backend_NT.exceptions.NotFoundException;
@@ -18,6 +25,8 @@ import com.nt.Backend_NT.model.LoanRequest;
 import com.nt.Backend_NT.model.LoanUpdateRequest;
 import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.LoanRepository;
+import com.nt.Backend_NT.repositories.SaleRepository;
+import com.nt.Backend_NT.repositories.SaleXLabelRepository;
 
 @Service
 public class LoanService {
@@ -33,7 +42,10 @@ public class LoanService {
 	private LabelService labelService;
 	@Autowired
 	private InventoryRepository inventoryRepository;
-	
+	@Autowired
+	private SaleRepository saleRepository;
+	@Autowired
+	private SaleXLabelRepository saleXLabelRepository;
 
 
 	public LoanEntity createLoan(LoanRequest loan) throws Exception {
@@ -71,30 +83,91 @@ public class LoanService {
 		
 		if(loanEntity != null) {
 			
-			if(loan.getFecha() != null && loan.getHora() != null 
-					&& isValidAmountToUpdate(loanEntity, loan.getEtiquetas())) {
+			if(loanEntity.getEstado().getEstado().equals("PENDIENTE")) {
+				if(loan.getFecha() != null && loan.getHora() != null 
+						&& isValidAmountToUpdate(loanEntity, loan.getEtiquetas())) {
+					
+					loanEntity.setTitular(loan.getTitular());
+					loanEntity.setAllocal(loan.getLocal());
+					loanEntity.setFecha(loan.getFecha());
+					loanEntity.setHora(loan.getHora());
+					
+					loanXLabelService.updateLoanXLabel(loanEntity, loan.getEtiquetas());
+					
+					return loanRepository.save(loanEntity);
+					
+				}
 				
-				loanEntity.setTitular(loan.getTitular());
-				loanEntity.setAllocal(loan.getLocal());
-				loanEntity.setFecha(loan.getFecha());
-				loanEntity.setHora(loan.getHora());
-				
-				loanXLabelService.updateLoanXLabel(loanEntity, loan.getEtiquetas());
-				
-				return loanRepository.save(loanEntity);
-				
+				throw new BadRequestException("Debe proporcionar una fecha y hora para el préstamo");
 			}
-			
-			throw new BadRequestException("Debe proporcionar una fecha y hora para el préstamo");
-			
+			throw new BadRequestException(String.format("No se puede editar el estado del préstamo "
+					.concat("%d porque su estado es %s"), loanId,loanEntity.getEstado().getEstado()));
 		}
 		
 		throw new NotFoundException(String.format("No se encontró el préstamo con "
 				.concat("el id %d"), loanId));
 	}
 	
+	public LoanEntity updateLoanStatus(int loanId, int statusID) throws Exception {
 
-	public int totalAmount(List<LabelInventoryRequest> labels) {
+		LoanEntity loanEntity = loanRepository.findById(loanId);
+		
+		if(loanEntity != null) {
+			LoanStatesEntity currentStatus = loanEntity.getEstado();
+			
+			if(currentStatus.getEstado().equals("PENDIENTE")) {
+				LoanStatesEntity desiredLoanStatus = loanStateService.getLoanById(statusID);
+				loanEntity.setEstado(desiredLoanStatus);
+				List<LoanXLabelEntity> loanLabels = loanXLabelService
+						.getLoansXLabelByLoan(loanEntity);
+				if(desiredLoanStatus.getEstado().equals("VENDIDO")) {
+					
+					SaleEntity sale = new SaleEntity();
+					sale.setProductReference(loanEntity.getProductReference());
+					sale.setCantidadtotal(loanEntity.getCantidad());
+					sale.setFecha(new Date());
+					sale.setHora(LocalTime.now());
+					
+					sale = saleRepository.save(sale);
+
+					
+					for(LoanXLabelEntity l : loanLabels) {
+						
+						SaleXLabelEntity label = new SaleXLabelEntity();
+						label.setVenta(sale);
+						label.setEtiqueta(l.getEtiqueta());
+						label.setCantidad(l.getCantidad());
+						saleXLabelRepository.save(label);
+					}
+					
+					
+				}else {
+					
+					loanLabels.forEach(l -> {
+						
+						InventoryEntity inventory = inventoryRepository.findByLabelReference(l.getEtiqueta());
+						inventory.setCantidad(inventory.getCantidad()+l.getCantidad());
+								
+						inventoryRepository.save(inventory);
+					});
+					
+					
+				}
+				
+				return loanRepository.save(loanEntity);
+			}
+			
+			throw new BadRequestException(String.format("No se puede editar el estado del préstamo "
+					.concat("%d porque su estado es %s"), loanId,currentStatus.getEstado()));
+		}
+		
+		
+		throw new NotFoundException(String.format("No se encontró el préstamo con "
+				.concat("el id %d"), loanId));
+	}
+	
+
+ 	public int totalAmount(List<LabelInventoryRequest> labels) {
 		return labels.stream().mapToInt(l -> l.getCantidad()).sum();
 	}
 

@@ -8,4 +8,5 @@ import com.nt.Backend_NT.entities.LoanStatesEntity;
 @Repository
 public interface LoanStatesRepository extends JpaRepository<LoanStatesEntity, Integer> {
 	public LoanStatesEntity findByEstado(String estado);
+	public LoanStatesEntity findById(int id);
 }

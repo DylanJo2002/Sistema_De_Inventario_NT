@@ -13,4 +13,6 @@ import com.nt.Backend_NT.entities.LoanXLabelEntity;
 public interface LoanXLabelRepository extends JpaRepository<LoanXLabelEntity, Integer> {
 	
 	public LoanXLabelEntity findByPrestamoAndEtiqueta(LoanEntity prestamo, LabelEntity etiqueta);
+	
+	public List<LoanXLabelEntity> findByPrestamo(LoanEntity prestamo);
 }

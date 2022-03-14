@@ -84,4 +84,8 @@ public class LoanXLabelService {
 		
 		return loanXLabelRepository.findByPrestamoAndEtiqueta(loan,label);
 	}
+	
+	public List<LoanXLabelEntity> getLoansXLabelByLoan(LoanEntity loan){
+		return loanXLabelRepository.findByPrestamo(loan);
+	}
 }

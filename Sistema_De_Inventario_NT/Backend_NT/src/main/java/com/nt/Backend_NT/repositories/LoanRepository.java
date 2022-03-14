@@ -7,5 +7,5 @@ import com.nt.Backend_NT.entities.LoanEntity;
 
 @Repository
 public interface LoanRepository extends JpaRepository<LoanEntity, Integer> {
-
-}
+	public LoanEntity findById(int id);
+}	
