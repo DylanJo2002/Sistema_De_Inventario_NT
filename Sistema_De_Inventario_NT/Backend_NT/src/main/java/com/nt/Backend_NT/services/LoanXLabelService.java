@@ -24,6 +24,7 @@ public class LoanXLabelService {
 	@Autowired
 	private InventoryRepository inventoryRepository;
 	
+	
 	public List<LoanXLabelEntity> createLoanXLabel(LoanEntity loan,List<LabelInventoryRequest> labels)
 			throws Exception{
 		
@@ -47,5 +48,40 @@ public class LoanXLabelService {
 		
 		
 		return loanXLabelEntities;
+	}
+
+	public List<LoanXLabelEntity> updateLoanXLabel(LoanEntity loan,List<LabelInventoryRequest> labels)
+			throws Exception{
+		
+		List<LoanXLabelEntity> loanXLabelEntities = new ArrayList<LoanXLabelEntity>();
+		
+		for(LabelInventoryRequest l : labels) {
+			
+			LabelEntity labelEntity = labelService.getLabel(l.getId());
+			InventoryEntity inventoryEntity = inventoryRepository.findByLabelReference(labelEntity);
+			LoanXLabelEntity loanXLabelEntity = loanXLabelRepository
+					.findByPrestamoAndEtiqueta(loan, labelEntity);
+			
+			int updatedAmount = inventoryEntity.getCantidad()+loanXLabelEntity.getCantidad()
+				-l.getCantidad();
+			
+			inventoryEntity.setCantidad(updatedAmount);
+			loanXLabelEntity.setCantidad(l.getCantidad());
+			
+			inventoryRepository.save(inventoryEntity);
+			loanXLabelRepository.save(loanXLabelEntity);
+			
+			loanXLabelEntities.add(loanXLabelEntity);
+			
+		};
+		
+		
+		return loanXLabelEntities;
+	}
+	
+	
+	public LoanXLabelEntity getLoanXLabelEntityByLoan(LoanEntity loan, LabelEntity label){
+		
+		return loanXLabelRepository.findByPrestamoAndEtiqueta(loan,label);
 	}
 }

@@ -8,11 +8,14 @@ import org.springframework.stereotype.Service;
 import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.LoanEntity;
+import com.nt.Backend_NT.entities.LoanXLabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
 import com.nt.Backend_NT.exceptions.BadRequestException;
 import com.nt.Backend_NT.exceptions.ConflictException;
+import com.nt.Backend_NT.exceptions.NotFoundException;
 import com.nt.Backend_NT.model.LabelInventoryRequest;
 import com.nt.Backend_NT.model.LoanRequest;
+import com.nt.Backend_NT.model.LoanUpdateRequest;
 import com.nt.Backend_NT.repositories.InventoryRepository;
 import com.nt.Backend_NT.repositories.LoanRepository;
 
@@ -39,7 +42,7 @@ public class LoanService {
 				productService.getProductByReference(loan.getProducto());
 		
 		if(loan.getFecha() != null && loan.getHora() != null && 
-				isValidAmountToUpdate(loan.getEtiquetas())) {
+				isValidAmountToCreate(loan.getEtiquetas())) {
 			
 			LoanEntity loanEntity = new LoanEntity();
 			
@@ -61,11 +64,41 @@ public class LoanService {
 		throw new BadRequestException("Debe proporcionar una fecha y hora para el préstamo");
 	}
 
+	public LoanEntity updateLoan(int loanId,LoanUpdateRequest loan) 
+			throws Exception {
+		
+		LoanEntity loanEntity = loanRepository.getById(loanId);
+		
+		if(loanEntity != null) {
+			
+			if(loan.getFecha() != null && loan.getHora() != null 
+					&& isValidAmountToUpdate(loanEntity, loan.getEtiquetas())) {
+				
+				loanEntity.setTitular(loan.getTitular());
+				loanEntity.setAllocal(loan.getLocal());
+				loanEntity.setFecha(loan.getFecha());
+				loanEntity.setHora(loan.getHora());
+				
+				loanXLabelService.updateLoanXLabel(loanEntity, loan.getEtiquetas());
+				
+				return loanRepository.save(loanEntity);
+				
+			}
+			
+			throw new BadRequestException("Debe proporcionar una fecha y hora para el préstamo");
+			
+		}
+		
+		throw new NotFoundException(String.format("No se encontró el préstamo con "
+				.concat("el id %d"), loanId));
+	}
+	
+
 	public int totalAmount(List<LabelInventoryRequest> labels) {
 		return labels.stream().mapToInt(l -> l.getCantidad()).sum();
 	}
 
-	public boolean isValidAmountToUpdate(List<LabelInventoryRequest> labels) throws Exception {
+	public boolean isValidAmountToCreate(List<LabelInventoryRequest> labels) throws Exception {
 
 		for (LabelInventoryRequest label : labels) {
 			LabelEntity labelInDB = labelService.getLabel(label.getId());
@@ -81,4 +114,30 @@ public class LoanService {
 		return true;
 	}
 
+	public boolean isValidAmountToUpdate(LoanEntity loan,List<LabelInventoryRequest> labels) 
+			throws Exception {
+
+		for (LabelInventoryRequest label : labels) {
+			LabelEntity labelInDB = labelService.getLabel(label.getId());
+			InventoryEntity inventory = inventoryRepository.findByLabelReference(labelInDB);
+			LoanXLabelEntity loanxLabel = loanXLabelService.getLoanXLabelEntityByLoan(loan, labelInDB);
+			
+			if(loanxLabel != null) {
+				
+				int updatedAmount = inventory.getCantidad()+loanxLabel.getCantidad()-label.getCantidad();
+				
+				if (updatedAmount < 0) {
+					throw new ConflictException(String.format(
+							"No tiene suficiente inventario de la etiqueta %s para el préstamo", labelInDB.getNombre()));
+				}
+				
+			}else {
+				throw new BadRequestException(String.format("No existe la etiqueta %s en el préstamo %d"
+						, labelInDB.getNombre(), loan.getId()));	
+			}
+
+		}
+
+		return true;
+	}
 }
