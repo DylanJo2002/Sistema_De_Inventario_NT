@@ -12,6 +12,8 @@ import com.nt.Backend_NT.entities.LoanEntity;
 public interface LoanRepository extends JpaRepository<LoanEntity, Integer> {
 	public LoanEntity findById(int id);
 	
+	// BÚSQUEDAS POR CATEGORÍA
+	
 	@Query(value = "SELECT * FROM prestamos p JOIN productos pr ON p.producto = pr.referencia "
 			+ "WHERE pr.categoria = ?1 AND p.fecha BETWEEN ?2 AND ?3 AND p.estado = ?4",
 			nativeQuery = true)
@@ -53,4 +55,29 @@ public interface LoanRepository extends JpaRepository<LoanEntity, Integer> {
 			nativeQuery = true)
 	public List<LoanEntity> findByState(int stateId);
 	
+	// BÚSQUEDAS POR PRODUCTO
+	
+	@Query(value = "SELECT * FROM prestamos p WHERE p.producto = ?1 "
+			+ "AND p.fecha BETWEEN ?2 AND ?3 AND p.estado = ?4"
+			,
+			nativeQuery = true)
+	public List<LoanEntity> findByProductReferenceAndDatesAndState(String referencia,String dateStart,
+			String dateEnd, int stateId);
+	
+	@Query(value = "SELECT * FROM prestamos p WHERE p.producto = ?1 "
+			+ "AND p.fecha BETWEEN ?2 AND ?3"
+			,
+			nativeQuery = true)
+	public List<LoanEntity> findByProductReferenceAndDates(String referencia,String dateStart,
+			String dateEnd);
+	
+	@Query(value = "SELECT * FROM prestamos p WHERE p.producto = ?1 "
+			+ "AND p.estado = ?2",
+			nativeQuery = true)
+	public List<LoanEntity> findByProductReferenceAndState(String referencia, int stateId);
+
+	@Query(value = "SELECT * FROM prestamos p WHERE p.producto = ?1",
+			nativeQuery = true)
+	public List<LoanEntity> findByProductReference(String referencia);
 }	
+

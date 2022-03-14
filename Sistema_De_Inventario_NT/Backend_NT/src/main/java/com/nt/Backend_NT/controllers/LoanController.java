@@ -58,4 +58,15 @@ public class LoanController {
 		
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
+
+	@GetMapping("/{reference}")
+	public ResponseEntity<LoansResponse> getByProduct(@PathVariable String reference,
+			@RequestParam String dateStart, @RequestParam String dateEnd, @RequestParam int stateId)
+					throws Exception{
+		
+		LoansResponse response = loanService.getLoansByProduct(reference, dateStart
+				, dateEnd, stateId);
+		
+		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+	}
 }

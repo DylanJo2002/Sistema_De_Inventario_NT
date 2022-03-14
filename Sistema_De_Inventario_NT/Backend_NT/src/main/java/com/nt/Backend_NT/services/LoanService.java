@@ -242,6 +242,48 @@ public class LoanService {
 
 	}
 
+	public LoansResponse getLoansByProduct(String reference, String dStart, String dEnd, int stateId)
+			throws Exception {
+		
+		ProductEntity productInDB = productService.getProductByReference(reference);
+		LoanStatesEntity stateEntity = loanStateService.getLoanById(stateId);
+		if(!dStart.isBlank() && !dEnd.isBlank()) {
+			//Buscamos por fecha
+			if(stateId != 0) {
+				//Buscamos por fecha y estado
+				List<LoanEntity> loans = loanRepository.findByProductReferenceAndDatesAndState(
+						reference,dStart,dEnd,stateId);
+				
+				return mappedToLoansResponse(loans);
+				
+			}else {
+				//Buscamos por fecha y cualquier estado
+				List<LoanEntity> loans = loanRepository.findByProductReferenceAndDates(
+						reference,dStart,dEnd);
+				
+				return mappedToLoansResponse(loans);
+				
+			}
+		}else {
+			//Buscamos por cualquier fecha
+			if(stateId != 0) {
+				//Buscamos por cualquier fecha y un estado estado
+				List<LoanEntity> loans = loanRepository.findByProductReferenceAndState(reference,stateId);
+				
+				return mappedToLoansResponse(loans);
+				
+			}else {
+				//Buscamos por cualquier fecha y cualquier estado
+				List<LoanEntity> loans = loanRepository.findByProductReference(reference);
+				
+				return mappedToLoansResponse(loans);
+				
+			}
+			
+		}
+		
+	}
+	
 	public LoansResponse mappedToLoansResponse(List<LoanEntity> loans) {
 
 		LoansResponse response = new LoansResponse();
