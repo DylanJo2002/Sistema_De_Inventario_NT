@@ -26,4 +26,19 @@ public interface ReportRepository extends JpaRepository<ProductReportEntity, Str
 			+ "limit ?3",
 			nativeQuery = true)
 	public List<ProductReportEntity> findProductReportByDates(String dateStart, String dateEnd, int top);
+	
+	@Query(value= "SELECT r.referencia, r.nombre , r.descripcion, r.costoxunidad, r.umbral , r.categoria,r.ventas "
+			+ "FROM reporteProductos r "
+			+ "WHERE r.id = ?1 "
+			+ "order by r.ventas desc "
+			+ "limit ?2",
+			nativeQuery = true)
+	public List<ProductReportEntity> findProductReportByCategory(int categoryId, int top);
+	
+	@Query(value= "SELECT r.referencia, r.nombre , r.descripcion, r.costoxunidad, r.umbral , r.categoria,r.ventas "
+			+ "FROM reporteProductos r "
+			+ "order by r.ventas desc "
+			+ "limit ?1",
+			nativeQuery = true)
+	public List<ProductReportEntity> findProductReport(int top);
 }

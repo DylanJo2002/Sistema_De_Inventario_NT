@@ -32,6 +32,7 @@ public class BestSellersController implements JRDataSource {
 	@Autowired
 	private ReportRepository productRepository;
 	private List<ProductReportEntity> products;
+	@Autowired
 	private CategoryService  categoryService;
 	private Map<String,Object> reportKeys;
 	private int index;
@@ -55,11 +56,17 @@ public class BestSellersController implements JRDataSource {
 				
 				products = productRepository.findProductReportByDates(dateStart,dateEnd,top);
 			}
-			
 		}
 		
 		if(dateStart.isBlank() && dateEnd.isBlank()) {
 			
+			if(categoryId != 0) {
+				products = productRepository.findProductReportByCategory(categoryId,top);
+				
+			}else {
+				
+				products = productRepository.findProductReport(top);
+			}
 		}
 		
 	}
