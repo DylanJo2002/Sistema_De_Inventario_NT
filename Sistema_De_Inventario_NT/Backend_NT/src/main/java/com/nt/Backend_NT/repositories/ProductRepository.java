@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
+import com.nt.Backend_NT.entities.ProductReportEntity;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, String>{
@@ -22,4 +23,5 @@ public interface ProductRepository extends JpaRepository<ProductEntity, String>{
 			+ "where e.producto = ?1", 
 			  nativeQuery = true)
 	public int findProductAmount(String reference);
+	
 }
