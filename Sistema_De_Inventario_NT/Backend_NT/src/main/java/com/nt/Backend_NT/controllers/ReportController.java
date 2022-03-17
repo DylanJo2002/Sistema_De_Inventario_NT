@@ -25,7 +25,7 @@ public class ReportController {
 	@Autowired
 	private ReportService reportController;
 	
-	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json",path = "/bestSeller")
 	public ResponseEntity<byte[]> getBestSellers(@RequestParam String startDate, 
 			@RequestParam String endDate,@RequestParam int categoryId,
 			@RequestParam int top) throws Exception{
@@ -36,5 +36,27 @@ public class ReportController {
 
 		return response;
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json",path = "/leastSold")
+	public ResponseEntity<byte[]> getLeasSold(@RequestParam String startDate, 
+			@RequestParam String endDate,@RequestParam int categoryId,
+			@RequestParam int top) throws Exception{
+		
+		byte[] report = reportController.getLeastSold(startDate, endDate,categoryId,top);
+		
+		ResponseEntity<byte[]>  response= new ResponseEntity<byte[]>(report, HttpStatus.OK);
 
+		return response;
+	}	
+
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json",path = "/underThreshole")
+	public ResponseEntity<byte[]> getUnderThreshole(@RequestParam int categoryId)
+			throws Exception{
+		
+		byte[] report = reportController.getUnderThreshole(categoryId);
+		
+		ResponseEntity<byte[]>  response= new ResponseEntity<byte[]>(report, HttpStatus.OK);
+
+		return response;
+	}	
 }

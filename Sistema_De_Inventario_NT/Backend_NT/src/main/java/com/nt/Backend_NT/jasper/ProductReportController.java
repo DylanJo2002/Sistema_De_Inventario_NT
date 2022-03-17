@@ -26,7 +26,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
 @Controller
-public class BestSellersController implements JRDataSource {
+public class ProductReportController implements JRDataSource {
 
 	
 	@Autowired
@@ -39,13 +39,14 @@ public class BestSellersController implements JRDataSource {
 	@PostConstruct
 	private void init() {
 		index = -1;
+		products = null;
 	}
 	
 	public void cleanData() {
 		index = -1;
 	}
 	
-	public void fillData(String dateStart, String dateEnd, int categoryId, int top) throws Exception{
+	public void fillDataBestSeller(String dateStart, String dateEnd, int categoryId, int top) throws Exception{
 		generateKeys(dateStart, dateEnd, categoryId, top);
 		if(!dateStart.isBlank() && !dateEnd.isBlank()) {
 			
@@ -66,6 +67,32 @@ public class BestSellersController implements JRDataSource {
 			}else {
 				
 				products = productRepository.findProductReport(top);
+			}
+		}
+		
+	}
+
+	public void fillDataLeastSold(String dateStart, String dateEnd, int categoryId, int top) throws Exception{
+		generateKeys(dateStart, dateEnd, categoryId, top);
+		if(!dateStart.isBlank() && !dateEnd.isBlank()) {
+			
+			if(categoryId != 0) {
+				products = productRepository.findProductReportByDatesAndCategory2(dateStart,dateEnd,categoryId,top);
+				
+			}else {
+				
+				products = productRepository.findProductReportByDates2(dateStart,dateEnd,top);
+			}
+		}
+		
+		if(dateStart.isBlank() && dateEnd.isBlank()) {
+			
+			if(categoryId != 0) {
+				products = productRepository.findProductReportByCategory2(categoryId,top);
+				
+			}else {
+				
+				products = productRepository.findProductReport2(top);
 			}
 		}
 		

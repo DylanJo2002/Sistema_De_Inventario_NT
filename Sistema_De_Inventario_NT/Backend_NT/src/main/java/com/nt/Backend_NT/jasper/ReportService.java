@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.lowagie.text.pdf.codec.Base64.InputStream;
 
 import io.github.classgraph.Resource;
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -21,17 +22,18 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @Service
 public class ReportService {
 	@Autowired
-	private BestSellersController bestSellersController;
+	private ProductReportController bestSellersController;
+	@Autowired
+	private InventoryReportController inventoryReportController;
 	
-	public byte[] getReport()
+	public byte[] getReport(String report, Map<String, Object> keys, JRDataSource source)
 			throws Exception {
 		try {
 			Logger log = Logger.getLogger(getClass().toString());
-			File file = new ClassPathResource("static/jasper/bestSellers.jasper").getFile();
+			File file = new ClassPathResource(report).getFile();
 			JasperReport jasper = (JasperReport) JRLoader.loadObject(file);
 			
-			Map<String, Object> keys = bestSellersController.getReportKeys();
-			JasperPrint print = JasperFillManager.fillReport(jasper, keys, bestSellersController);
+			JasperPrint print = JasperFillManager.fillReport(jasper, keys, source);
 			
 			byte[] pdfBytes = JasperExportManager.exportReportToPdf(print);
 			
@@ -43,12 +45,29 @@ public class ReportService {
 					.concat("los productos mejores ventidos: %s"), e.getMessage()));
 		}
 	}
+	
 
 	public byte[] getBestSellers(String dateStart, String dateEnd, int categoryId, int top)
 			throws Exception {
 		bestSellersController.cleanData();
-		bestSellersController.fillData(dateStart, dateEnd, categoryId, top);
-		
-		return getReport();
+		bestSellersController.fillDataBestSeller(dateStart, dateEnd, categoryId, top);
+		Map<String, Object> keys = bestSellersController.getReportKeys();
+		return getReport("static/jasper/bestSellers.jasper",keys,bestSellersController);
+	}
+	
+	public byte[] getLeastSold(String dateStart, String dateEnd, int categoryId, int top)
+			throws Exception {
+		bestSellersController.cleanData();
+		bestSellersController.fillDataLeastSold(dateStart, dateEnd, categoryId, top);
+		Map<String, Object> keys = bestSellersController.getReportKeys();
+		return getReport("static/jasper/leastSold.jasper",keys,bestSellersController );
+	}
+	
+	public byte[] getUnderThreshole(int categoryId)
+			throws Exception {
+		inventoryReportController.cleanData();
+		inventoryReportController.fillData(categoryId);
+		Map<String, Object> keys = inventoryReportController.getReportKeys();
+		return getReport("static/jasper/underThreshole.jasper",keys, inventoryReportController);
 	}
 }
