@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ public class ReportController {
 	@Autowired
 	private ReportService reportController;
 	
-	@GetMapping
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<byte[]> getBestSellers(@RequestParam String startDate, 
 			@RequestParam String endDate,@RequestParam int categoryId,
 			@RequestParam int top) throws Exception{
@@ -31,9 +32,7 @@ public class ReportController {
 		byte[] report = reportController.getBestSellers(startDate, endDate,categoryId,top);
 		
 		ResponseEntity<byte[]>  response= new ResponseEntity<byte[]>(report, HttpStatus.OK);
-		response.getHeaders().add("Content-Type", "application/pdf");
-		response.getHeaders().add("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
-		
+
 		return response;
 	}
 

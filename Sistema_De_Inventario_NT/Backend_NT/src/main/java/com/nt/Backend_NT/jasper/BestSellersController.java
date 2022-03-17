@@ -31,11 +31,11 @@ public class BestSellersController implements JRDataSource {
 	private int index;
 	@PostConstruct
 	private void init() {
-		index = 0;
+		index = -1;
 	}
 	
 	public void cleanData() {
-		index = 0;
+		index = -1;
 	}
 	
 	public void fillData(String dateStart, String dateEnd, int categoryId, int top){
@@ -60,6 +60,7 @@ public class BestSellersController implements JRDataSource {
 	
 	@Override
 	public boolean next() throws JRException {
+		index++;
 		return index<products.size();
 	}
 
@@ -68,14 +69,14 @@ public class BestSellersController implements JRDataSource {
 		Object value = null;
 		
 		switch (jrField.getName()) {
-			case "numer": value = index+1; break; 	
+			case "numer": value = index+1+""; break; 	
 			case "reference": value = products.get(index).getReferencia(); break; 	
 			case "name": value = products.get(index).getProducto(); break; 	
 			case "description": value = products.get(index).getDescripcion(); break;
-			case "cu": value = products.get(index).getCostoxunidad(); break; 	
-			case "threshold": value = products.get(index).getUmbral(); break; 	
+			case "cu": value = products.get(index).getCostoxunidad()+""; break; 	
+			case "threshold": value = products.get(index).getUmbral()+""; break; 	
 			case "category": value = products.get(index).getCategoria(); break; 	
-			case "amount": value = products.get(index).getVentas(); break; 	
+			case "amount": value = products.get(index).getVentas()+""; break; 	
 
 		}
 		
