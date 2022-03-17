@@ -1,6 +1,7 @@
 package com.nt.Backend_NT.jasper;
 
 import java.io.File;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,8 @@ public class ReportService {
 			File file = new ClassPathResource("static/jasper/bestSellers.jasper").getFile();
 			JasperReport jasper = (JasperReport) JRLoader.loadObject(file);
 			
-			JasperPrint print = JasperFillManager.fillReport(jasper, null, bestSellersController);
+			Map<String, Object> keys = bestSellersController.getReportKeys();
+			JasperPrint print = JasperFillManager.fillReport(jasper, keys, bestSellersController);
 			
 			byte[] pdfBytes = JasperExportManager.exportReportToPdf(print);
 			

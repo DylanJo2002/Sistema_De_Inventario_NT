@@ -2,10 +2,13 @@ package com.nt.Backend_NT.jasper;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,7 @@ import com.nt.Backend_NT.exceptions.BadRequestException;
 import com.nt.Backend_NT.jasper.model.Product;
 import com.nt.Backend_NT.repositories.ProductRepository;
 import com.nt.Backend_NT.repositories.ReportRepository;
+import com.nt.Backend_NT.services.CategoryService;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -28,6 +32,8 @@ public class BestSellersController implements JRDataSource {
 	@Autowired
 	private ReportRepository productRepository;
 	private List<ProductReportEntity> products;
+	private CategoryService  categoryService;
+	private Map<String,Object> reportKeys;
 	private int index;
 	@PostConstruct
 	private void init() {
@@ -38,8 +44,8 @@ public class BestSellersController implements JRDataSource {
 		index = -1;
 	}
 	
-	public void fillData(String dateStart, String dateEnd, int categoryId, int top){
-		
+	public void fillData(String dateStart, String dateEnd, int categoryId, int top) throws Exception{
+		generateKeys(dateStart, dateEnd, categoryId, top);
 		if(!dateStart.isBlank() && !dateEnd.isBlank()) {
 			
 			if(categoryId != 0) {
@@ -47,7 +53,7 @@ public class BestSellersController implements JRDataSource {
 				
 			}else {
 				
-				
+				products = productRepository.findProductReportByDates(dateStart,dateEnd,top);
 			}
 			
 		}
@@ -71,7 +77,7 @@ public class BestSellersController implements JRDataSource {
 		switch (jrField.getName()) {
 			case "numer": value = index+1+""; break; 	
 			case "reference": value = products.get(index).getReferencia(); break; 	
-			case "name": value = products.get(index).getProducto(); break; 	
+			case "name": value = products.get(index).getNombre(); break; 	
 			case "description": value = products.get(index).getDescripcion(); break;
 			case "cu": value = products.get(index).getCostoxunidad()+""; break; 	
 			case "threshold": value = products.get(index).getUmbral()+""; break; 	
@@ -84,4 +90,23 @@ public class BestSellersController implements JRDataSource {
 		return value;
 	}
 
+	public void generateKeys(String dateStart, String dateEnd, int categoryId, int top)
+			throws Exception{
+		Map<String,Object> keys = new HashMap<String,Object>();
+		String categoryName = "TODAS";
+		if(categoryId != 0) {
+			categoryName = categoryService.getCategory(categoryId).getNombre();
+		}
+		keys.put("startDate", dateStart);
+		keys.put("endDate", dateEnd);
+		keys.put("category",categoryName+"");
+		keys.put("top",top+"");
+		
+		reportKeys =  keys;
+	}
+
+	public Map<String, Object> getReportKeys() {
+		return reportKeys;
+	}
+	
 }

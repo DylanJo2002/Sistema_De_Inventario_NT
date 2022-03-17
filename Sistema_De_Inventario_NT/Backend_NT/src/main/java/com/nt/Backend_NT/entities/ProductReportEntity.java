@@ -10,7 +10,7 @@ import lombok.Data;
 public class ProductReportEntity {
 	@Id
 	private String referencia;
-	private String producto;
+	private String nombre;
 	private String descripcion;
 	private int costoxunidad;
 	private int umbral;
