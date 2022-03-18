@@ -631,7 +631,6 @@ async function llenarIngresos(){
     const cantidadTotal = document.createElement("td");
     const costo = document.createElement("td");
     const fechaHora = document.createElement("td");
-    const acciones = document.createElement("td");
 
     id.textContent = ingreso.id;
     referencia.textContent = ingreso.referencia;
@@ -640,7 +639,6 @@ async function llenarIngresos(){
     cantidadTotal.textContent = ingreso.cantidadTotal
     costo.textContent = formatter.format(ingreso.costoxunidad);
     fechaHora.textContent = ingreso.fecha+" - "+ingreso.hora;
-    acciones.textContent = "HOLA MUNDO";
 
     child.appendChild(id);
     child.appendChild(referencia);
@@ -649,37 +647,36 @@ async function llenarIngresos(){
     child.appendChild(cantidadTotal);
     child.appendChild(costo);
     child.appendChild(fechaHora);
-    child.appendChild(acciones);
     childs.push(child);
     fragment.appendChild(child);
   }
-  // try {
-  //   await Promise.all(
-  //     childs.map(async (child) => {
-  //       const acciones = await $.get("./accionesProductos.html");
-  //       const newChild = document.createElement("td");
-  //       newChild.innerHTML = acciones;
-  //       child.appendChild(newChild);
-  //     })
-  //   );
-  // } catch (err) {
-  //   console.log(`Error: ${err.message}`);
-  // }
+  try {
+    await Promise.all(
+      childs.map(async (child) => {
+        const acciones = await $.get("./accionesIngresos.html");
+        const newChild = document.createElement("td");
+        newChild.innerHTML = acciones;
+        child.appendChild(newChild);
+      })
+    );
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+  }
 
   const root = await $("#tableBody_ingresos");
   append(root, fragment);
-  // agregarEventListener(
-  //   document.getElementsByClassName("btn-info-product"),
-  //   llenarInformacionProducto
-  // );
-  // agregarEventListener(
-  //   document.getElementsByClassName("btn-edit-product"),
-  //   llenarEdicionProducto
-  // );
-  // agregarEventListener(
-  //   document.getElementsByClassName("btn-delete-product"),
-  //   almacenarReferenciaProducto
-  // );
+  agregarEventListener(
+    document.getElementsByClassName("btn-info-entry"),
+    llenarInformacionIngreso
+  );
+  agregarEventListener(
+    document.getElementsByClassName("btn-edit-entry"),
+    //llenarEdicionProducto
+  );
+  agregarEventListener(
+    document.getElementsByClassName("btn-delete-entry"),
+    //almacenarReferenciaProducto
+  );
 }
 
 async function llenarProductos() {
@@ -818,6 +815,39 @@ async function doFetch(metodo, recurso, mensajes, estadoOk, json) {
   }
   return body;
 }
+
+function llenarInformacionIngreso(ref){
+  const referencia = $("#mostrar-referencia-ingreso")[0];
+  const producto = $("#mostrar-producto-ingreso")[0];
+  const etiqueta = $("#mostrar-etiqueta-ingreso")[0];
+  $('#mostrar-etiqueta-ingreso').empty()
+  const cantidad = $("#mostrar-cantidad-ingreso")[0];
+  const cantidadTotal = $("#mostrar-cantidadTotal-ingreso")[0];
+
+  const item = ingresos.find((i) => i.id == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidadTotal;
+
+  const fragment = document.createDocumentFragment();
+  // etiqueta.addEventListener('click', (ev)=>{
+  //   eventoLlenarCantidadEtiqueta($( "#mostrar-etiqueta-inventario option:selected")
+  //   .attr('id'),"mostrar-referencia-inventario","mostrar-cantidad-inventario");
+  // });
+  for(eti of etiquetas){
+    
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+}
+
 
 function llenarInformacionInventario(ref){
   const referencia = $("#mostrar-referencia-inventario")[0];

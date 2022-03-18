@@ -60,7 +60,7 @@ public class InventoryEntryService {
 			inventory.setProducto(productInDB);
 			inventory.setProveedor(entry.getProveedor());
 			inventory.setCostoxunidad(entry.getCostoxunidad());
-			inventory.setCantidadtotal(entry.getCantidadTotal());
+			inventory.setCantidadtotal(totalAmount(entry.getEtiquetas()));
 			inventory.setFecha(entry.getFecha());
 			inventory.setHora(entry.getHora());
 					
@@ -309,4 +309,10 @@ public class InventoryEntryService {
 
 		return true;
 	}
+
+	public int totalAmount(List<LabelInventoryRequest> labels) {
+		return labels.stream().mapToInt(l -> l.getCantidad()).sum();
+	}
+
+
 }
