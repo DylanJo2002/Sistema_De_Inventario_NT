@@ -130,7 +130,7 @@ $(document).ready(function () {
 
       document.getElementById("ingresos").addEventListener("click", (ev) => {
         $("#indexContent").load("./ingresos.html", () => {
-          obtenerCategorias(true, 1);
+          obtenerCategorias(true);
 
           document
           .getElementById("btn_buscarIngreso")
@@ -623,6 +623,7 @@ async function llenarIngresos(){
   await $("#table_entry > tbody").empty();
   const childs = new Array();
   const fragment = document.createDocumentFragment();
+  const cantidadEdit = $("#editar-cantidad-ingreso")[0];
   for (let ingreso of ingresos) {
     const child = document.createElement("tr");
     const id = document.createElement("td");
@@ -683,7 +684,31 @@ async function llenarIngresos(){
     eventoLlenarCantidadEtiquetaIngreso($("#mostrar-etiqueta-ingreso option:selected").attr("id"),
     "mostrar-cantidad-ingreso");
   })
+  $("#editar-etiqueta-ingreso")[0].addEventListener('click',()=>{
+    eventoLlenarCantidadEtiquetaIngreso($("#editar-etiqueta-ingreso option:selected").attr("id"),
+    "editar-cantidad-ingreso",true);
+  })
     
+cantidadEdit.addEventListener('keydown',(e)=>{
+    if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+    && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+      e.preventDefault();
+    }
+})
+cantidadEdit.addEventListener('input', (e)=>{
+  const valorString = e.target.value+'';
+  let valor = 0;
+  if(valorString.length > 0){
+    valor = Number.parseInt(valorString);
+
+  }
+  const idEtiqueta = $("#editar-etiqueta-ingreso option:selected").attr('id');
+  const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+  const inputCantidadTotal = $("#editar-cantidadTotal-ingreso")[0];
+  const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+  inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+  etiquetaEditar.cantidad = Number.parseInt(valor);
+  })
 }
 
 async function llenarProductos() {
@@ -923,6 +948,7 @@ function llenarEdicionInventario(ref){
 }
 
 function llenarEdicionIngreso(ref){
+  registroIngreso = ref;
   etiquetasEditadas.splice(0,etiquetasEditadas.length);
   const referencia = $("#editar-referencia-ingreso")[0];
   const producto = $("#editar-producto-ingreso")[0];
@@ -949,6 +975,7 @@ function llenarEdicionIngreso(ref){
     fragment.appendChild(option);
   }
   etiqueta.appendChild(fragment);
+
 }
 
 function eventoLlenarCantidadEtiqueta(id,idReferencia,idCantidad, etiquetasTemporales){
