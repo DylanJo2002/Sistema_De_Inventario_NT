@@ -91,6 +91,7 @@ public class InventoryEntryService {
 				inventoryEntry.setProveedor(entry.getProveedor());
 				inventoryEntry.setFecha(entry.getFecha());
 				inventoryEntry.setHora(entry.getHora());
+				inventoryEntry.setCantidadtotal(totalAmount(entry.getEtiquetas()));
 				
 				inventoryEntryXLabelService.updateInventoryEntryXLabels(inventoryEntry, entry.getEtiquetas());
 					
@@ -246,7 +247,7 @@ public class InventoryEntryService {
  		entriesXLabels.forEach(l -> {
  			LabelInventoryResponse labelEntryResponse = new LabelInventoryResponse();
  			
- 			labelEntryResponse.setId(l.getId());
+ 			labelEntryResponse.setId(l.getEtiqueta().getId());
  			labelEntryResponse.setNombre(l.getEtiqueta().getNombre());
  			labelEntryResponse.setCantidad(l.getCantidad());
  			
@@ -259,7 +260,7 @@ public class InventoryEntryService {
  	
 	public boolean isValidLabels(List<LabelInventoryRequest> labels) throws Exception {
 		for(LabelInventoryRequest label : labels) {
-			if(label.getCantidad() < 1 ) {
+			if(label.getCantidad() <  0) {
 				throw new Exception(String.format(
 						"La cantidad de la etiqueta %d debe ser mayor o igual a 0",
 						label.getCantidad()));

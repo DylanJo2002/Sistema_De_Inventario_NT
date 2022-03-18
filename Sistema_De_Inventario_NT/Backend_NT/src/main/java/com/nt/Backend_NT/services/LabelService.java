@@ -11,6 +11,7 @@ import com.nt.Backend_NT.entities.CategoryEntity;
 import com.nt.Backend_NT.entities.InventoryEntity;
 import com.nt.Backend_NT.entities.LabelEntity;
 import com.nt.Backend_NT.entities.ProductEntity;
+import com.nt.Backend_NT.exceptions.BadRequestException;
 import com.nt.Backend_NT.exceptions.ConflictException;
 import com.nt.Backend_NT.repositories.CategoryRepository;
 import com.nt.Backend_NT.repositories.InventoryRepository;
@@ -111,7 +112,7 @@ public class LabelService {
 			return labelInDB;
 		}
 		
-		throw new Exception(String.format("No existe una etiqueta con el id %o",labelId));			
+		throw new BadRequestException(String.format("No existe una etiqueta con el id %d",labelId));			
 	}	
 	public LabelEntity deleteLabel(int labelId) throws Exception {
 		LabelEntity labelInDB = labelRepository.findById(labelId);

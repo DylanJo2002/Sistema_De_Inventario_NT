@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.nt.Backend_NT.exceptions.BadRequestException;
 import com.nt.Backend_NT.exceptions.ConflictException;
 import com.nt.Backend_NT.exceptions.NotFoundException;
 import com.nt.Backend_NT.model.ErrorResponse;
@@ -29,6 +30,12 @@ public class AdviseController {
 	public ResponseEntity<ErrorResponse> notFoundExceptioMessage(Exception ex) {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse(ex.getMessage())
 				,HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<ErrorResponse> BadRequestExceptioMessage(Exception ex) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse(ex.getMessage())
+				,HttpStatus.BAD_REQUEST);
 	}
 	
 }

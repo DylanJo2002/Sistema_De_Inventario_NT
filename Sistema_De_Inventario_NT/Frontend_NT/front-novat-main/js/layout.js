@@ -138,6 +138,14 @@ $(document).ready(function () {
             ev.preventDefault();
             obtenerIngresosCallBack();
           });
+
+          document
+          .getElementById("btn_aceptarEditarIngreso")
+          .addEventListener("click", (ev) => {
+            actualizarIngreso();
+          });
+
+          
           
         });
       });
@@ -808,7 +816,7 @@ async function llenarTablaCategorias() {
   );
 }
 
-//mensajes = [407_Message,404_Message]
+//mensajes = [407_Message,404_Message,400_Message]
 async function doFetch(metodo, recurso, mensajes, estadoOk, json) {
   const settings = {
     method: metodo,
@@ -824,6 +832,10 @@ async function doFetch(metodo, recurso, mensajes, estadoOk, json) {
   try {
     const res = await fetch(domain + recurso, settings);
 
+    if(res.status == 400){
+      const json = await res.json();
+      alert(json.errorMessage);
+    }
     if (res.status == 403) {
       alert("Sesión terminada. Vuelva a iniciar sesión.");
       window.open("../login.html", "_self");
@@ -956,6 +968,10 @@ function llenarEdicionIngreso(ref){
   $('#editar-etiqueta-ingreso').empty()
   const cantidad = $("#editar-cantidad-ingreso")[0];
   const cantidadTotal = $("#editar-cantidadTotal-ingreso")[0];
+  const proveedor = $("#editar-proveedor-ingreso")[0];
+  const costo = $("#editar-costo-ingreso")[0];
+  const fecha = $("#editar-fecha-ingreso")[0];
+  const hora = $("#editar-hora-ingreso")[0];
 
   const item = ingresos.find((i) => i.id == ref);
   const etiquetas = item.etiquetas;
@@ -964,6 +980,10 @@ function llenarEdicionIngreso(ref){
   producto.value = item.producto;
   cantidad.value = etiquetas[0].cantidad;
   cantidadTotal.value = item.cantidadTotal;
+  proveedor.value = item.proveedor;
+  costo.value = item.costoxunidad;
+  fecha.value = parseDateToHTMLFormat(item.fecha);
+  hora.value = item.hora;
 
   const fragment = document.createDocumentFragment();
   for(eti of etiquetas){
@@ -976,6 +996,33 @@ function llenarEdicionIngreso(ref){
   }
   etiqueta.appendChild(fragment);
 
+}
+
+function parseDateToHTMLFormat(date){
+  formated = "";
+  for(char of date){
+    if(char == '/'){
+      formated+='-'
+    }else{
+      formated+=char;
+    }
+
+  }
+  return formated;
+}
+
+function parseDateToAPIFormat(){
+  const fecha = $("#editar-fecha-ingreso")[0].value;
+  formated = "";
+  for(char of fecha){
+    if(char == '-'){
+      formated+='/'
+    }else{
+      formated+=char;
+    }
+
+  }
+  return formated;
 }
 
 function eventoLlenarCantidadEtiqueta(id,idReferencia,idCantidad, etiquetasTemporales){
@@ -1168,6 +1215,36 @@ async function actualizarInventario(){
     $("#modal_editarInventario").modal("hide");
     // limpiarCamposCrearCategoria();
     // actualizarRegistroCategorias();
+  }
+}
+
+async function actualizarIngreso(){
+  if(!validarCamposEditarIngreso()){
+    alert("Debe ingresar campos válidos para editar el ingreso");
+    return;
+  }
+  const proveedor = $("#editar-proveedor-ingreso")[0].value;
+  const costoxunidad = $("#editar-costo-ingreso")[0].value;
+  const fecha = parseDateToAPIFormat($("#editar-fecha-ingreso")[0].value);
+  const hora = $("#editar-hora-ingreso")[0].value;
+  body = {
+    etiquetas: etiquetasEditadas,
+    proveedor,
+    costoxunidad,
+    fecha,
+    hora
+  }
+  console.log("FECHA: "+fecha+" HORA "+hora);
+  body = await doFetch(
+    "put",
+    "inventory-entries/"+registroIngreso,
+    [null,"No se encontró una etiqueta."],
+    200,
+    body
+  );
+  if (body != -1) {
+    alert(`El ingreso ${registroIngreso} se editó satisfactoriamente`);
+    $("#modal_editarIngreso").modal("hide");
   }
 }
 
@@ -1406,6 +1483,20 @@ function validarCamposCrearEtiqueta() {
 function validarCamposEditarEtiqueta() {
   const nombre = $("#editar-nombre-etiqueta")[0].value.trim();
   return nombre;
+}
+
+function validarCamposEditarIngreso() {
+  const proveedor = $("#editar-proveedor-ingreso")[0].value.trim();
+  let costo = $("#editar-costo-ingreso")[0].value.trim();
+  const fecha = $("#editar-fecha-ingreso")[0].value.trim();
+  const hora = $("#editar-hora-ingreso")[0].value.trim();
+
+  try {
+    costo = Number.parseInt(costo);
+  }catch(e){
+    return false;
+  }
+  return proveedor && fecha && hora && (costo > 0);
 }
 
 async function actualizarRegistroCategorias() {
