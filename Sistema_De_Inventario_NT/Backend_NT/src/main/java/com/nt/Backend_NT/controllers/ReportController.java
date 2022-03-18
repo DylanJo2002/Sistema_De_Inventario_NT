@@ -1,16 +1,8 @@
 package com.nt.Backend_NT.controllers;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,6 +46,17 @@ public class ReportController {
 			throws Exception{
 		
 		byte[] report = reportController.getUnderThreshole(categoryId);
+		
+		ResponseEntity<byte[]>  response= new ResponseEntity<byte[]>(report, HttpStatus.OK);
+
+		return response;
+	}	
+	
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json",path = "/inventory")
+	public ResponseEntity<byte[]> getInventory(@RequestParam int categoryId)
+			throws Exception{
+		
+		byte[] report = reportController.getInventoryExistence(categoryId);
 		
 		ResponseEntity<byte[]>  response= new ResponseEntity<byte[]>(report, HttpStatus.OK);
 

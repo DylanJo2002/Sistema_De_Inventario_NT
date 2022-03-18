@@ -70,4 +70,13 @@ public class ReportService {
 		Map<String, Object> keys = inventoryReportController.getReportKeys();
 		return getReport("static/jasper/underThreshole.jasper",keys, inventoryReportController);
 	}
+	
+	public byte[] getInventoryExistence(int categoryId)
+			throws Exception {
+		inventoryReportController.cleanData();
+		inventoryReportController.fillInventoryExistenceData(categoryId);
+		Map<String, Object> keys = inventoryReportController.getReportKeys();
+		return getReport("static/jasper/underThreshole.jasper",keys, inventoryReportController);
+	}
+	
 }

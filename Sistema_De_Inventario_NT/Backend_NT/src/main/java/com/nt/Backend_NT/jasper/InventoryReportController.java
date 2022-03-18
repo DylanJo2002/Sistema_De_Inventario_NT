@@ -53,6 +53,23 @@ public class InventoryReportController implements JRDataSource {
 		}
 
 	}
+	
+	public void fillInventoryExistenceData(int categoryId) throws Exception {
+		generateKeys(categoryId);
+
+		if (categoryId != 0) {
+			products = underThresholdReportRepository.findInventoryExistenceByCategory(categoryId);
+
+		} else {
+
+			products = underThresholdReportRepository.findInventoryExistence();
+		}
+		
+		if(products.size() == 0) {
+			products.add(defaultRecord);
+		}
+
+	}
 
 	@Override
 	public boolean next() throws JRException {

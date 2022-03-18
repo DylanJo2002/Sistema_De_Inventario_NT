@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/v4-shims.js"></script> 
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/fontawesome.js"> </script>
+  
+    <!--css-->
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./bootstrap-4.6.1-dist/css/bootstrap.min.css">
+    <title>Layout</title>
+</head>
+
+<body>
+<div class="container px-0" style="background-color: #F1F1F1; border-radius: 10px;">
+  <div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-bordered table-striped mb-0 text-center" id="table_entry">
+        <thead class="thead-dark font_bold">
+          <tr>
+            <th class="align-middle" scope="col">ID</th>
+            <th class="align-middle" scope="col">Referencia</th>
+            <th class="align-middle" scope="col">Producto</th>
+            <th class="align-middle" scope="col">Proveedor</th>
+            <th class="align-middle" scope="col">Cantidad total</th>
+            <th class="align-middle" scope="col">Costo</th>
+            <th class="align-middle" scope="col">Fecha y hora</th>
+            <th class="align-middle" scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody_ingresos" class="font_regular">
+        </tbody>
+      </table>
+    </div>
+        
+</div>
+<div class ="container justify-content-center font_regular px-0">
+  <div class="abs-center ">
+<div class="row d-inline-block mx-0">
+  <div class="col-md-auto">
+<div class="container-h px-0" style="background-color: #FFFFFF;">
+<div class="col-sm">
+<form class="form-inline my-2 my-lg-0">
+<div>
+  <div class="d-flex">
+    <label for="exampleFormControlInput1" class="mr-sm-2">Referencia del producto</label>
+  <input class="form-control mr-sm-2" id ="search_referenciaIngreso" type="search" placeholder="Referencia" aria-label="Search">
+  <label for="exampleFormControlInput1" class="mr-sm-2">ó</label>
+  <label for="exampleFormControlInput1"class="mr-sm-2">Categoría</label>
+  <select id="select_categoryEntry" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
+  </select>
+  </div>
+  <div class="d-flex w-100 justify-content-between">
+    <label for="exampleFormControlInput1" class="mr-sm-2">Fecha inicio</label>
+    <input class="form-control mr-sm-2" id ="search_fechaInicioIngreso" type="date">
+    <label for="exampleFormControlInput1" class="mr-sm-2">Fecha fin</label>
+    <input class="form-control mr-sm-2" id ="search_fechaFinIngreso" type="date">
+  </div>
+</div>
+<button class="btn btn-outline-success my-2 my-sm-0" id="btn_buscarIngreso"  type="submit">Buscar</button>
+</form>
+</div>
+</div>
+</div>
+
+</div>
+<div class="col-auto px-0 ">
+<div class="abs-end ">
+<form class="form-inline my-2 my-lg-0 ">
+<button type="button" class="btn-product-add" data-toggle="modal" data-target="#agregar"><img class="img_add" src="./img/anadir.png" alt=""></button>
+</form>
+</div>
+</div>
+
+</div>
+</div>
+
+<!--modales-->
+<!-- Modal -->
+<div class="modal fade" id="agregar" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header font_bold">
+          <h5 class="modal-title" id="staticBackdropLabel">CREAR UN NUEVO PRODUCTO</h5>
+          <button type="button" class="close" id="btn_cerrarCrearProducto" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+              <div class="col-sm-9 px-0 ">
+                <input type="text" class="form-control inputWitdh" id="crear-referencia-producto">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">Nombre</label>
+              <div class="col-sm-9 px-0">
+                <input type="text" class="form-control inputWitdh" id="crear-nombre-producto">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">Descripción</label>
+              <div class="col-sm-9  paddingText">
+                <textarea class="form-control inputWitdh" rows="3" id="crear-descripcion-producto"></textarea>
+              </div>
+            </div>
+              <div class="form-group row">
+                <label for="inputPassword" class="col-sm-3 col-form-label" >C/U</label>
+                <div class="col-sm-9 paddingSelect ">
+                  <input type="number" class="form-control inputWitdh" id="crear-cu-producto" pattern="[0-9]">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword" class="col-sm-3 col-form-label">Umbral</label>
+                <div class="col-sm-9 paddingSelect ">
+                  <input type="number" class="form-control inputWitdh" id="crear-umbral-producto" pattern="[0-9]">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword" class="col-sm-3 col-form-label">Categoría</label>
+                <div class="col-sm-9  paddingSelect">
+                  <select class="form-control inputWitdh" id="crear-categoria-producto">
+                  </select>
+                </div>
+              </div>
+           
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn_cancelarCrearProducto">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarCrearProducto">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal  Editar-->
+<div class="modal fade" id="modal_editarProducto" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Editar producto</h5>
+        <button type="button" class="close" onclick="$('#modal_editarProducto').modal('hide');" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+            <div class="col-sm-9 px-0">
+              <input type="text" class="form-control inputWitdh" id="editar-referencia-producto" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword" class="col-sm-3 col-form-label">Nombre</label>
+            <div class="col-sm-9 px-0">
+              <input type="text" class="form-control inputWitdh" id="editar-nombre-producto">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword" class="col-sm-3 col-form-label">Descripción</label>
+            <div class="col-sm-9 paddingText">
+              <textarea class="form-control inputWitdh" rows="3" id="editar-descripcion-producto"></textarea>
+            </div>
+          </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">C/U</label>
+              <div class="col-sm-9 paddingSelect">
+                <input type="number" class="form-control inputWitdh" id="editar-cu-producto">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">Umbral</label>
+              <div class="col-sm-9 paddingSelect">
+                <input type="number" class="form-control inputWitdh" id="editar-umbral-producto"> 
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">Categoría</label>
+              <div class="col-sm-9 paddingSelect">
+                <select class="form-control" id="editar-categoria-producto">
+                </select>
+              </div>
+            </div>
+         
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="$('#modal_editarProducto').modal('hide');">Cancelar</button>
+        <button type="button" id="btn_aceptarEdicionProducto" class="btn btn-primary">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Modal  Eliminar-->
+<div class="modal fade" id="modal_eliminarProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Eliminar">Eliminar</h5>
+        <button type="button" class="close" onclick="$('#modal_eliminarProducto').modal('hide');" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h5 id="confirmacion-del-producto"></h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="$('#modal_eliminarProducto').modal('hide');" id="btn_cancelarEliminarProducto">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarEliminarProducto">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <!-- Modal Mirar-->
+<div class="modal fade" id="modal_mirarProducto" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Información del producto</h5>
+        <button type="button" class="close" onclick="$('#modal_mirarProducto').modal('hide');" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+            <div class="col-sm-9 px-0">
+              <input class="form-control inputWitdh" id="mirar-referencia-producto" type="text" 
+              placeholder="informacion" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword" class="col-sm-3 col-form-label">Nombre</label>
+            <div class="col-sm-9 px-0">
+              <input class="form-control inputWitdh" id="mirar-nombre-producto" type="text" 
+              placeholder="informacion" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword" class="col-sm-3 col-form-label">Descripcion</label>
+            <div class="col-sm-9 paddingText">
+              <textarea  class="form-control inputWitdh" id="mirar-descripcion-producto" type="text" 
+                placeholder="informacion" readonly></textarea>
+            </div>
+          </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">C/U</label>
+              <div class="col-sm-9 paddingSelect">
+                <input class="form-control inputWitdh" id="mirar-cu-producto" type="number" 
+                placeholder="informacion" readonly>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">Umbral</label>
+              <div class="col-sm-9 paddingSelect">
+                <input class="form-control inputWitdh" id="mirar-umbral-producto" type="number" 
+                placeholder="informacion" readonly>
+              </div>
+            </div>           
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-3 col-form-label">Categoría</label>
+              <div class="col-sm-9 px-0 paddingSelect">
+                <input class="form-control inputWitdh" id="mirar-categoria-producto" type="text" 
+                placeholder="informacion" readonly>
+              </div>
+            </div>
+         
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="$('#modal_mirarProducto').modal('hide');">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+
+</html>

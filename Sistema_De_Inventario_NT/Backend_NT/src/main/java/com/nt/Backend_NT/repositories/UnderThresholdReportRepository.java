@@ -21,4 +21,15 @@ public interface UnderThresholdReportRepository extends JpaRepository<UnderThres
 			nativeQuery = true)
 	public List<UnderThresholdEntity> findInventory();
 	
+	@Query(value= "SELECT r.referencia, r.nombre , r.descripcion, r.costoxunidad, r.umbral , r.categoria,r.cantidad "
+			+ "FROM reporteExistencia r "
+			+ "WHERE r.id = ?1 ", 
+			nativeQuery = true)
+	public List<UnderThresholdEntity> findInventoryExistenceByCategory(int categoryId);
+	
+	@Query(value= "SELECT r.referencia, r.nombre , r.descripcion, r.costoxunidad, r.umbral , r.categoria,r.cantidad "
+			+ "FROM reporteExistencia r ",
+			nativeQuery = true)
+	public List<UnderThresholdEntity> findInventoryExistence();
+	
 }

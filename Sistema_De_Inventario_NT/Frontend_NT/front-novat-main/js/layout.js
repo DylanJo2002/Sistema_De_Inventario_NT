@@ -127,6 +127,24 @@ $(document).ready(function () {
             .addEventListener('click',actualizarInventario)
         });
       });
+
+      document.getElementById("ingresos").addEventListener("click", (ev) => {
+        $("#indexContent").load("./ingresos.html", () => {
+          obtenerCategorias(true, 1);
+
+          document
+          .getElementById("btn_buscarIngreso")
+          .addEventListener("click", (ev) => {
+            ev.preventDefault();
+            obtenerIngresosCallBack();
+          });
+          
+        });
+      });
+
+
+
+
     });
   });
 });
@@ -137,6 +155,7 @@ const productos = new Array();
 const etiquetas = new Array();
 const etiquetasEditadas = new Array();
 const inventario = new Array();
+const ingresos = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
 let registroCategoria;
@@ -220,6 +239,39 @@ async function obtenerInventarioCallBack() {
   if (categoria) {
     obtenerInventario(null, categoria);
   }
+}
+
+async function obtenerIngresosCallBack() {
+  const referencia = $("#search_referenciaIngreso")[0].value.trim();
+  const categoria =
+    (await $("#select_categoryEntry option:selected").attr("id")) || false;
+  const fechaInicio = $("#search_fechaInicioIngreso")[0].value;
+  const fechaFin =  $("#search_fechaFinIngreso")[0].value; 
+  console.log("FECHA INICIO: "+fechaInicio+" FECHA FIN: "+fechaFin);
+  if (referencia != 0 && categoria != -1) {
+    alert(
+      "No puede hacer una búsqueda por referencia y categoría al mismo tiempo."
+    );
+    return;
+  }
+  if (referencia == 0 && categoria == -1) {
+    alert("Debe hacer una búsqueda por referencia o categoría.");
+    return;
+  }
+
+  if((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)){
+    alert("Para realizar una búsqueda por fechas debe proporcionar la fecha de inicio y fin.");
+    return;
+  }
+
+  if(referencia){
+    obtenerIngresos(referencia,null,fechaInicio,fechaFin);
+
+  }else{
+    obtenerIngresos(null,categoria,fechaInicio,fechaFin);
+
+  }
+
 }
 
 async function obtenerInventario(referencia, categoria) {
@@ -422,6 +474,7 @@ async function llenarInventario() {
   })
 }
 
+
 /**Seccion 1=productos, 2=categorias */
 async function obtenerCategorias(sinActualizar, seccion) {
   if (categorias.length > 0 && sinActualizar) {
@@ -456,6 +509,42 @@ async function obtenerCategorias(sinActualizar, seccion) {
   }
 }
 
+async function obtenerIngresos(referencia, categoria, fechaInicio, fechaFin){
+  let recurso;
+  if (referencia) {
+    if(fechaInicio && fechaFin){
+      recurso = `inventory-entries/${referencia}?dateStart=${fechaInicio}&dateEnd=${fechaFin}`;
+    }else {
+      recurso = `inventory-entries/${referencia}?dateStart=&dateEnd=`;
+    }
+    
+  } else {
+    if(fechaInicio && fechaFin){
+      recurso =  `inventory-entries?dateStart=${fechaInicio}&dateEnd=${fechaFin}&categoryId=${categoria}`;
+    }else {
+      recurso =  `inventory-entries?dateStart=&dateEnd=&categoryId=${categoria}`;
+    }
+  }
+
+  const body = await doFetch(
+    "get",
+    recurso,
+    [null, `No existe un producto con la referencia ${referencia}`],
+    200
+  );
+
+  console.log("INGRESOS OBTENIDOS: ",body);
+
+  if (body != -1) {
+
+    ingresos.splice(0, ingresos.length);
+    for (item of body.ingresos) {
+      ingresos.push(item);
+    }
+    llenarIngresos();
+  }
+}
+
 function crearFragmentoCategorias(noPermitirTodas) {
   const fragment = document.createDocumentFragment();
   for (let categoria of categorias) {
@@ -484,9 +573,9 @@ function llenarCategorias() {
   const selectProductos = document.getElementById("select_categoryProduct");
   const selectEtiquetas = document.getElementById("select_categoryLabel");
   const selectInventario = document.getElementById("select_categoryInventory");
-
-  if (selectProductos || selectEtiquetas || selectInventario) {
-    append(selectProductos || selectEtiquetas || selectInventario, fragment);
+  const selectIngresos = document.getElementById("select_categoryEntry");
+  if (selectProductos || selectEtiquetas || selectInventario || selectIngresos) {
+    append(selectProductos || selectEtiquetas || selectInventario || selectIngresos, fragment);
   }
 }
 
@@ -527,6 +616,70 @@ async function obtenerProductos(referencia, categoria) {
     }
   }
   return body;
+}
+
+async function llenarIngresos(){
+  await $("#table_entry > tbody").empty();
+  const childs = new Array();
+  const fragment = document.createDocumentFragment();
+  for (let ingreso of ingresos) {
+    const child = document.createElement("tr");
+    const id = document.createElement("td");
+    const referencia = document.createElement("td");
+    const producto = document.createElement("td");
+    const proveedor = document.createElement("td");
+    const cantidadTotal = document.createElement("td");
+    const costo = document.createElement("td");
+    const fechaHora = document.createElement("td");
+    const acciones = document.createElement("td");
+
+    id.textContent = ingreso.id;
+    referencia.textContent = ingreso.referencia;
+    producto.textContent = ingreso.producto;
+    proveedor.textContent = ingreso.proveedor;
+    cantidadTotal.textContent = ingreso.cantidadTotal
+    costo.textContent = formatter.format(ingreso.costoxunidad);
+    fechaHora.textContent = ingreso.fecha+" - "+ingreso.hora;
+    acciones.textContent = "HOLA MUNDO";
+
+    child.appendChild(id);
+    child.appendChild(referencia);
+    child.appendChild(producto);
+    child.appendChild(proveedor);
+    child.appendChild(cantidadTotal);
+    child.appendChild(costo);
+    child.appendChild(fechaHora);
+    child.appendChild(acciones);
+    childs.push(child);
+    fragment.appendChild(child);
+  }
+  // try {
+  //   await Promise.all(
+  //     childs.map(async (child) => {
+  //       const acciones = await $.get("./accionesProductos.html");
+  //       const newChild = document.createElement("td");
+  //       newChild.innerHTML = acciones;
+  //       child.appendChild(newChild);
+  //     })
+  //   );
+  // } catch (err) {
+  //   console.log(`Error: ${err.message}`);
+  // }
+
+  const root = await $("#tableBody_ingresos");
+  append(root, fragment);
+  // agregarEventListener(
+  //   document.getElementsByClassName("btn-info-product"),
+  //   llenarInformacionProducto
+  // );
+  // agregarEventListener(
+  //   document.getElementsByClassName("btn-edit-product"),
+  //   llenarEdicionProducto
+  // );
+  // agregarEventListener(
+  //   document.getElementsByClassName("btn-delete-product"),
+  //   almacenarReferenciaProducto
+  // );
 }
 
 async function llenarProductos() {
@@ -653,6 +806,7 @@ async function doFetch(metodo, recurso, mensajes, estadoOk, json) {
       alert(mensajes[0]);
     }
     if (res.status >= 500) {
+      console.log(res);
       alert("Error interno en el servidor. Contacte a soporte.");
     }
     if (res.status == estadoOk) {
