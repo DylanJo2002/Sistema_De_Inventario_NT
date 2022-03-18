@@ -160,6 +160,7 @@ const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
 let registroCategoria;
 let registroEtiqueta;
+let registroIngreso;
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -671,12 +672,18 @@ async function llenarIngresos(){
   );
   agregarEventListener(
     document.getElementsByClassName("btn-edit-entry"),
-    //llenarEdicionProducto
+    llenarEdicionIngreso
   );
   agregarEventListener(
     document.getElementsByClassName("btn-delete-entry"),
     //almacenarReferenciaProducto
   );
+
+  $("#mostrar-etiqueta-ingreso")[0].addEventListener('click',()=>{
+    eventoLlenarCantidadEtiquetaIngreso($("#mostrar-etiqueta-ingreso option:selected").attr("id"),
+    "mostrar-cantidad-ingreso");
+  })
+    
 }
 
 async function llenarProductos() {
@@ -817,6 +824,7 @@ async function doFetch(metodo, recurso, mensajes, estadoOk, json) {
 }
 
 function llenarInformacionIngreso(ref){
+  registroIngreso = ref;
   const referencia = $("#mostrar-referencia-ingreso")[0];
   const producto = $("#mostrar-producto-ingreso")[0];
   const etiqueta = $("#mostrar-etiqueta-ingreso")[0];
@@ -914,6 +922,35 @@ function llenarEdicionInventario(ref){
   etiqueta.appendChild(fragment);
 }
 
+function llenarEdicionIngreso(ref){
+  etiquetasEditadas.splice(0,etiquetasEditadas.length);
+  const referencia = $("#editar-referencia-ingreso")[0];
+  const producto = $("#editar-producto-ingreso")[0];
+  const etiqueta = $("#editar-etiqueta-ingreso")[0];
+  $('#editar-etiqueta-ingreso').empty()
+  const cantidad = $("#editar-cantidad-ingreso")[0];
+  const cantidadTotal = $("#editar-cantidadTotal-ingreso")[0];
+
+  const item = ingresos.find((i) => i.id == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidadTotal;
+
+  const fragment = document.createDocumentFragment();
+  for(eti of etiquetas){
+    etiquetasEditadas.push({id:eti.id,cantidad:eti.cantidad});
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+}
+
 function eventoLlenarCantidadEtiqueta(id,idReferencia,idCantidad, etiquetasTemporales){
   const referencia = $(`#${idReferencia}`)[0].value;
   const cantidadEtiqueta = $(`#${idCantidad}`)[0];
@@ -924,6 +961,22 @@ function eventoLlenarCantidadEtiqueta(id,idReferencia,idCantidad, etiquetasTempo
     etiqueta = etiquetasEditadas.find(eti => eti.id == id);
   }else {
     item = inventario.find(item => item.referencia == referencia);
+    etiquetas = item.etiquetas;
+    etiqueta = etiquetas.find(eti => eti.id == id);
+  }
+  cantidadEtiqueta.value = etiqueta.cantidad;
+}
+
+function eventoLlenarCantidadEtiquetaIngreso(id,idCantidad, etiquetasTemporales){
+  console.log("ID: "+id);
+  const cantidadEtiqueta = $(`#${idCantidad}`)[0];
+  let item;
+  let etiquetas;
+  let etiqueta;
+  if(etiquetasTemporales){
+    etiqueta = etiquetasEditadas.find(eti => eti.id == id);
+  }else {
+    item = ingresos.find(i => i.id == registroIngreso);
     etiquetas = item.etiquetas;
     etiqueta = etiquetas.find(eti => eti.id == id);
   }

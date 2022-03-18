@@ -140,94 +140,65 @@
     </div>
   </div>
 
-  <!-- Modal  Editar-->
-<div class="modal fade" id="modal_editarProducto" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Editar producto</h5>
-        <button type="button" class="close" onclick="$('#modal_editarProducto').modal('hide');" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group row">
-            <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
-            <div class="col-sm-9 px-0">
-              <input type="text" class="form-control inputWitdh" id="editar-referencia-producto" readonly>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="inputPassword" class="col-sm-3 col-form-label">Nombre</label>
-            <div class="col-sm-9 px-0">
-              <input type="text" class="form-control inputWitdh" id="editar-nombre-producto">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="inputPassword" class="col-sm-3 col-form-label">Descripción</label>
-            <div class="col-sm-9 paddingText">
-              <textarea class="form-control inputWitdh" rows="3" id="editar-descripcion-producto"></textarea>
-            </div>
-          </div>
+  <!-- Modal  editar inventario-->
+  <div class="modal fade" id="modal_editarIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" id="staticBackdropLabel">EDITAR INGRESO</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-3 col-form-label">C/U</label>
-              <div class="col-sm-9 paddingSelect">
-                <input type="number" class="form-control inputWitdh" id="editar-cu-producto">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="editar-referencia-ingreso" placeholder="informacion" readonly>
               </div>
             </div>
-
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-3 col-form-label">Umbral</label>
-              <div class="col-sm-9 paddingSelect">
-                <input type="number" class="form-control inputWitdh" id="editar-umbral-producto"> 
+              <label for="staticEmail" class="col-sm-2 col-form-label">Producto</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="editar-producto-ingreso" placeholder="informacion" readonly>
               </div>
             </div>
-
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-3 col-form-label">Categoría</label>
-              <div class="col-sm-9 paddingSelect">
-                <select class="form-control" id="editar-categoria-producto">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
+              <div class="col-sm-4">
+                <select id="editar-etiqueta-ingreso" class="form-control form-control-lg selectCategory font_initial">            
                 </select>
+               </div> 
+              
+              <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
+              <div class="col-sm-4">
+                <input class="form-control mx-0 w-100" id="editar-cantidad-ingreso" type="number" min="0">
+  
               </div>
             </div>
-         
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="$('#modal_editarProducto').modal('hide');">Cancelar</button>
-        <button type="button" id="btn_aceptarEdicionProducto" class="btn btn-primary">Aceptar</button>
-      </div>
-    </div>
-  </div>
-</div>
-  <!-- Modal  Eliminar-->
-<div class="modal fade" id="modal_eliminarProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="Eliminar">Eliminar</h5>
-        <button type="button" class="close" onclick="$('#modal_eliminarProducto').modal('hide');" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h5 id="confirmacion-del-producto"></h5>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="$('#modal_eliminarProducto').modal('hide');" id="btn_cancelarEliminarProducto">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btn_aceptarEliminarProducto">Aceptar</button>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="editar-cantidadTotal-ingreso" placeholder="informacion" readonly>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarEditarIngreso">Aceptar</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
   
   <!-- Modal mirar inventario-->
   <div class="modal fade" id="modal_infoIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title text-center" id="staticBackdropLabel">INFORMACIÓN DEL INVENTARIO</h5>
+          <h5 class="modal-title text-center" id="staticBackdropLabel">INFORMACIÓN DEL INGRESO</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
