@@ -140,7 +140,7 @@
     </div>
   </div>
 
-  <!-- Modal  editar inventario-->
+  <!-- Modal  editar ingreso-->
   <div class="modal fade" id="modal_editarIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -217,7 +217,7 @@
     </div>
   </div>
   
-  <!-- Modal mirar inventario-->
+  <!-- Modal mirar ingreso-->
   <div class="modal fade" id="modal_infoIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -264,6 +264,27 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal eliminar ingreso-->
+  <div class="modal fade" id="modal_eliminarIngreso" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="Eliminar">ELIMINAR INGRESO</h5>
+          <button type="button" class="close" onclick="$('#modal_eliminarIngreso').modal('hide');" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <h5 id="confirmacion-del-ingreso"></h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="$('#modal_eliminarIngreso').modal('hide');" id="btn_cancelarEliminarIngreso">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarEliminarIngreso">Aceptar</button>
         </div>
       </div>
     </div>

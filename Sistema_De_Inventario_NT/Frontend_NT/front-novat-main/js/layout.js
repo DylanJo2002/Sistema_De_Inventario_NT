@@ -145,7 +145,11 @@ $(document).ready(function () {
             actualizarIngreso();
           });
 
-          
+          document
+          .getElementById("btn_aceptarEliminarIngreso")
+          .addEventListener("click", (ev) => {
+            eliminarIngreso();
+          });
           
         });
       });
@@ -685,7 +689,7 @@ async function llenarIngresos(){
   );
   agregarEventListener(
     document.getElementsByClassName("btn-delete-entry"),
-    //almacenarReferenciaProducto
+    almacenarIngreso
   );
 
   $("#mostrar-etiqueta-ingreso")[0].addEventListener('click',()=>{
@@ -1180,6 +1184,20 @@ async function eliminarProducto() {
   $("#modal_eliminarProducto").modal("hide");
 }
 
+async function eliminarIngreso() {
+  const body = await doFetch(
+    "delete",
+    "inventory-entries/" + registroIngreso,
+    null,
+    200
+  );
+  if (body != -1) {
+    alert(`Se eliminó el ingreso ${registroIngreso} satisfactoriamente.`);
+  }
+
+  $("#modal_eliminarIngreso").modal("hide");
+}
+
 function almacenarReferenciaProducto(ref) {
   const confirmacion = $("#confirmacion-del-producto")[0];
   registroReferencia = ref;
@@ -1196,6 +1214,12 @@ function almacenarEtiqueta(ref) {
   const confirmacion = $("#confirmacion-del-etiqueta")[0];
   registroEtiqueta = ref;
   confirmacion.innerText = `Al eliminar la etiqueta ${registroEtiqueta} su inventario asignado estará sin clasificar. ¿Está seguro?`;
+}
+
+function almacenarIngreso(ref) {
+  const confirmacion = $("#confirmacion-del-ingreso")[0];
+  registroIngreso = ref;
+  confirmacion.innerText = `Al eliminar el ingreso ${registroIngreso} se actualizará el inventario. ¿Está seguro?`;
 }
 
 async function actualizarInventario(){
