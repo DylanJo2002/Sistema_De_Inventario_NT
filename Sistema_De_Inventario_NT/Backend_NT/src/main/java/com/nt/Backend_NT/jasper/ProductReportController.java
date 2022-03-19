@@ -36,10 +36,12 @@ public class ProductReportController implements JRDataSource {
 	private CategoryService  categoryService;
 	private Map<String,Object> reportKeys;
 	private int index;
+	private ProductReportEntity defaultRecord;
 	@PostConstruct
 	private void init() {
 		index = -1;
 		products = null;
+		defaultRecord = new ProductReportEntity();
 	}
 	
 	public void cleanData() {
@@ -70,6 +72,10 @@ public class ProductReportController implements JRDataSource {
 			}
 		}
 		
+		if(products.size() == 0) {
+			products.add(defaultRecord);
+		}
+		
 	}
 
 	public void fillDataLeastSold(String dateStart, String dateEnd, int categoryId, int top) throws Exception{
@@ -94,6 +100,10 @@ public class ProductReportController implements JRDataSource {
 				
 				products = productRepository.findProductReport2(top);
 			}
+		}
+		
+		if(products.size() == 0) {
+			products.add(defaultRecord);
 		}
 		
 	}
@@ -130,6 +140,10 @@ public class ProductReportController implements JRDataSource {
 		String categoryName = "TODAS";
 		if(categoryId != 0) {
 			categoryName = categoryService.getCategory(categoryId).getNombre();
+		}
+		if(dateStart.isBlank() || dateEnd.isBlank()) {
+			dateStart = "NINGUNA";
+			dateEnd = "NINGUNA";
 		}
 		keys.put("startDate", dateStart);
 		keys.put("endDate", dateEnd);

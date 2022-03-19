@@ -76,7 +76,7 @@ public class ReportService {
 		inventoryReportController.cleanData();
 		inventoryReportController.fillInventoryExistenceData(categoryId);
 		Map<String, Object> keys = inventoryReportController.getReportKeys();
-		return getReport("static/jasper/underThreshole.jasper",keys, inventoryReportController);
+		return getReport("static/jasper/inventoryReport.jasper",keys, inventoryReportController);
 	}
 	
 }
