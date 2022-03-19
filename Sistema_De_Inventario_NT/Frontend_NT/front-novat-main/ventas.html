@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/v4-shims.js"></script> 
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/fontawesome.js"> </script>
+  
+    <!--css-->
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./bootstrap-4.6.1-dist/css/bootstrap.min.css">
+    <title>Layout</title>
+</head>
+
+<body>
+<div class="container px-0" style="background-color: #F1F1F1; border-radius: 10px;">
+  <div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-bordered table-striped mb-0 text-center" id="table_sale">
+        <thead class="thead-dark font_bold">
+          <tr>
+            <th class="align-middle" scope="col">ID</th>
+            <th class="align-middle" scope="col">Referencia</th>
+            <th class="align-middle" scope="col">Producto</th>
+            <th class="align-middle" scope="col">Cantidad total</th>
+            <th class="align-middle" scope="col">Fecha y hora</th>
+            <th class="align-middle" style="width: 10rem;" scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody_ventas" class="font_regular">
+        </tbody>
+      </table>
+    </div>
+        
+</div>
+<div class ="container justify-content-center font_regular px-0">
+  <div class="abs-center ">
+<div class="row d-inline-block mx-0">
+  <div class="col-md-auto">
+<div class="container-h px-0" style="background-color: #FFFFFF;">
+<div class="col-sm">
+<form class="form-inline my-2 my-lg-0">
+<div>
+  <div class="d-flex">
+    <label for="exampleFormControlInput1" class="mr-sm-2">Referencia del producto</label>
+  <input class="form-control mr-sm-2" id ="search_referenciaVenta" type="search" placeholder="Referencia" aria-label="Search">
+  <label for="exampleFormControlInput1" class="mr-sm-2">ó</label>
+  <label for="exampleFormControlInput1"class="mr-sm-2">Categoría</label>
+  <select id="select_categorySale" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
+  </select>
+  </div>
+  <div class="d-flex w-100 justify-content-between">
+    <label for="exampleFormControlInput1" class="mr-sm-2">Fecha inicio</label>
+    <input class="form-control mr-sm-2" id ="search_fechaInicioVenta" type="date">
+    <label for="exampleFormControlInput1" class="mr-sm-2">Fecha fin</label>
+    <input class="form-control mr-sm-2" id ="search_fechaFinVenta" type="date">
+  </div>
+</div>
+<button class="btn btn-outline-success my-2 my-sm-0" id="btn_buscarVenta"  type="submit">Buscar</button>
+</form>
+</div>
+</div>
+</div>
+
+</div>
+<div class="col-auto px-0 ">
+<div class="abs-end ">
+<form class="form-inline my-2 my-lg-0 ">
+<button type="button" class="btn-product-add" data-toggle="modal" data-target="#modal_crearVentaReferencia"><img class="img_add" src="./img/anadir.png" alt=""></button>
+</form>
+</div>
+</div>
+
+</div>
+</div>
+
+
+<!--modales-->
+<!-- Modal -->
+<div class="modal fade" id="modal_crearVenta" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog  mt-1">
+    <div class="modal-content">
+      <div class="modal-header font_bold">
+        <h5 class="modal-title" id="staticBackdropLabel">CREAR UN NUEVO Venta</h5>
+        <button type="button" class="close" id="btn_cerrarCrearVenta" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+            <div class="col-sm-9 px-0 ">
+              <input type="text" class="form-control inputWitdh" id="crear-referencia-Venta" readonly>
+            </div>
+          </div>
+
+          <div id="campos-Venta">
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-3 col-form-label">Producto</label>
+              <div class="col-sm-9 px-0 ">
+                <input type="text" class="form-control inputWitdh" id="crear-producto-venta" readonly>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
+              <div class="col-sm-4">
+                <select id="crear-etiqueta-Venta" class="form-control form-control-lg selectCategory font_initial">            
+                </select>
+               </div> 
+              
+              <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
+              <div class="col-sm-4">
+                <input class="form-control mx-0 w-100" id="crear-cantidad-venta" type="number" min="0">
+  
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="crear-cantidadTotal-venta" placeholder="informacion" readonly>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Proveedor</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="crear-proveedor-venta" placeholder="informacion">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Costo</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="number" id="crear-costo-venta" placeholder="informacion"  min="0">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Fecha</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="date" id="crear-fecha-venta" placeholder="informacion">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Hora</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="time" id="crear-hora-venta" placeholder="informacion">
+              </div>
+            </div>
+          </div>
+
+         
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn_cancelarCrearVenta">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarCrearVenta">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Model crear Venta referencia -->
+<div class="modal fade" id="modal_crearVentaReferencia" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header font_bold">
+        <h5 class="modal-title" id="staticBackdropLabel">INGRESE LA REFERENCIA PARA CREAR UN NUEVO Venta</h5>
+        <button type="button" class="close" id="btn_cerrarCrearVentaReferencia" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+            <div class="col-sm-9 px-0 ">
+              <input type="text" class="form-control inputWitdh" id="crear-referencia-VentaReferencia">
+            </div>
+          </div>
+         
+        </form>
+      </div>
+      <div               class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn_cancelarCrearVentaReferencia">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarCrearVentaReferencia">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Modal  editar Venta-->
+  <div class="modal fade" id="modal_editarVenta" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" id="staticBackdropLabel">EDITAR Venta</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="editar-referencia-Venta" placeholder="informacion" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Producto</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="editar-producto-Venta" placeholder="informacion" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
+              <div class="col-sm-4">
+                <select id="editar-etiqueta-Venta" class="form-control form-control-lg selectCategory font_initial">            
+                </select>
+               </div> 
+              
+              <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
+              <div class="col-sm-4">
+                <input class="form-control mx-0 w-100" id="editar-cantidad-Venta" type="number" min="0">
+  
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="editar-cantidadTotal-Venta" placeholder="informacion" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Proveedor</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="editar-proveedor-Venta" placeholder="informacion">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Costo</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="number" id="editar-costo-Venta" placeholder="informacion"  min="0">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Fecha</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="date" id="editar-fecha-Venta" placeholder="informacion">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Hora</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="time" id="editar-hora-Venta" placeholder="informacion">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarEditarVenta">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal mirar Venta-->
+  <div class="modal fade" id="modal_infoVenta" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" id="staticBackdropLabel">INFORMACIÓN DEL Venta</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="mostrar-referencia-Venta" placeholder="informacion" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Producto</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="mostrar-producto-Venta" placeholder="informacion" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
+              <div class="col-sm-4">
+                <select id="mostrar-etiqueta-Venta" class="form-control form-control-lg selectCategory font_initial">            
+                </select>
+               </div> 
+              
+              <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
+              <div class="col-sm-4">
+                <input class="form-control mx-0 w-100" id="mostrar-cantidad-Venta" type="text" readonly>
+  
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="mostrar-cantidadTotal-Venta" placeholder="informacion" readonly>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal eliminar Venta-->
+  <div class="modal fade" id="modal_eliminarVenta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="Eliminar">ELIMINAR Venta</h5>
+          <button type="button" class="close" onclick="$('#modal_eliminarVenta').modal('hide');" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <h5 id="confirmacion-del-Venta"></h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="$('#modal_eliminarVenta').modal('hide');" id="btn_cancelarEliminarVenta">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarEliminarVenta">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+</html>
