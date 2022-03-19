@@ -75,6 +75,7 @@ public class SaleService {
 			if (isValidAmountToUpdateSale(saleEntity, sale.getEtiquetas())) {
 				saleEntity.setFecha(sale.getFecha());
 				saleEntity.setHora(sale.getHora());
+				saleEntity.setCantidadtotal(totalAmount(sale.getEtiquetas()));
 				for (LabelInventoryRequest label : sale.getEtiquetas()) {
 					LabelEntity labelInDB = labelService.getLabel(label.getId());
 
@@ -232,7 +233,7 @@ public class SaleService {
 			sale.setCantidadTotal(s.getCantidadtotal());
 			salesXLabel.forEach(label -> {
 				LabelInventoryResponse labelInventory = new LabelInventoryResponse();
-				labelInventory.setId(label.getId());
+				labelInventory.setId(label.getEtiqueta().getId());
 				labelInventory.setNombre(label.getEtiqueta().getNombre());
 				labelInventory.setCantidad(label.getCantidad());
 				salesInventory.add(labelInventory);

@@ -35,7 +35,6 @@ public class SaleController {
 	@PutMapping("/{saleId}")
 	public ResponseEntity<SaleEntity> updateSale(@RequestBody SaleUpdateRequest sale,@PathVariable int saleId) 
 			throws Exception{
-		
 		SaleEntity updatedSale = saleService.updateSale(sale, saleId);
 		
 		

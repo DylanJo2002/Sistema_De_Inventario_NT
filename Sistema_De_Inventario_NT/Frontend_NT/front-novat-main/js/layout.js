@@ -247,6 +247,12 @@ $(document).ready(function () {
             $("#modal_crearVenta").modal("hide");
           });
 
+          document
+          .getElementById("btn_aceptarEditarVenta")
+          .addEventListener("click", (ev) => {
+            actualizarVenta();
+          });
+
         })
       })
 
@@ -1010,7 +1016,7 @@ async function llenarVentas(){
   await $("#table_sale > tbody").empty();
   const childs = new Array();
   const fragment = document.createDocumentFragment();
-  // const cantidadEdit = $("#editar-cantidad-ingreso")[0];
+  const cantidadEdit = $("#editar-cantidad-venta")[0];
   for (let venta of ventas) {
     const child = document.createElement("tr");
     const id = document.createElement("td");
@@ -1052,10 +1058,10 @@ async function llenarVentas(){
     document.getElementsByClassName("btn-info-sale"),
     llenarInformacionVenta
   );
-//   agregarEventListener(
-//     document.getElementsByClassName("btn-edit-entry"),
-//     llenarEdicionIngreso
-//   );
+  agregarEventListener(
+    document.getElementsByClassName("btn-edit-sale"),
+    llenarEdicionVenta
+  );
 //   agregarEventListener(
 //     document.getElementsByClassName("btn-delete-entry"),
 //     almacenarIngreso
@@ -1065,31 +1071,31 @@ async function llenarVentas(){
     eventoLlenarCantidadEtiquetaVenta($("#mostrar-etiqueta-venta option:selected").attr("id"),
     "mostrar-cantidad-venta");
   })
-//   $("#editar-etiqueta-ingreso")[0].addEventListener('click',()=>{
-//     eventoLlenarCantidadEtiquetaIngreso($("#editar-etiqueta-ingreso option:selected").attr("id"),
-//     "editar-cantidad-ingreso",true);
-//   })
+  $("#editar-etiqueta-venta")[0].addEventListener('click',()=>{
+    eventoLlenarCantidadEtiquetaVenta($("#editar-etiqueta-venta option:selected").attr("id"),
+    "editar-cantidad-venta",true);
+  })
     
-// cantidadEdit.addEventListener('keydown',(e)=>{
-//     if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
-//     && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
-//       e.preventDefault();
-//     }
-// })
-// cantidadEdit.addEventListener('input', (e)=>{
-//   const valorString = e.target.value+'';
-//   let valor = 0;
-//   if(valorString.length > 0){
-//     valor = Number.parseInt(valorString);
+cantidadEdit.addEventListener('keydown',(e)=>{
+    if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+    && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+      e.preventDefault();
+    }
+})
+cantidadEdit.addEventListener('input', (e)=>{
+  const valorString = e.target.value+'';
+  let valor = 0;
+  if(valorString.length > 0){
+    valor = Number.parseInt(valorString);
 
-//   }
-//   const idEtiqueta = $("#editar-etiqueta-ingreso option:selected").attr('id');
-//   const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
-//   const inputCantidadTotal = $("#editar-cantidadTotal-ingreso")[0];
-//   const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
-//   inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
-//   etiquetaEditar.cantidad = Number.parseInt(valor);
-//   })
+  }
+  const idEtiqueta = $("#editar-etiqueta-venta option:selected").attr('id');
+  const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+  const inputCantidadTotal = $("#editar-cantidadTotal-venta")[0];
+  const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+  inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+  etiquetaEditar.cantidad = Number.parseInt(valor);
+  })
 }
 
 
@@ -1402,6 +1408,42 @@ function llenarEdicionIngreso(ref){
 
 }
 
+function llenarEdicionVenta(ref){
+  registroVenta = ref;
+  console.log("REFERENCIA VENTA: "+registroVenta,ventas);
+  etiquetasEditadas.splice(0,etiquetasEditadas.length);
+  const referencia = $("#editar-referencia-venta")[0];
+  const producto = $("#editar-producto-venta")[0];
+  const etiqueta = $("#editar-etiqueta-venta")[0];
+  $('#editar-etiqueta-venta').empty()
+  const cantidad = $("#editar-cantidad-venta")[0];
+  const cantidadTotal = $("#editar-cantidadTotal-venta")[0];
+  const fecha = $("#editar-fecha-venta")[0];
+  const hora = $("#editar-hora-venta")[0];
+
+  const item = ventas.find((i) => i.id == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidadTotal;
+  fecha.value = parseDateToHTMLFormat(item.fecha);
+  hora.value = item.hora;
+
+  const fragment = document.createDocumentFragment();
+  for(eti of etiquetas){
+    etiquetasEditadas.push({id:eti.id,cantidad:eti.cantidad});
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+
+}
+
 function parseDateToHTMLFormat(date){
   formated = "";
   for(char of date){
@@ -1454,6 +1496,21 @@ function eventoLlenarCantidadEtiquetaIngreso(id,idCantidad, etiquetasTemporales)
     etiqueta = etiquetasEditadas.find(eti => eti.id == id);
   }else {
     item = ingresos.find(i => i.id == registroIngreso);
+    etiquetas = item.etiquetas;
+    etiqueta = etiquetas.find(eti => eti.id == id);
+  }
+  cantidadEtiqueta.value = etiqueta.cantidad;
+}
+
+function eventoLlenarCantidadEtiquetaVenta(id,idCantidad, etiquetasTemporales){
+  const cantidadEtiqueta = $(`#${idCantidad}`)[0];
+  let item;
+  let etiquetas;
+  let etiqueta;
+  if(etiquetasTemporales){
+    etiqueta = etiquetasEditadas.find(eti => eti.id == id);
+  }else {
+    item = ventas.find(i => i.id == registroVenta);
     etiquetas = item.etiquetas;
     etiqueta = etiquetas.find(eti => eti.id == id);
   }
@@ -1692,6 +1749,34 @@ async function actualizarIngreso(){
     $("#modal_editarIngreso").modal("hide");
   }
 }
+
+async function actualizarVenta(){
+  if(!validarCamposEditarVenta()){
+    alert("Debe ingresar campos válidos para editar la venta");
+    return;
+  }
+
+  const fecha = parseDateToAPIFormat($("#editar-fecha-venta")[0].value);
+  const hora = $("#editar-hora-venta")[0].value;
+  console.log("fecha: "+fecha);
+  body = {
+    etiquetas: etiquetasEditadas,
+    fecha,
+    hora
+  }
+  body = await doFetch(
+    "put",
+    "sales/"+registroVenta,
+    [null,"No se encontró una etiqueta."],
+    200,
+    body
+  );
+  if (body != -1) {
+    alert(`La venta ${registroVenta} se editó satisfactoriamente`);
+    $("#modal_editarVenta").modal("hide");
+  }
+}
+
 
 async function crearProducto() {
   if (!validarCamposCrearProducto()) {
@@ -2080,6 +2165,13 @@ function validarCamposEditarIngreso() {
     return false;
   }
   return proveedor && fecha && hora && (costo > 0);
+}
+
+function validarCamposEditarVenta() {
+  const fecha = $("#editar-fecha-venta")[0].value.trim();
+  const hora = $("#editar-hora-venta")[0].value.trim();
+
+  return fecha && hora;
 }
 
 function validarCamposCrearIngreso() {
