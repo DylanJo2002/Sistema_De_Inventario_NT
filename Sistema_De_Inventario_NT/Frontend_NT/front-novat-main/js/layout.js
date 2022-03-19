@@ -316,6 +316,12 @@ $(document).ready(function () {
             obtenerPrestamosCallBack();
           });
 
+          document
+          .getElementById("btn_aceptarEditarPrestamo")
+          .addEventListener("click", (ev) => {
+            actualizarPrestamo();
+          });
+
         });
       });
 
@@ -1336,7 +1342,7 @@ async function llenarPrestamos(){
   await $("#table_loan > tbody").empty();
   const childs = new Array();
   const fragment = document.createDocumentFragment();
-  //const cantidadEdit = $("#editar-cantidad-venta")[0];
+  const cantidadEdit = $("#editar-cantidad-prestamo")[0];
   for (let prestamo of prestamos) {
     const child = document.createElement("tr");
     const id = document.createElement("td");
@@ -1387,10 +1393,10 @@ async function llenarPrestamos(){
     document.getElementsByClassName("btn-info-loan"),
     llenarInformacionPrestamo
   );
-//   agregarEventListener(
-//     document.getElementsByClassName("btn-edit-sale"),
-//     llenarEdicionVenta
-//   );
+  agregarEventListener(
+    document.getElementsByClassName("btn-edit-loan"),
+    llenarEdicionPrestamo
+  );
 //   agregarEventListener(
 //     document.getElementsByClassName("btn-delete-sale"),
 //     almacenarVenta
@@ -1400,31 +1406,31 @@ async function llenarPrestamos(){
     eventoLlenarCantidadEtiquetaPrestamo($("#mostrar-etiqueta-prestamo option:selected").attr("id"),
     "mostrar-cantidad-prestamo");
   })
-//   $("#editar-etiqueta-venta")[0].addEventListener('click',()=>{
-//     eventoLlenarCantidadEtiquetaVenta($("#editar-etiqueta-venta option:selected").attr("id"),
-//     "editar-cantidad-venta",true);
-//   })
+  $("#editar-etiqueta-prestamo")[0].addEventListener('click',()=>{
+    eventoLlenarCantidadEtiquetaPrestamo($("#editar-etiqueta-prestamo option:selected").attr("id"),
+    "editar-cantidad-prestamo",true);
+  })
     
-// cantidadEdit.addEventListener('keydown',(e)=>{
-//     if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
-//     && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
-//       e.preventDefault();
-//     }
-// })
-// cantidadEdit.addEventListener('input', (e)=>{
-//   const valorString = e.target.value+'';
-//   let valor = 0;
-//   if(valorString.length > 0){
-//     valor = Number.parseInt(valorString);
+cantidadEdit.addEventListener('keydown',(e)=>{
+    if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+    && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+      e.preventDefault();
+    }
+})
+cantidadEdit.addEventListener('input', (e)=>{
+  const valorString = e.target.value+'';
+  let valor = 0;
+  if(valorString.length > 0){
+    valor = Number.parseInt(valorString);
 
-//   }
-//   const idEtiqueta = $("#editar-etiqueta-venta option:selected").attr('id');
-//   const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
-//   const inputCantidadTotal = $("#editar-cantidadTotal-venta")[0];
-//   const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
-//   inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
-//   etiquetaEditar.cantidad = Number.parseInt(valor);
-//   })
+  }
+  const idEtiqueta = $("#editar-etiqueta-prestamo option:selected").attr('id');
+  const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+  const inputCantidadTotal = $("#editar-cantidadTotal-prestamo")[0];
+  const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+  inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+  etiquetaEditar.cantidad = Number.parseInt(valor);
+  })
 }
 
 
@@ -1803,6 +1809,45 @@ function llenarEdicionVenta(ref){
 
 }
 
+function llenarEdicionPrestamo(ref){
+  registroPrestamo = ref;
+  etiquetasEditadas.splice(0,etiquetasEditadas.length);
+  const referencia = $("#editar-referencia-prestamo")[0];
+  const producto = $("#editar-producto-prestamo")[0];
+  const etiqueta = $("#editar-etiqueta-prestamo")[0];
+  $('#editar-etiqueta-prestamo').empty()
+  const cantidad = $("#editar-cantidad-prestamo")[0];
+  const cantidadTotal = $("#editar-cantidadTotal-prestamo")[0];
+  const titular = $("#editar-titular-prestamo")[0];
+  const local = $("#editar-local-prestamo")[0];
+  const fecha = $("#editar-fecha-prestamo")[0];
+  const hora = $("#editar-hora-prestamo")[0];
+
+  const item = prestamos.find((i) => i.id == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidad;
+  titular.value = item.titular;
+  local.value = item.local;
+  fecha.value = parseDateToHTMLFormat(item.fecha);
+  hora.value = item.hora;
+
+  const fragment = document.createDocumentFragment();
+  for(eti of etiquetas){
+    etiquetasEditadas.push({id:eti.id,cantidad:eti.cantidad});
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+
+}
+
 function parseDateToHTMLFormat(date){
   formated = "";
   for(char of date){
@@ -2156,6 +2201,36 @@ async function actualizarVenta(){
   }
 }
 
+async function actualizarPrestamo(){
+  if(!validarCamposEditarPrestamo()){
+    alert("Debe ingresar campos válidos para editar el préstamo");
+    return;
+  }
+
+  const titular = $("#editar-titular-prestamo")[0].value;
+  const local = $("#editar-local-prestamo")[0].value;
+  const fecha = parseDateToAPIFormat($("#editar-fecha-prestamo")[0].value);
+  const hora = $("#editar-hora-prestamo")[0].value;
+
+  body = {
+    titular,
+    local,
+    etiquetas: etiquetasEditadas,
+    fecha,
+    hora
+  }
+  body = await doFetch(
+    "put",
+    "loans/"+registroPrestamo,
+    [null,"No se encontró una etiqueta."],
+    200,
+    body
+  );
+  if (body != -1) {
+    alert(`El préstamo ${registroPrestamo} se editó satisfactoriamente`);
+    $("#modal_editarPrestamo").modal("hide");
+  }
+}
 
 async function crearProducto() {
   if (!validarCamposCrearProducto()) {
@@ -2626,6 +2701,16 @@ function validarCamposEditarVenta() {
   const hora = $("#editar-hora-venta")[0].value.trim();
 
   return fecha && hora;
+}
+
+function validarCamposEditarPrestamo() {
+
+  const titular = $("#editar-titular-prestamo")[0].value.trim();
+  const local = $("#editar-local-prestamo")[0].value.trim();
+  const fecha = $("#editar-fecha-prestamo")[0].value.trim();
+  const hora = $("#editar-hora-prestamo")[0].value.trim();
+
+  return fecha && hora && titular && local;
 }
 
 function validarCamposCrearIngreso() {

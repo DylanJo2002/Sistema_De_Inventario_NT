@@ -170,7 +170,7 @@
   </div>
 </div>
 
-<!--Model crear ingreso referencia -->
+<!--Model crear prestamo referencia -->
 <div class="modal fade" id="modal_crearPrestamoReferencia" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -200,12 +200,12 @@
 </div>
 
 
-  <!-- Modal  editar ingreso-->
-  <div class="modal fade" id="modal_editarIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <!-- Modal  editar prestamo-->
+  <div class="modal fade" id="modal_editarPrestamo" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title text-center" id="staticBackdropLabel">EDITAR INGRESO</h5>
+          <h5 class="modal-title text-center" id="staticBackdropLabel">EDITAR PRÉSTAMO</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -215,69 +215,69 @@
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="text" id="editar-referencia-ingreso" placeholder="informacion" readonly>
+                <input class="form-control w-100" type="text" id="editar-referencia-prestamo" placeholder="informacion" readonly>
               </div>
             </div>
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Producto</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="text" id="editar-producto-ingreso" placeholder="informacion" readonly>
+                <input class="form-control w-100" type="text" id="editar-producto-prestamo" placeholder="informacion" readonly>
               </div>
             </div>
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
               <div class="col-sm-4">
-                <select id="editar-etiqueta-ingreso" class="form-control form-control-lg selectCategory font_initial">            
+                <select id="editar-etiqueta-prestamo" class="form-control form-control-lg selectCategory font_initial">            
                 </select>
                </div> 
               
               <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
               <div class="col-sm-4">
-                <input class="form-control mx-0 w-100" id="editar-cantidad-ingreso" type="number" min="0">
+                <input class="form-control mx-0 w-100" id="editar-cantidad-prestamo" type="number" min="0">
   
               </div>
             </div>
             <div class="form-group row">
               <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="text" id="editar-cantidadTotal-ingreso" placeholder="informacion" readonly>
+                <input class="form-control w-100" type="text" id="editar-cantidadTotal-prestamo" placeholder="informacion" readonly>
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Proveedor</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Titular</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="text" id="editar-proveedor-ingreso" placeholder="informacion">
+                <input class="form-control w-100" type="text" id="editar-titular-prestamo" placeholder="informacion">
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Costo</label>
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Local</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="number" id="editar-costo-ingreso" placeholder="informacion"  min="0">
+                <input class="form-control w-100" type="text" id="editar-local-prestamo" placeholder="informacion">
               </div>
             </div>
             <div class="form-group row">
               <label for="inputPassword" class="col-sm-2 col-form-label text-center">Fecha</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="date" id="editar-fecha-ingreso" placeholder="informacion">
+                <input class="form-control w-100" type="date" id="editar-fecha-prestamo" placeholder="informacion">
               </div>
             </div>
             <div class="form-group row">
               <label for="inputPassword" class="col-sm-2 col-form-label text-center">Hora</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="time" id="editar-hora-ingreso" placeholder="informacion">
+                <input class="form-control w-100" type="time" id="editar-hora-prestamo" placeholder="informacion">
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btn_aceptarEditarIngreso">Aceptar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarEditarPrestamo">Aceptar</button>
         </div>
       </div>
     </div>
   </div>
   
-  <!-- Modal mirar ingreso-->
+  <!-- Modal mirar prestamo-->
   <div class="modal fade" id="modal_infoPrestamo" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
