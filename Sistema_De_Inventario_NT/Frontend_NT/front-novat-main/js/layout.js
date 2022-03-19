@@ -205,7 +205,47 @@ $(document).ready(function () {
             e.preventDefault();
             obtenerVentasCallBack();
           });
-          
+
+          document
+          .getElementById("btn_cancelarCrearVentaReferencia")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearVenta();
+            $("#modal_crearVentaReferencia").modal("hide");
+
+          });
+
+          document
+          .getElementById("btn_cerrarCrearVentaReferencia")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearVenta();
+            $("#modal_crearVentaReferencia").modal("hide");
+          });
+
+          document
+          .getElementById("btn_aceptarCrearVentaReferencia")
+          .addEventListener("click", (ev) => {
+            crearVentaReferencia();
+          });
+
+          document
+          .getElementById("btn_aceptarCrearVenta")
+          .addEventListener("click", (ev) => {
+            crearVenta();
+          });
+
+          document
+          .getElementById("btn_cancelarCrearVenta")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearVenta2();
+            $("#modal_crearVenta").modal("hide");
+          });
+
+          document
+          .getElementById("btn_cerrarCrearVenta")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearVenta2();
+            $("#modal_crearVenta").modal("hide");
+          });
 
         })
       })
@@ -529,6 +569,64 @@ async function llenarCrearIngreso(producto, etiquetasP){
 
 
   $("#modal_crearIngreso").modal("show");
+
+}
+
+async function llenarCrearVenta(producto, etiquetasP){
+  $("#modal_crearVentaReferencia").modal("hide");
+  limpiarCamposCrearVenta();
+
+  const referencia = $("#crear-referencia-venta")[0];
+  const nombreProducto = $("#crear-producto-venta")[0];
+  const etiquetasIngreso = $('#crear-etiqueta-venta')[0];
+  const cantidadEdit = $('#crear-cantidad-venta')[0];
+  const cantidadTotal = $('#crear-cantidadTotal-venta')[0];
+  referencia.value = producto.referencia;
+  nombreProducto.value = producto.nombre;
+  cantidadEdit.value = 0;
+  cantidadTotal.value = 0;
+
+  etiquetasEditadas.splice(0,etiquetasEditadas.length);
+  const fragment = document.createDocumentFragment();
+  for(eti of etiquetasP){
+    etiquetasEditadas.push({'id': eti.id,'cantidad':0});
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+
+  etiquetasIngreso.appendChild(fragment);
+
+  etiquetasIngreso.addEventListener('click', (ev)=>{
+    eventoLlenarCantidadEtiquetaCrearIngreso($("#crear-etiqueta-venta option:selected")
+      .attr('id'),"crear-cantidad-venta");
+  });
+
+  cantidadEdit.addEventListener('keydown',(e)=>{
+      if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+      && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+        e.preventDefault();
+      }
+  })
+  cantidadEdit.addEventListener('input', (e)=>{
+    const valorString = e.target.value+'';
+    let valor = 0;
+    if(valorString.length > 0){
+      valor = Number.parseInt(valorString);
+
+    }
+    const idEtiqueta = $("#crear-etiqueta-venta option:selected").attr('id');
+    const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+    const inputCantidadTotal = $("#crear-cantidadTotal-venta")[0];
+    const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+    inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+    etiquetaEditar.cantidad = Number.parseInt(valor);
+  })
+
+
+  $("#modal_crearVenta").modal("show");
 
 }
 
@@ -1623,6 +1721,40 @@ async function crearIngreso(){
   
 }
 
+async function crearVenta(){
+  if(!validarCamposCrearVenta()){
+    alert("Debe crear una venta con capos válidos.");
+    return;
+  }
+  const producto = $("#crear-referencia-venta")[0].value;
+  const fecha = parseDateToAPIFormat($("#crear-fecha-venta")[0].value);
+  const hora = $("#crear-hora-venta")[0].value;
+  const etiquetasVenta = new Array();
+
+  for(eti of etiquetasEditadas){
+    if(eti.cantidad > 0){
+      etiquetasVenta.push({id: eti.id, cantidad: eti.cantidad});
+
+    }
+  }
+
+  let body = {
+    producto,
+    fecha,
+    hora,
+    etiquetas: etiquetasVenta
+  }
+
+  body = await doFetch('post','sales',['El inventario actual no permite la venta'],201,body);
+
+  if(body != -1){
+    alert("Venta creada satisfactoriamente.");
+    $("#modal_crearVenta").modal("hide");
+  }
+  
+}
+
+
 async function crearCategoria() {
   if (!validarCamposCrearCategoria()) {
     alert("Debe crear una categoría con un nombre válido");
@@ -1661,6 +1793,28 @@ async function crearIngresoReferencia(){
       null,200);
 
       llenarCrearIngreso(producto,etiquetasP.labels);
+    }
+
+    return;
+
+  }else{
+    alert("Debe proporcionar una referencia para crear un nuevo ingreso.");
+  }
+}
+
+async function crearVentaReferencia(){
+  const referencia = $("#crear-referencia-ventaReferencia")[0].value;
+  
+  if(referencia){
+
+    const producto = await doFetch('get','products/'+referencia,[null,
+    'No existe el producto con la referencia '+referencia],200)
+
+    if(producto != -1){
+      const etiquetasP = await doFetch('get','labels/reference?reference='+referencia,
+      null,200);
+
+      llenarCrearVenta(producto,etiquetasP.labels);
     }
 
     return;
@@ -1799,6 +1953,10 @@ function limpiarCamposCrearIngreso(){
   const referencia_element = ($("#crear-referencia-ingresoReferencia")[0].value = "");
 }
 
+function limpiarCamposCrearVenta(){
+  const referencia_element = ($("#crear-referencia-ventaReferencia")[0].value = "");
+}
+
 function limpiarCamposCrearIngreso2(){
   $("#crear-etiqueta-ingreso").empty();
   $("#crear-proveedor-ingreso")[0].value = "";
@@ -1806,6 +1964,12 @@ function limpiarCamposCrearIngreso2(){
   $("#crear-fecha-ingreso")[0].value = "";
   $("#crear-hora-ingreso")[0].value = "";
     
+}
+
+function limpiarCamposCrearVenta2(){
+  $("#crear-etiqueta-venta").empty();
+  $("#crear-fecha-venta")[0].value = "";
+  $("#crear-hora-venta")[0].value = "";
 }
 
 function validarCamposCrearCategoria() {
@@ -1881,6 +2045,13 @@ function validarCamposCrearIngreso() {
   costo = Number.parseInt(costo);
 
   return proveedor && fecha && hora && costo>0
+}
+
+function validarCamposCrearVenta() {
+  const fecha = $("#crear-fecha-venta")[0].value;
+  const hora = $("#crear-hora-venta")[0].value;
+
+  return fecha && hora;
 }
 
 async function actualizarRegistroCategorias() {
