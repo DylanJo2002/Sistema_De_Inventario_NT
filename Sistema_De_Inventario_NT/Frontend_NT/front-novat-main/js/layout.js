@@ -150,6 +150,47 @@ $(document).ready(function () {
           .addEventListener("click", (ev) => {
             eliminarIngreso();
           });
+
+          document
+          .getElementById("btn_aceptarCrearIngresoReferencia")
+          .addEventListener("click", (ev) => {
+            crearIngresoReferencia();
+          });
+
+          document
+          .getElementById("btn_cancelarCrearIngresoReferencia")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearIngreso();
+            $("#modal_crearIngresoReferencia").modal("hide");
+
+          });
+
+          document
+          .getElementById("btn_cerrarCrearIngresoReferencia")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearIngreso();
+            $("#modal_crearIngresoReferencia").modal("hide");
+          });
+
+          document
+          .getElementById("btn_cancelarCrearIngreso")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearIngreso2();
+            $("#modal_crearIngreso").modal("hide");
+          });
+
+          document
+          .getElementById("btn_cerrarCrearIngreso")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearIngreso2();
+            $("#modal_crearIngreso").modal("hide");
+          });
+
+          document
+          .getElementById("btn_aceptarCrearIngreso")
+          .addEventListener("click", (ev) => {
+            crearIngreso();
+          });
           
         });
       });
@@ -384,6 +425,64 @@ async function llenarEtiquetas() {
     document.getElementsByClassName("btn-delete-label"),
     almacenarEtiqueta
   );
+}
+
+async function llenarCrearIngreso(producto, etiquetasP){
+  $("#modal_crearIngresoReferencia").modal("hide");
+  limpiarCamposCrearIngreso();
+
+  const referencia = $("#crear-referencia-ingreso")[0];
+  const nombreProducto = $("#crear-producto-ingreso")[0];
+  const etiquetasIngreso = $('#crear-etiqueta-ingreso')[0];
+  const cantidadEdit = $('#crear-cantidad-ingreso')[0];
+  const cantidadTotal = $('#crear-cantidadTotal-ingreso')[0];
+  referencia.value = producto.referencia;
+  nombreProducto.value = producto.nombre;
+  cantidadEdit.value = 0;
+  cantidadTotal.value = 0;
+
+  etiquetasEditadas.splice(0,etiquetasEditadas.length);
+  const fragment = document.createDocumentFragment();
+  for(eti of etiquetasP){
+    etiquetasEditadas.push({'id': eti.id,'cantidad':0});
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+
+  etiquetasIngreso.appendChild(fragment);
+
+  etiquetasIngreso.addEventListener('click', (ev)=>{
+    eventoLlenarCantidadEtiquetaCrearIngreso($("#crear-etiqueta-ingreso option:selected")
+      .attr('id'),"crear-cantidad-ingreso");
+  });
+
+  cantidadEdit.addEventListener('keydown',(e)=>{
+      if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+      && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+        e.preventDefault();
+      }
+  })
+  cantidadEdit.addEventListener('input', (e)=>{
+    const valorString = e.target.value+'';
+    let valor = 0;
+    if(valorString.length > 0){
+      valor = Number.parseInt(valorString);
+
+    }
+    const idEtiqueta = $("#crear-etiqueta-ingreso option:selected").attr('id');
+    const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+    const inputCantidadTotal = $("#crear-cantidadTotal-ingreso")[0];
+    const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+    inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+    etiquetaEditar.cantidad = Number.parseInt(valor);
+  })
+
+
+  $("#modal_crearIngreso").modal("show");
+
 }
 
 async function llenarInventario() {
@@ -1015,8 +1114,7 @@ function parseDateToHTMLFormat(date){
   return formated;
 }
 
-function parseDateToAPIFormat(){
-  const fecha = $("#editar-fecha-ingreso")[0].value;
+function parseDateToAPIFormat(fecha){
   formated = "";
   for(char of fecha){
     if(char == '-'){
@@ -1058,6 +1156,13 @@ function eventoLlenarCantidadEtiquetaIngreso(id,idCantidad, etiquetasTemporales)
     etiquetas = item.etiquetas;
     etiqueta = etiquetas.find(eti => eti.id == id);
   }
+  cantidadEtiqueta.value = etiqueta.cantidad;
+}
+
+function eventoLlenarCantidadEtiquetaCrearIngreso(id,idCantidad){
+  const cantidadEtiqueta = $(`#${idCantidad}`)[0];
+  const etiqueta = etiquetasEditadas.find(eti => eti.id == id);
+
   cantidadEtiqueta.value = etiqueta.cantidad;
 }
 
@@ -1309,6 +1414,43 @@ async function crearProducto() {
   }
 }
 
+async function crearIngreso(){
+  if(!validarCamposCrearIngreso()){
+    alert("Debe crear un ingreso con capos válidos.");
+    return;
+  }
+  const producto = $("#crear-referencia-ingreso")[0].value;
+  const proveedor = $("#crear-proveedor-ingreso")[0].value;
+  const costoxunidad = $("#crear-costo-ingreso")[0].value;
+  const fecha = parseDateToAPIFormat($("#crear-fecha-ingreso")[0].value);
+  const hora = $("#crear-hora-ingreso")[0].value;
+  const etiquetasIngreso = new Array();
+
+  for(eti of etiquetasEditadas){
+    if(eti.cantidad > 0){
+      etiquetasIngreso.push({id: eti.id, cantidad: eti.cantidad});
+
+    }
+  }
+
+  let body = {
+    producto,
+    proveedor,
+    costoxunidad,
+    fecha,
+    hora,
+    etiquetas: etiquetasIngreso
+  }
+
+  body = await doFetch('post','inventory-entries',null,201,body);
+
+  if(body != -1){
+    alert("Ingreso creado satisfactoriamente.");
+    $("#modal_crearIngreso").modal("hide");
+  }
+  
+}
+
 async function crearCategoria() {
   if (!validarCamposCrearCategoria()) {
     alert("Debe crear una categoría con un nombre válido");
@@ -1331,6 +1473,28 @@ async function crearCategoria() {
     $("#modal_agregarCategoria").modal("hide");
     limpiarCamposCrearCategoria();
     actualizarRegistroCategorias();
+  }
+}
+
+async function crearIngresoReferencia(){
+  const referencia = $("#crear-referencia-ingresoReferencia")[0].value;
+  
+  if(referencia){
+
+    const producto = await doFetch('get','products/'+referencia,[null,
+    'No existe el producto con la referencia '+referencia],200)
+
+    if(producto != -1){
+      const etiquetasP = await doFetch('get','labels/reference?reference='+referencia,
+      null,200);
+
+      llenarCrearIngreso(producto,etiquetasP.labels);
+    }
+
+    return;
+
+  }else{
+    alert("Debe proporcionar una referencia para crear un nuevo ingreso.");
   }
 }
 
@@ -1459,6 +1623,19 @@ function limpiarCamposCrearEtiqueta() {
   const nombre_element = ($("#crear-nombre-etiqueta")[0].value = "");
 }
 
+function limpiarCamposCrearIngreso(){
+  const referencia_element = ($("#crear-referencia-ingresoReferencia")[0].value = "");
+}
+
+function limpiarCamposCrearIngreso2(){
+  $("#crear-etiqueta-ingreso").empty();
+  $("#crear-proveedor-ingreso")[0].value = "";
+  $("#crear-costo-ingreso")[0].value = "";
+  $("#crear-fecha-ingreso")[0].value = "";
+  $("#crear-hora-ingreso")[0].value = "";
+    
+}
+
 function validarCamposCrearCategoria() {
   const nombre = $("#crear-nombre-categoria")[0].value.trim();
   return nombre;
@@ -1521,6 +1698,17 @@ function validarCamposEditarIngreso() {
     return false;
   }
   return proveedor && fecha && hora && (costo > 0);
+}
+
+function validarCamposCrearIngreso() {
+  const proveedor = $("#crear-proveedor-ingreso")[0].value;
+  let costo = $("#crear-costo-ingreso")[0].value;
+  const fecha = $("#crear-fecha-ingreso")[0].value;
+  const hora = $("#crear-hora-ingreso")[0].value;
+
+  costo = Number.parseInt(costo);
+
+  return proveedor && fecha && hora && costo>0
 }
 
 async function actualizarRegistroCategorias() {

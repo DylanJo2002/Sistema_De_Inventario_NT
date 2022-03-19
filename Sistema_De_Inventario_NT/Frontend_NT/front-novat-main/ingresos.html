@@ -71,7 +71,7 @@
 <div class="col-auto px-0 ">
 <div class="abs-end ">
 <form class="form-inline my-2 my-lg-0 ">
-<button type="button" class="btn-product-add" data-toggle="modal" data-target="#agregar"><img class="img_add" src="./img/anadir.png" alt=""></button>
+<button type="button" class="btn-product-add" data-toggle="modal" data-target="#modal_crearIngresoReferencia"><img class="img_add" src="./img/anadir.png" alt=""></button>
 </form>
 </div>
 </div>
@@ -79,66 +79,121 @@
 </div>
 </div>
 
+
 <!--modales-->
 <!-- Modal -->
-<div class="modal fade" id="agregar" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header font_bold">
-          <h5 class="modal-title" id="staticBackdropLabel">CREAR UN NUEVO PRODUCTO</h5>
-          <button type="button" class="close" id="btn_cerrarCrearProducto" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form>
+<div class="modal fade" id="modal_crearIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog  mt-1">
+    <div class="modal-content">
+      <div class="modal-header font_bold">
+        <h5 class="modal-title" id="staticBackdropLabel">CREAR UN NUEVO INGRESO</h5>
+        <button type="button" class="close" id="btn_cerrarCrearIngreso" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+            <div class="col-sm-9 px-0 ">
+              <input type="text" class="form-control inputWitdh" id="crear-referencia-ingreso" readonly>
+            </div>
+          </div>
+
+          <div id="campos-ingreso">
             <div class="form-group row">
-              <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+              <label for="staticEmail" class="col-sm-3 col-form-label">Producto</label>
               <div class="col-sm-9 px-0 ">
-                <input type="text" class="form-control inputWitdh" id="crear-referencia-producto">
+                <input type="text" class="form-control inputWitdh" id="crear-producto-ingreso" readonly>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
+              <div class="col-sm-4">
+                <select id="crear-etiqueta-ingreso" class="form-control form-control-lg selectCategory font_initial">            
+                </select>
+               </div> 
+              
+              <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
+              <div class="col-sm-4">
+                <input class="form-control mx-0 w-100" id="crear-cantidad-ingreso" type="number" min="0">
+  
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-3 col-form-label">Nombre</label>
-              <div class="col-sm-9 px-0">
-                <input type="text" class="form-control inputWitdh" id="crear-nombre-producto">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="crear-cantidadTotal-ingreso" placeholder="informacion" readonly>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Proveedor</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="text" id="crear-proveedor-ingreso" placeholder="informacion">
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputPassword" class="col-sm-3 col-form-label">Descripción</label>
-              <div class="col-sm-9  paddingText">
-                <textarea class="form-control inputWitdh" rows="3" id="crear-descripcion-producto"></textarea>
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Costo</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="number" id="crear-costo-ingreso" placeholder="informacion"  min="0">
               </div>
             </div>
-              <div class="form-group row">
-                <label for="inputPassword" class="col-sm-3 col-form-label" >C/U</label>
-                <div class="col-sm-9 paddingSelect ">
-                  <input type="number" class="form-control inputWitdh" id="crear-cu-producto" pattern="[0-9]">
-                </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Fecha</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="date" id="crear-fecha-ingreso" placeholder="informacion">
               </div>
-              <div class="form-group row">
-                <label for="inputPassword" class="col-sm-3 col-form-label">Umbral</label>
-                <div class="col-sm-9 paddingSelect ">
-                  <input type="number" class="form-control inputWitdh" id="crear-umbral-producto" pattern="[0-9]">
-                </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label text-center">Hora</label>
+              <div class="col-sm-10">
+                <input class="form-control w-100" type="time" id="crear-hora-ingreso" placeholder="informacion">
               </div>
-              <div class="form-group row">
-                <label for="inputPassword" class="col-sm-3 col-form-label">Categoría</label>
-                <div class="col-sm-9  paddingSelect">
-                  <select class="form-control inputWitdh" id="crear-categoria-producto">
-                  </select>
-                </div>
-              </div>
-           
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="btn_cancelarCrearProducto">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btn_aceptarCrearProducto">Aceptar</button>
-        </div>
+            </div>
+          </div>
+
+         
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn_cancelarCrearIngreso">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarCrearIngreso">Aceptar</button>
       </div>
     </div>
   </div>
+</div>
+
+<!--Model crear ingreso referencia -->
+<div class="modal fade" id="modal_crearIngresoReferencia" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header font_bold">
+        <h5 class="modal-title" id="staticBackdropLabel">INGRESE LA REFERENCIA PARA CREAR UN NUEVO INGRESO</h5>
+        <button type="button" class="close" id="btn_cerrarCrearIngresoReferencia" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Referencia</label>
+            <div class="col-sm-9 px-0 ">
+              <input type="text" class="form-control inputWitdh" id="crear-referencia-ingresoReferencia">
+            </div>
+          </div>
+         
+        </form>
+      </div>
+      <div               class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn_cancelarCrearIngresoReferencia">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn_aceptarCrearIngresoReferencia">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <!-- Modal  editar ingreso-->
   <div class="modal fade" id="modal_editarIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
