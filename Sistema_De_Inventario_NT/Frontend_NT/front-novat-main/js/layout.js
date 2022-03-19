@@ -269,6 +269,7 @@ let registroReferencia;
 let registroCategoria;
 let registroEtiqueta;
 let registroIngreso;
+let registroVenta;
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -1047,10 +1048,10 @@ async function llenarVentas(){
 
   const root = await $("#tableBody_ventas");
   append(root, fragment);
-//   agregarEventListener(
-//     document.getElementsByClassName("btn-info-entry"),
-//     llenarInformacionIngreso
-//   );
+  agregarEventListener(
+    document.getElementsByClassName("btn-info-sale"),
+    llenarInformacionVenta
+  );
 //   agregarEventListener(
 //     document.getElementsByClassName("btn-edit-entry"),
 //     llenarEdicionIngreso
@@ -1060,10 +1061,10 @@ async function llenarVentas(){
 //     almacenarIngreso
 //   );
 
-//   $("#mostrar-etiqueta-ingreso")[0].addEventListener('click',()=>{
-//     eventoLlenarCantidadEtiquetaIngreso($("#mostrar-etiqueta-ingreso option:selected").attr("id"),
-//     "mostrar-cantidad-ingreso");
-//   })
+  $("#mostrar-etiqueta-venta")[0].addEventListener('click',()=>{
+    eventoLlenarCantidadEtiquetaVenta($("#mostrar-etiqueta-venta option:selected").attr("id"),
+    "mostrar-cantidad-venta");
+  })
 //   $("#editar-etiqueta-ingreso")[0].addEventListener('click',()=>{
 //     eventoLlenarCantidadEtiquetaIngreso($("#editar-etiqueta-ingreso option:selected").attr("id"),
 //     "editar-cantidad-ingreso",true);
@@ -1266,6 +1267,36 @@ function llenarInformacionIngreso(ref){
   etiqueta.appendChild(fragment);
 }
 
+function llenarInformacionVenta(ref){
+  registroVenta = ref;
+  const referencia = $("#mostrar-referencia-venta")[0];
+  const producto = $("#mostrar-producto-venta")[0];
+  const etiqueta = $("#mostrar-etiqueta-venta")[0];
+  $('#mostrar-etiqueta-venta').empty()
+  const cantidad = $("#mostrar-cantidad-venta")[0];
+  const cantidadTotal = $("#mostrar-cantidadTotal-venta")[0];
+
+  const item = ventas.find((i) => i.id == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidadTotal;
+
+  const fragment = document.createDocumentFragment();
+
+  for(eti of etiquetas){
+    
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+}
+
 
 function llenarInformacionInventario(ref){
   const referencia = $("#mostrar-referencia-inventario")[0];
@@ -1423,6 +1454,21 @@ function eventoLlenarCantidadEtiquetaIngreso(id,idCantidad, etiquetasTemporales)
     etiqueta = etiquetasEditadas.find(eti => eti.id == id);
   }else {
     item = ingresos.find(i => i.id == registroIngreso);
+    etiquetas = item.etiquetas;
+    etiqueta = etiquetas.find(eti => eti.id == id);
+  }
+  cantidadEtiqueta.value = etiqueta.cantidad;
+}
+
+function eventoLlenarCantidadEtiquetaVenta(id,idCantidad, etiquetasTemporales){
+  const cantidadEtiqueta = $(`#${idCantidad}`)[0];
+  let item;
+  let etiquetas;
+  let etiqueta;
+  if(etiquetasTemporales){
+    etiqueta = etiquetasEditadas.find(eti => eti.id == id);
+  }else {
+    item = ventas.find(i => i.id == registroVenta);
     etiquetas = item.etiquetas;
     etiqueta = etiquetas.find(eti => eti.id == id);
   }
