@@ -366,8 +366,10 @@ $(document).ready(function () {
   document.getElementById("btnCerrarSesion")
   .addEventListener('click',(ev)=>{
     ev.preventDefault();
-    localStorage.removeItem("tokenNT");
-    window.open('../login.html',"_self");
+    if(confirm("¿Está seguro de cerrar la sesión?")){
+      localStorage.removeItem("tokenNT");
+      window.open('../login.html',"_self");
+    }
   })
 });
 
