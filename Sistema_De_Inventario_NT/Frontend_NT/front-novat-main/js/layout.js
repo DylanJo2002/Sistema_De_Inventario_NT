@@ -335,6 +335,19 @@ $(document).ready(function () {
 
     });
   });
+
+  document.getElementById("btnReportes").addEventListener('click', (ev)=> { 
+    $("#seccion").load("./reportes.html", () => {
+      
+      llenarCategoriasReporte();
+
+      document.getElementById("btn_generarReporte")
+      .addEventListener('click',(ev)=>{
+        ev.preventDefault();
+        obtenerReporte();
+      })
+    })
+  });
 });
 
 const domain = "http://localhost:8080/";
@@ -1084,6 +1097,18 @@ function crearFragmentoCategorias(noPermitirTodas) {
 
   return fragment;
 }
+function crearFragmentoCategoriasReporte() {
+  const fragment = document.createDocumentFragment();
+  for (let categoria of categorias) {
+    if (categoria.id != -1) {
+        const child = document.createElement("option");
+        child.text = categoria.nombre;
+        child.id = categoria.id;
+        fragment.appendChild(child);
+    }
+  }
+  return fragment;
+}
 
 function crearFragmentoEstados(noPermitirTodas) {
   const fragment = document.createDocumentFragment();
@@ -1114,10 +1139,31 @@ function llenarCategorias() {
   const selectIngresos = document.getElementById("select_categoryEntry");
   const selectVentas = document.getElementById("select_categorySale");
   const selectPrestamos = document.getElementById("select_categoryLoan");
+  const selectReportes = document.getElementById("select_categoryReport");
+  
 
-  if (selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas || selectPrestamos) {
-    append(selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas || selectPrestamos, fragment);
+  if (selectProductos || selectEtiquetas || selectInventario || selectIngresos
+     || selectVentas || selectPrestamos || selectReportes) {
+    append(selectProductos || selectEtiquetas || selectInventario || selectIngresos
+       || selectVentas || selectPrestamos || selectReportes, fragment);
   }
+}
+
+async function llenarCategoriasReporte() {
+  categorias.splice(0, categorias.length);
+  const body = await doFetch("get", "categories", null, 200);
+
+  if (body != -1) {
+    for (let categoria of body.categories) {
+      categorias.push(categoria);
+    }
+  }
+
+  const fragment = crearFragmentoCategoriasReporte();
+  const selectReportes = document.getElementById("select_categoryReport");
+  console.log(fragment);
+  append(selectReportes, fragment);
+  
 }
 
 function llenarEstados() {
@@ -1576,6 +1622,26 @@ async function doFetch(metodo, recurso, mensajes, estadoOk, json) {
     if (res.status == estadoOk) {
       body = await res.json();
       return body;
+    }
+  } catch (err) {
+    alert(`Ocurrió el siguiente error: ${err}`);
+  }
+  return body;
+}
+async function doReportFetch(recurso) {
+  const settings = {
+    method: 'get',
+    headers: { Authorization: token, "Access-Control-Allow-Origin": "*" },
+  };
+
+  let body = -1;
+  try {
+    const res = await fetch(domain + recurso, settings);
+
+    if (res.status == 200) {
+      body = await res.blob();
+      const blob = new Blob([body], {type: 'application/pdf'});
+      return blob;
     }
   } catch (err) {
     alert(`Ocurrió el siguiente error: ${err}`);
@@ -2798,4 +2864,65 @@ function validarCamposCrearPrestamo() {
 async function actualizarRegistroCategorias() {
   await obtenerCategorias(false);
   llenarTablaCategorias();
+}
+
+async function obtenerReporte(){
+  const idReport = $("#select_report option:selected").attr("id");
+  const category = $("#select_categoryReport option:selected").attr("id");
+  const top = Number.parseInt($("#search_topReporte")[0].value);
+
+  let fechaInicio = $("#search_fechaInicioReporte")[0].value;
+  let fechaFin = $("#search_fechaFinReporte")[0].value;
+
+  if(idReport != 3 && idReport != 4 && (isNaN(top) || top == 0)){
+    alert("Debe ingresar un TOP válido.");
+    return;
+  }
+
+  if(idReport != 3 && idReport != 4){
+    if(fechaInicio){
+      if(!fechaFin){
+        alert("Para generar un reporte por fechas debe ingresar fecha inicio y fecha fin.");
+        return;
+      }
+    }
+  
+    if(fechaFin){
+      if(!fechaInicio){
+        alert("Para generar un reporte por fechas debe ingresar fecha inicio y fecha fin.");
+        return;
+      }
+    }
+    fechaInicio = parseDateToAPIFormat(fechaInicio);
+    fechaFin = parseDateToAPIFormat(fechaFin);
+  }
+
+  let recurso = "";
+  switch(idReport){
+    case '1': {
+      if(fechaInicio && fechaFin){
+        recurso = `reports/bestSeller?startDate=${fechaInicio}&categoryId=${category}&top=${top}&endDate=${fechaFin}`;
+      }else{
+        recurso = `reports/bestSeller?startDate=&categoryId=${category}&top=${top}&endDate`;
+      }
+    }break;
+    case '2': {
+      if(fechaInicio && fechaFin){
+        recurso = `reports/leastSold?startDate=${fechaInicio}&categoryId=${category}&top=${top}&endDate=${fechaFin}`;
+      }else{
+        recurso = `reports/leastSold?startDate=&categoryId=${category}&top=${top}&endDate`;
+      }
+    }break;
+    case '3': {
+      recurso = `reports/inventory?categoryId=${category}`;
+    }break;
+    case '4': {
+      recurso = `reports/underThreshole?categoryId=${category}`;
+    }break;
+  }
+
+  const blob = await doReportFetch(recurso);
+  const url = window.URL.createObjectURL(blob);
+
+  window.open(url);
 }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/v4-shims.js"></script> 
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/fontawesome.js"> </script>
+    
+    <!--css-->
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+    <link href="styles/reportStyle.css" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./bootstrap-4.6.1-dist/css/bootstrap.min.css">
+    <title>Layout</title>
+</head>
+
+<body>
+
+  <div class="mt-5">
+    <div class="d-flex flex-column text-center justify-content-center align-items-center">
+      <div class="container d-flex text-center justify-content-center align-items-center">
+        <select id="select_report" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
+          <option id="1">Referencias más vendidas</option>
+          <option id="2">Referencias menos vendidas</option>
+          <option id="3">Estado de inventario de referencias</option>
+          <option id="4">Referencias agotadas</option>
+        </select>
+      </div>
+    
+    <div class ="container justify-content-center font_regular px-0 mt-5">
+      <div class="abs-center ">
+    <div class="row d-inline-block mx-0">
+      <div class="col-md-auto">
+    <div class="container-h px-0" style="background-color: #FFFFFF;">
+    <div class="col-sm">
+    <form class="form-inline my-2 my-lg-0">
+    <div class="">
+      <div class="d-flex justify-content-center">
+        <label for="exampleFormControlInput1"class="mr-sm-2">Categoría</label>
+        <select id="select_categoryReport" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
+        </select>
+        <label for="exampleFormControlInput1"class="mr-sm-2">Top</label>
+        <input class="form-control mr-sm-2" id ="search_topReporte" type="number" min="0">
+      </div>
+      <div class="d-flex w-100 justify-content-between">
+        <label for="exampleFormControlInput1" class="mr-sm-2">Fecha inicio</label>
+        <input class="form-control mr-sm-2" id ="search_fechaInicioReporte" type="date">
+        <label for="exampleFormControlInput1" class="mr-sm-2">Fecha fin</label>
+        <input class="form-control mr-sm-2" id ="search_fechaFinReporte" type="date">
+      </div>
+    </div>
+    <button class="btn btn-outline-success my-2 my-sm-0" id="btn_generarReporte"  type="submit">Generar reporte</button>
+    </form>
+    </div>
+    </div>
+    </div>
+    
+    </div>
+    
+    </div>
+    </div>
+    
+  
+  
+    </div>
+  </div>
+
+</body>
+
+</html>
