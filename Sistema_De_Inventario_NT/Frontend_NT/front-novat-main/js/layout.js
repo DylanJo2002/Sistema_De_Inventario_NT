@@ -253,7 +253,14 @@ $(document).ready(function () {
             actualizarVenta();
           });
 
+          document
+          .getElementById("btn_aceptarEliminarVenta")
+          .addEventListener("click", (ev) => {
+            eliminarVenta();
+          });
+
         })
+
       })
 
 
@@ -1062,10 +1069,10 @@ async function llenarVentas(){
     document.getElementsByClassName("btn-edit-sale"),
     llenarEdicionVenta
   );
-//   agregarEventListener(
-//     document.getElementsByClassName("btn-delete-entry"),
-//     almacenarIngreso
-//   );
+  agregarEventListener(
+    document.getElementsByClassName("btn-delete-sale"),
+    almacenarVenta
+  );
 
   $("#mostrar-etiqueta-venta")[0].addEventListener('click',()=>{
     eventoLlenarCantidadEtiquetaVenta($("#mostrar-etiqueta-venta option:selected").attr("id"),
@@ -1676,6 +1683,20 @@ async function eliminarIngreso() {
   $("#modal_eliminarIngreso").modal("hide");
 }
 
+async function eliminarVenta() {
+  const body = await doFetch(
+    "delete",
+    "sales/" + registroVenta,
+    null,
+    200
+  );
+  if (body != -1) {
+    alert(`Se eliminó la venta ${registroVenta} satisfactoriamente.`);
+  }
+
+  $("#modal_eliminarVenta").modal("hide");
+}
+
 function almacenarReferenciaProducto(ref) {
   const confirmacion = $("#confirmacion-del-producto")[0];
   registroReferencia = ref;
@@ -1698,6 +1719,12 @@ function almacenarIngreso(ref) {
   const confirmacion = $("#confirmacion-del-ingreso")[0];
   registroIngreso = ref;
   confirmacion.innerText = `Al eliminar el ingreso ${registroIngreso} se actualizará el inventario. ¿Está seguro?`;
+}
+
+function almacenarVenta(ref) {
+  const confirmacion = $("#confirmacion-de-venta")[0];
+  registroVenta = ref;
+  confirmacion.innerText = `Al eliminar la venta ${registroVenta} se actualizará el inventario. ¿Está seguro?`;
 }
 
 async function actualizarInventario(){
