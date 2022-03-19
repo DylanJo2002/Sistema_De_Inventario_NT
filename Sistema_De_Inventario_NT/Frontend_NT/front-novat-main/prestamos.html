@@ -47,7 +47,7 @@
 <div class="col-sm">
 <form class="form-inline my-2 my-lg-0">
 <div>
-  <div class="d-flex">
+  <div class="d-flex w-100 text-center justify-content-center align-items-center">
     <label for="exampleFormControlInput1" class="mr-sm-2">Referencia del producto</label>
   <input class="form-control mr-sm-2" id ="search_referenciaPrestamo" type="search" placeholder="Referencia" aria-label="Search">
   <label for="exampleFormControlInput1" class="mr-sm-2">ó</label>
@@ -60,9 +60,13 @@
     <input class="form-control mr-sm-2" id ="search_fechaInicioPrestamo" type="date">
     <label for="exampleFormControlInput1" class="mr-sm-2">Fecha fin</label>
     <input class="form-control mr-sm-2" id ="search_fechaFinPrestamo" type="date">
+    
+    <label for="exampleFormControlInput1"class="mr-sm-2">Estado</label>
+    <select id="select_StateLoan" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
+    </select>
   </div>
 </div>
-<button class="btn btn-outline-success my-2 my-sm-0" id="btn_buscarLoan"  type="submit">Buscar</button>
+<button class="btn btn-outline-success my-2 my-sm-0" id="btn_buscarPrestamo"  type="submit">Buscar</button>
 </form>
 </div>
 </div>
@@ -274,11 +278,11 @@
   </div>
   
   <!-- Modal mirar ingreso-->
-  <div class="modal fade" id="modal_infoIngreso" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal fade" id="modal_infoPrestamo" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title text-center" id="staticBackdropLabel">INFORMACIÓN DEL INGRESO</h5>
+          <h5 class="modal-title text-center" id="staticBackdropLabel">INFORMACIÓN DEL PRÉSTAMO</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -288,32 +292,32 @@
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Referencia</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="text" id="mostrar-referencia-ingreso" placeholder="informacion" readonly>
+                <input class="form-control w-100" type="text" id="mostrar-referencia-prestamo" placeholder="informacion" readonly>
               </div>
             </div>
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Producto</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="text" id="mostrar-producto-ingreso" placeholder="informacion" readonly>
+                <input class="form-control w-100" type="text" id="mostrar-producto-prestamo" placeholder="informacion" readonly>
               </div>
             </div>
             <div class="form-group row">
               <label for="staticEmail" class="col-sm-2 col-form-label">Etiqueta</label>
               <div class="col-sm-4">
-                <select id="mostrar-etiqueta-ingreso" class="form-control form-control-lg selectCategory font_initial">            
+                <select id="mostrar-etiqueta-prestamo" class="form-control form-control-lg selectCategory font_initial">            
                 </select>
                </div> 
               
               <label for="staticEmail" class="col-sm-2 col-form-label">Cantidad</label>
               <div class="col-sm-4">
-                <input class="form-control mx-0 w-100" id="mostrar-cantidad-ingreso" type="text" readonly>
+                <input class="form-control mx-0 w-100" id="mostrar-cantidad-prestamo" type="text" readonly>
   
               </div>
             </div>
             <div class="form-group row">
               <label for="inputPassword" class="col-sm-2 col-form-label text-center">Cantidad Total</label>
               <div class="col-sm-10">
-                <input class="form-control w-100" type="text" id="mostrar-cantidadTotal-ingreso" placeholder="informacion" readonly>
+                <input class="form-control w-100" type="text" id="mostrar-cantidadTotal-prestamo" placeholder="informacion" readonly>
               </div>
             </div>
           </form>

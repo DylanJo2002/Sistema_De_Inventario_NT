@@ -31,7 +31,7 @@ public class InventoryEntryEntity {
 	private int costoxunidad;
 	private int cantidadtotal;
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
-	@JsonFormat(pattern = "yyyy/MM/dd")
+	@JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT-5")
 	private Date fecha;
 	@DateTimeFormat(pattern = "HH:mm")
 	@JsonFormat(pattern = "HH:mm")

@@ -35,7 +35,7 @@ public class LoanEntity {
 	@JoinColumn(name="estado")
 	private LoanStatesEntity estado;
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
-	@JsonFormat(pattern = "yyyy/MM/dd")
+	@JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT-5")
 	private Date fecha;
 	@DateTimeFormat(pattern = "HH:mm")
 	@JsonFormat(pattern = "HH:mm")

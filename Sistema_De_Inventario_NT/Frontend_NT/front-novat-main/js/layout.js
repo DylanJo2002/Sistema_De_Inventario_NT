@@ -266,6 +266,7 @@ $(document).ready(function () {
       document.getElementById("prestamos").addEventListener("click", (ev) => {
         $("#indexContent").load("./prestamos.html", () => {
           obtenerCategorias(true);
+          obtenerEstados();
 
           document
           .getElementById("btn_cancelarCrearPrestamoReferencia")
@@ -308,6 +309,12 @@ $(document).ready(function () {
             crearPrestamo();
           });
 
+          document
+          .getElementById("btn_buscarPrestamo")
+          .addEventListener("click", (e) => {
+            e.preventDefault();
+            obtenerPrestamosCallBack();
+          });
 
         });
       });
@@ -324,12 +331,15 @@ const etiquetasEditadas = new Array();
 const inventario = new Array();
 const ingresos = new Array();
 const ventas = new Array();
+const prestamos = new Array();
+const estados = new Array();
 const token = "Bearer " + localStorage.getItem("tokenNT");
 let registroReferencia;
 let registroCategoria;
 let registroEtiqueta;
 let registroIngreso;
 let registroVenta;
+let registroPrestamo;
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -471,6 +481,40 @@ async function obtenerVentasCallBack() {
 
   }else{
     obtenerVentas(null,categoria,fechaInicio,fechaFin);
+
+  }
+
+}
+
+async function obtenerPrestamosCallBack() {
+  const referencia = $("#search_referenciaPrestamo")[0].value.trim();
+  const categoria =
+    (await $("#select_categoryLoan option:selected").attr("id")) || false;
+  const fechaInicio = $("#search_fechaInicioPrestamo")[0].value;
+  const fechaFin =  $("#search_fechaFinPrestamo")[0].value; 
+  const estado =  (await $("#select_StateLoan option:selected").attr("id")); 
+
+  if (referencia != 0 && categoria != -1) {
+    alert(
+      "No puede hacer una búsqueda por referencia y categoría al mismo tiempo."
+    );
+    return;
+  }
+  if (referencia == 0 && categoria == -1) {
+    alert("Debe hacer una búsqueda por referencia o categoría.");
+    return;
+  }
+
+  if((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)){
+    alert("Para realizar una búsqueda por fechas debe proporcionar la fecha de inicio y fin.");
+    return;
+  }
+
+  if(referencia){
+    obtenerPrestamos(referencia,null,fechaInicio,fechaFin,estado);
+
+  }else{
+    obtenerPrestamos(null,categoria,fechaInicio,fechaFin,estado);
 
   }
 
@@ -885,6 +929,20 @@ async function obtenerCategorias(sinActualizar, seccion) {
   }
 }
 
+async function obtenerEstados() {
+  
+  let states = await doFetch('get','loanStates',null,200);
+
+  if(states != -1 && estados.length == 0){
+    for(state of states.estados){
+      estados.push(state);
+    }
+    
+  }
+  llenarEstados();
+}
+
+
 async function obtenerIngresos(referencia, categoria, fechaInicio, fechaFin){
   let recurso;
   if (referencia) {
@@ -955,6 +1013,40 @@ async function obtenerVentas(referencia, categoria, fechaInicio, fechaFin){
   }
 }
 
+async function obtenerPrestamos(referencia, categoria, fechaInicio, fechaFin, estado){
+  let recurso;
+  if (referencia) {
+    if(fechaInicio && fechaFin){
+      recurso = `loans/${referencia}?dateStart=${fechaInicio}&dateEnd=${fechaFin}&stateId=${estado}`;
+    }else {
+      recurso = `loans/${referencia}?dateStart=&dateEnd=&stateId=${estado}`;
+    }
+    
+  } else {
+    if(fechaInicio && fechaFin){
+      recurso =  `loans?categoryId=${categoria}&dateStart=${fechaInicio}&dateEnd=${fechaFin}&stateId=${estado}`;
+    }else {
+      recurso =  `loans?categoryId=${categoria}&dateStart=&dateEnd=&stateId=${estado}`;
+    }
+  }
+
+  const body = await doFetch(
+    "get",
+    recurso,
+    [null, `No existe un producto con la referencia ${referencia}`],
+    200
+  );
+
+  if (body != -1) {
+
+    prestamos.splice(0, prestamos.length);
+    for (item of body.prestamos) {
+      prestamos.push(item);
+    }
+    llenarPrestamos();
+  }
+}
+
 
 function crearFragmentoCategorias(noPermitirTodas) {
   const fragment = document.createDocumentFragment();
@@ -979,6 +1071,27 @@ function crearFragmentoCategorias(noPermitirTodas) {
   return fragment;
 }
 
+function crearFragmentoEstados(noPermitirTodas) {
+  const fragment = document.createDocumentFragment();
+  for (let estado of estados) {
+    if (estado.id == 0) {
+      if (!noPermitirTodas) {
+        const child = document.createElement("option");
+        child.text = estado.estado;
+        child.id = estado.id;
+        fragment.appendChild(child);
+      }
+    } else {
+      const child = document.createElement("option");
+      child.text = estado.estado;
+      child.id = estado.id;
+      fragment.appendChild(child);
+    }
+  }
+
+  return fragment;
+}
+
 function llenarCategorias() {
   const fragment = crearFragmentoCategorias();
   const selectProductos = document.getElementById("select_categoryProduct");
@@ -991,6 +1104,14 @@ function llenarCategorias() {
   if (selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas || selectPrestamos) {
     append(selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas || selectPrestamos, fragment);
   }
+}
+
+function llenarEstados() {
+  const fragment = crearFragmentoEstados();
+  const selectEstados = document.getElementById("select_StateLoan");
+
+  append(selectEstados, fragment);
+
 }
 
 function append(root, fragment) {
@@ -1211,6 +1332,101 @@ cantidadEdit.addEventListener('input', (e)=>{
   })
 }
 
+async function llenarPrestamos(){
+  await $("#table_loan > tbody").empty();
+  const childs = new Array();
+  const fragment = document.createDocumentFragment();
+  //const cantidadEdit = $("#editar-cantidad-venta")[0];
+  for (let prestamo of prestamos) {
+    const child = document.createElement("tr");
+    const id = document.createElement("td");
+    const referencia = document.createElement("td");
+    const producto = document.createElement("td");
+    const titular = document.createElement("td");
+    const local = document.createElement("td");
+    const cantidad = document.createElement("td");
+    const estado = document.createElement("td");
+    const fechaHora = document.createElement("td");
+
+    id.textContent = prestamo.id;
+    referencia.textContent = prestamo.referencia;
+    producto.textContent = prestamo.producto;
+    titular.textContent = prestamo.titular;
+    local.textContent = prestamo.local;
+    cantidad.textContent = prestamo.cantidad;
+    estado.textContent = prestamo.estado;
+    fechaHora.textContent = prestamo.fecha+" - "+prestamo.hora;
+
+    child.appendChild(id);
+    child.appendChild(referencia);
+    child.appendChild(producto);
+    child.appendChild(titular);
+    child.appendChild(local);
+    child.appendChild(cantidad);
+    child.appendChild(estado);
+    child.appendChild(fechaHora);
+    childs.push(child);
+    fragment.appendChild(child);
+  }
+  try {
+    await Promise.all(
+      childs.map(async (child) => {
+        const acciones = await $.get("./accionesPrestamos.html");
+        const newChild = document.createElement("td");
+        newChild.innerHTML = acciones;
+        child.appendChild(newChild);
+      })
+    );
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
+  }
+
+  const root = await $("#tableBody_prestamos");
+  append(root, fragment);
+  agregarEventListener(
+    document.getElementsByClassName("btn-info-loan"),
+    llenarInformacionPrestamo
+  );
+//   agregarEventListener(
+//     document.getElementsByClassName("btn-edit-sale"),
+//     llenarEdicionVenta
+//   );
+//   agregarEventListener(
+//     document.getElementsByClassName("btn-delete-sale"),
+//     almacenarVenta
+//   );
+
+  $("#mostrar-etiqueta-prestamo")[0].addEventListener('click',()=>{
+    eventoLlenarCantidadEtiquetaPrestamo($("#mostrar-etiqueta-prestamo option:selected").attr("id"),
+    "mostrar-cantidad-prestamo");
+  })
+//   $("#editar-etiqueta-venta")[0].addEventListener('click',()=>{
+//     eventoLlenarCantidadEtiquetaVenta($("#editar-etiqueta-venta option:selected").attr("id"),
+//     "editar-cantidad-venta",true);
+//   })
+    
+// cantidadEdit.addEventListener('keydown',(e)=>{
+//     if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+//     && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+//       e.preventDefault();
+//     }
+// })
+// cantidadEdit.addEventListener('input', (e)=>{
+//   const valorString = e.target.value+'';
+//   let valor = 0;
+//   if(valorString.length > 0){
+//     valor = Number.parseInt(valorString);
+
+//   }
+//   const idEtiqueta = $("#editar-etiqueta-venta option:selected").attr('id');
+//   const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+//   const inputCantidadTotal = $("#editar-cantidadTotal-venta")[0];
+//   const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+//   inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+//   etiquetaEditar.cantidad = Number.parseInt(valor);
+//   })
+}
+
 
 async function llenarProductos() {
   const childs = new Array();
@@ -1402,6 +1618,36 @@ function llenarInformacionVenta(ref){
   producto.value = item.producto;
   cantidad.value = etiquetas[0].cantidad;
   cantidadTotal.value = item.cantidadTotal;
+
+  const fragment = document.createDocumentFragment();
+
+  for(eti of etiquetas){
+    
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+  etiqueta.appendChild(fragment);
+}
+
+function llenarInformacionPrestamo(ref){
+  registroPrestamo = ref;
+  const referencia = $("#mostrar-referencia-prestamo")[0];
+  const producto = $("#mostrar-producto-prestamo")[0];
+  const etiqueta = $("#mostrar-etiqueta-prestamo")[0];
+  $('#mostrar-etiqueta-prestamo').empty()
+  const cantidad = $("#mostrar-cantidad-prestamo")[0];
+  const cantidadTotal = $("#mostrar-cantidadTotal-prestamo")[0];
+
+  const item = prestamos.find((i) => i.id == ref);
+  const etiquetas = item.etiquetas;
+
+  referencia.value = item.referencia;
+  producto.value = item.producto;
+  cantidad.value = etiquetas[0].cantidad;
+  cantidadTotal.value = item.cantidad;
 
   const fragment = document.createDocumentFragment();
 
@@ -1630,7 +1876,7 @@ function eventoLlenarCantidadEtiquetaVenta(id,idCantidad, etiquetasTemporales){
   cantidadEtiqueta.value = etiqueta.cantidad;
 }
 
-function eventoLlenarCantidadEtiquetaVenta(id,idCantidad, etiquetasTemporales){
+function eventoLlenarCantidadEtiquetaPrestamo(id,idCantidad, etiquetasTemporales){
   const cantidadEtiqueta = $(`#${idCantidad}`)[0];
   let item;
   let etiquetas;
@@ -1638,7 +1884,7 @@ function eventoLlenarCantidadEtiquetaVenta(id,idCantidad, etiquetasTemporales){
   if(etiquetasTemporales){
     etiqueta = etiquetasEditadas.find(eti => eti.id == id);
   }else {
-    item = ventas.find(i => i.id == registroVenta);
+    item = prestamos.find(i => i.id == registroPrestamo);
     etiquetas = item.etiquetas;
     etiqueta = etiquetas.find(eti => eti.id == id);
   }
