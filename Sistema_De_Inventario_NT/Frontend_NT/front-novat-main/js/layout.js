@@ -1,9 +1,11 @@
 $(document).ready(function () {
   document.getElementById("btnInventario").addEventListener("click", (ev) => {
+    actualizarSeccion("btnInventario");
     ev.preventDefault();
     $("#seccion").load("./index.html", () => {
       document.getElementById("productos").addEventListener("click", (ev) => {
         $("#indexContent").load("./productos.html", () => {
+          actualizarSeccion("productos");
           obtenerCategorias(true, 1);
           document
             .getElementById("btn_buscarProducto")
@@ -38,7 +40,9 @@ $(document).ready(function () {
       });
 
       document.getElementById("etiquetas").addEventListener("click", (ev) => {
+
         $("#indexContent").load("./etiquetas.html", () => {
+          actualizarSeccion("etiquetas");
           obtenerCategorias(true);
           document
             .getElementById("btn_cerrarCrearEtiqueta")
@@ -78,6 +82,7 @@ $(document).ready(function () {
       });
       document.getElementById("categorias").addEventListener("click", (ev) => {
         $("#indexContent").load("./categorias.html", () => {
+          actualizarSeccion("categorias");
           obtenerCategorias(true, 2);
           document
             .getElementById("btn_cancelarCrearCategoria")
@@ -113,6 +118,8 @@ $(document).ready(function () {
       });
       document.getElementById("inventario").addEventListener("click", (ev) => {
         $("#indexContent").load("./inventario.html", () => {
+          actualizarSeccion("inventario");
+
           obtenerCategorias(true);
 
           document
@@ -130,6 +137,8 @@ $(document).ready(function () {
 
       document.getElementById("ingresos").addEventListener("click", (ev) => {
         $("#indexContent").load("./ingresos.html", () => {
+          actualizarSeccion("ingresos");
+
           obtenerCategorias(true);
 
           document
@@ -197,6 +206,8 @@ $(document).ready(function () {
 
       document.getElementById("ventas").addEventListener('click',(ev)=>{
         $("#indexContent").load("./ventas.html", () => {
+          actualizarSeccion("ventas");
+
           obtenerCategorias(true);
 
           document
@@ -265,6 +276,8 @@ $(document).ready(function () {
 
       document.getElementById("prestamos").addEventListener("click", (ev) => {
         $("#indexContent").load("./prestamos.html", () => {
+          actualizarSeccion("prestamos");
+
           obtenerCategorias(true);
           obtenerEstados();
 
@@ -338,7 +351,7 @@ $(document).ready(function () {
 
   document.getElementById("btnReportes").addEventListener('click', (ev)=> { 
     $("#seccion").load("./reportes.html", () => {
-      
+      actualizarSeccion("btnReportes");
       llenarCategoriasReporte();
 
       document.getElementById("btn_generarReporte")
@@ -346,8 +359,16 @@ $(document).ready(function () {
         ev.preventDefault();
         obtenerReporte();
       })
+      
     })
   });
+
+  document.getElementById("btnCerrarSesion")
+  .addEventListener('click',(ev)=>{
+    ev.preventDefault();
+    localStorage.removeItem("tokenNT");
+    window.open('../login.html',"_self");
+  })
 });
 
 const domain = "http://localhost:8080/";
@@ -2925,4 +2946,32 @@ async function obtenerReporte(){
   const url = window.URL.createObjectURL(blob);
 
   window.open(url);
+}
+
+function actualizarSeccion(elementoActual){
+  
+  
+  $("#productos").removeClass("seleccion");
+  $("#ventas").removeClass("seleccion");
+  $("#ingresos").removeClass("seleccion");
+  $("#prestamos").removeClass("seleccion");
+  $("#etiquetas").removeClass("seleccion");
+  $("#categorias").removeClass("seleccion");
+  $("#inventario").removeClass("seleccion");
+
+  if("btnReportes" == elementoActual){
+    $("#btnReportes").addClass("seccionPrimaria");
+    $("#btnInventario").removeClass("seccionPrimaria");
+    return;
+  }
+
+  if("btnInventario" == elementoActual){
+    $("#btnInventario").addClass("seccionPrimaria");
+    $("#btnReportes").removeClass("seccionPrimaria");
+    return;
+
+  }
+
+  $(`#${elementoActual}`).addClass("seleccion");
+  
 }

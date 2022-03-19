@@ -49,7 +49,8 @@
 }
 
 .btn-info:hover {
-  color: black !important;
+  font-weight: bold!important;
+  color: black!important;
 }
 
 .hr_inventario {
@@ -387,7 +388,8 @@ input[type="text"]:placeholder {
   font-family: 'IBM Plex Sans', sans-serif;
 }
 .a_li:hover {
-  color: black!important;
+  font-weight: bold!important;
+  color: #040BBE!important;
 }
 
 
@@ -430,4 +432,14 @@ textarea {
 
 .modalActualizar {
   width: 28rem!important;
+}
+
+.seleccion {
+  font-weight: bold!important;
+  color: black!important;
+}
+
+.seccionPrimaria {
+  font-weight: bold!important;
+  color: #040BBE!important;
 }
