@@ -263,7 +263,54 @@ $(document).ready(function () {
 
       })
 
+      document.getElementById("prestamos").addEventListener("click", (ev) => {
+        $("#indexContent").load("./prestamos.html", () => {
+          obtenerCategorias(true);
 
+          document
+          .getElementById("btn_cancelarCrearPrestamoReferencia")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearPrestamo();
+            $("#modal_crearPrestamoReferencia").modal("hide");
+
+          });
+
+          document
+          .getElementById("btn_cerrarCrearPrestamoReferencia")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearPrestamo();
+            $("#modal_crearPrestamoReferencia").modal("hide");
+          });
+
+          document
+          .getElementById("btn_aceptarCrearPrestamoReferencia")
+          .addEventListener("click", (ev) => {
+            crearPrestamoReferencia();
+          });
+
+          document
+          .getElementById("btn_cancelarCrearPrestamo")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearPrestamo2();
+            $("#modal_crearPrestamo").modal("hide");
+          });
+
+          document
+          .getElementById("btn_cerrarCrearPrestamo")
+          .addEventListener("click", (ev) => {
+            limpiarCamposCrearPrestamo2();
+            $("#modal_crearPrestamo").modal("hide");
+          });
+
+          document
+          .getElementById("btn_aceptarCrearPrestamo")
+          .addEventListener("click", (ev) => {
+            crearPrestamo();
+          });
+
+
+        });
+      });
 
     });
   });
@@ -644,6 +691,64 @@ async function llenarCrearVenta(producto, etiquetasP){
 
 }
 
+async function llenarCrearPrestamo(producto, etiquetasP){
+  $("#modal_crearPrestamoReferencia").modal("hide");
+  limpiarCamposCrearPrestamo();
+
+  const referencia = $("#crear-referencia-prestamo")[0];
+  const nombreProducto = $("#crear-producto-prestamo")[0];
+  const etiquetasIngreso = $('#crear-etiqueta-prestamo')[0];
+  const cantidadEdit = $('#crear-cantidad-prestamo')[0];
+  const cantidadTotal = $('#crear-cantidadTotal-prestamo')[0];
+  referencia.value = producto.referencia;
+  nombreProducto.value = producto.nombre;
+  cantidadEdit.value = 0;
+  cantidadTotal.value = 0;
+
+  etiquetasEditadas.splice(0,etiquetasEditadas.length);
+  const fragment = document.createDocumentFragment();
+  for(eti of etiquetasP){
+    etiquetasEditadas.push({'id': eti.id,'cantidad':0});
+    const option = document.createElement('option');
+    option.innerText = eti.nombre;
+    option.id = eti.id;
+    
+    fragment.appendChild(option);
+  }
+
+  etiquetasIngreso.appendChild(fragment);
+
+  etiquetasIngreso.addEventListener('click', (ev)=>{
+    eventoLlenarCantidadEtiquetaCrearIngreso($("#crear-etiqueta-prestamo option:selected")
+      .attr('id'),"crear-cantidad-prestamo");
+  });
+
+  cantidadEdit.addEventListener('keydown',(e)=>{
+      if((e.keyCode < 48 || e.keyCode > 57)  && e.keyCode != 46 && e.keyCode != 8
+      && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40){
+        e.preventDefault();
+      }
+  })
+  cantidadEdit.addEventListener('input', (e)=>{
+    const valorString = e.target.value+'';
+    let valor = 0;
+    if(valorString.length > 0){
+      valor = Number.parseInt(valorString);
+
+    }
+    const idEtiqueta = $("#crear-etiqueta-prestamo option:selected").attr('id');
+    const etiquetaEditar = etiquetasEditadas.find(e => e.id==idEtiqueta);
+    const inputCantidadTotal = $("#crear-cantidadTotal-prestamo")[0];
+    const cantidadTotalValor = Number.parseInt(inputCantidadTotal.value);
+    inputCantidadTotal.value = cantidadTotalValor-etiquetaEditar.cantidad+valor;
+    etiquetaEditar.cantidad = Number.parseInt(valor);
+  })
+
+
+  $("#modal_crearPrestamo").modal("show");
+
+}
+
 async function llenarInventario() {
   const root = $("#tableBody_inventario")[0];
   const etiquetasInfo = $("#mostrar-etiqueta-inventario")[0];
@@ -881,9 +986,10 @@ function llenarCategorias() {
   const selectInventario = document.getElementById("select_categoryInventory");
   const selectIngresos = document.getElementById("select_categoryEntry");
   const selectVentas = document.getElementById("select_categorySale");
+  const selectPrestamos = document.getElementById("select_categoryLoan");
 
-  if (selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas) {
-    append(selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas, fragment);
+  if (selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas || selectPrestamos) {
+    append(selectProductos || selectEtiquetas || selectInventario || selectIngresos || selectVentas || selectPrestamos, fragment);
   }
 }
 
@@ -1875,6 +1981,7 @@ async function crearIngreso(){
   if(body != -1){
     alert("Ingreso creado satisfactoriamente.");
     $("#modal_crearIngreso").modal("hide");
+    limpiarCamposCrearIngreso2();
   }
   
 }
@@ -1908,8 +2015,48 @@ async function crearVenta(){
   if(body != -1){
     alert("Venta creada satisfactoriamente.");
     $("#modal_crearVenta").modal("hide");
+    limpiarCamposCrearVenta2();
   }
   
+}
+
+async function crearPrestamo(){
+  if(!validarCamposCrearPrestamo()){
+    alert("Debe crear un préstamo con capos válidos.");
+    return;
+  }
+  
+  const producto = $("#crear-referencia-prestamo")[0].value;
+  const titular = $("#crear-titular-prestamo")[0].value;
+  const local = $("#crear-local-prestamo")[0].value;
+  const fecha = parseDateToAPIFormat($("#crear-fecha-prestamo")[0].value);
+  const hora = $("#crear-hora-prestamo")[0].value;
+  const etiquetasPrestamo = new Array();
+
+  for(eti of etiquetasEditadas){
+    if(eti.cantidad > 0){
+      etiquetasPrestamo.push({id: eti.id, cantidad: eti.cantidad});
+
+    }
+  }
+
+  let body = {
+    producto,
+    titular,
+    local,
+    fecha,
+    hora,
+    etiquetas: etiquetasPrestamo
+  }
+
+  body = await doFetch('post','loans',['El inventario actual no permite el préstamo'],201,body);
+
+  if(body != -1){
+    alert("Préstamo creado satisfactoriamente.");
+    $("#modal_crearPrestamo").modal("hide");
+    limpiarCamposCrearPrestamo2();
+  }
+
 }
 
 
@@ -1979,6 +2126,28 @@ async function crearVentaReferencia(){
 
   }else{
     alert("Debe proporcionar una referencia para crear un nuevo ingreso.");
+  }
+}
+
+async function crearPrestamoReferencia(){
+  const referencia = $("#crear-referencia-prestamoReferencia")[0].value;
+  
+  if(referencia){
+
+    const producto = await doFetch('get','products/'+referencia,[null,
+    'No existe el producto con la referencia '+referencia],200)
+
+    if(producto != -1){
+      const etiquetasP = await doFetch('get','labels/reference?reference='+referencia,
+      null,200);
+
+      llenarCrearPrestamo(producto,etiquetasP.labels);
+    }
+
+    return;
+
+  }else{
+    alert("Debe proporcionar una referencia para crear un nuevo préstamo.");
   }
 }
 
@@ -2115,6 +2284,10 @@ function limpiarCamposCrearVenta(){
   const referencia_element = ($("#crear-referencia-ventaReferencia")[0].value = "");
 }
 
+function limpiarCamposCrearPrestamo(){
+  const referencia_element = ($("#crear-referencia-prestamoReferencia")[0].value = "");
+}
+
 function limpiarCamposCrearIngreso2(){
   $("#crear-etiqueta-ingreso").empty();
   $("#crear-proveedor-ingreso")[0].value = "";
@@ -2128,6 +2301,14 @@ function limpiarCamposCrearVenta2(){
   $("#crear-etiqueta-venta").empty();
   $("#crear-fecha-venta")[0].value = "";
   $("#crear-hora-venta")[0].value = "";
+}
+
+function limpiarCamposCrearPrestamo2(){
+  $("#crear-etiqueta-prestamo").empty();
+  $("#crear-fecha-prestamo")[0].value = "";
+  $("#crear-hora-prestamo")[0].value = "";
+  $("#crear-titular-prestamo")[0].value = "";
+  $("#crear-local-prestamo")[0].value = "";
 }
 
 function validarCamposCrearCategoria() {
@@ -2215,6 +2396,15 @@ function validarCamposCrearIngreso() {
 function validarCamposCrearVenta() {
   const fecha = $("#crear-fecha-venta")[0].value;
   const hora = $("#crear-hora-venta")[0].value;
+
+  return fecha && hora;
+}
+
+function validarCamposCrearPrestamo() {
+  const fecha = $("#crear-fecha-prestamo")[0].value;
+  const hora = $("#crear-hora-prestamo")[0].value;
+  const titular = $("#crear-titular-prestamo")[0].value;
+  const local = $("#crear-local-prestamo")[0].value;
 
   return fecha && hora;
 }

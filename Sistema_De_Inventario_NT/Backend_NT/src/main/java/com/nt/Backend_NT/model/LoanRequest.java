@@ -18,7 +18,7 @@ public class LoanRequest {
 	private String titular;
 	private String local;
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
-	@JsonFormat(pattern = "yyyy/MM/dd")
+	@JsonFormat(pattern = "yyyy/MM/dd",timezone = "GTM-5")
 	private Date fecha;
 	@DateTimeFormat(pattern = "HH:mm")
 	@JsonFormat(pattern = "HH:mm")
