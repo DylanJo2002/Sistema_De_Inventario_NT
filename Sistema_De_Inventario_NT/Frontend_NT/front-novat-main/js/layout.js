@@ -345,7 +345,7 @@ $(document).ready(function () {
 
         });
       });
-
+      document.getElementById("productos").click();
     });
   });
 
@@ -371,6 +371,8 @@ $(document).ready(function () {
       window.open('../login.html',"_self");
     }
   })
+
+  document.getElementById("btnInventario").click();
 });
 
 const domain = "http://localhost:8080/";
