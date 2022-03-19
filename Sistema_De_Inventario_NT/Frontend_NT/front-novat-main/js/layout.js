@@ -322,6 +322,14 @@ $(document).ready(function () {
             actualizarPrestamo();
           });
 
+          document
+          .getElementById("btn_aceptarActualizarPrestamo")
+          .addEventListener("click", (ev) => {
+            actualizarPrestamo2();
+          });
+
+          
+
         });
       });
 
@@ -1397,10 +1405,10 @@ async function llenarPrestamos(){
     document.getElementsByClassName("btn-edit-loan"),
     llenarEdicionPrestamo
   );
-//   agregarEventListener(
-//     document.getElementsByClassName("btn-delete-sale"),
-//     almacenarVenta
-//   );
+  agregarEventListener(
+    document.getElementsByClassName("btn-updateState-loan"),
+    llenarActualizarPrestamo
+  );
 
   $("#mostrar-etiqueta-prestamo")[0].addEventListener('click',()=>{
     eventoLlenarCantidadEtiquetaPrestamo($("#mostrar-etiqueta-prestamo option:selected").attr("id"),
@@ -1609,6 +1617,7 @@ function llenarInformacionIngreso(ref){
 }
 
 function llenarInformacionVenta(ref){
+  console.log("INFORMACIÓN VENTAS ");
   registroVenta = ref;
   const referencia = $("#mostrar-referencia-venta")[0];
   const producto = $("#mostrar-producto-venta")[0];
@@ -1771,6 +1780,31 @@ function llenarEdicionIngreso(ref){
   }
   etiqueta.appendChild(fragment);
 
+}
+
+function llenarActualizarPrestamo(ref){
+  registroPrestamo = ref;
+  const id = $("#eliminar-id-prestamo")[0];
+  const etiqueta = $("#eliminar-estado-prestamo")[0];
+  $('#eliminar-estado-prestamo').empty()
+
+  const item = prestamos.find((i) => i.id == ref);
+
+  id.value = item.id;
+
+  const fragment = document.createDocumentFragment();
+  for(eti of estados){
+    if(eti.id != 0){
+      const option = document.createElement('option');
+      option.innerText = eti.estado;
+      option.id = eti.id;
+      
+      fragment.appendChild(option);
+    }
+  }
+  etiqueta.appendChild(fragment);
+
+  $("#modal_actualizarPrestamo").modal("show");
 }
 
 function llenarEdicionVenta(ref){
@@ -2124,6 +2158,7 @@ function almacenarVenta(ref) {
   confirmacion.innerText = `Al eliminar la venta ${registroVenta} se actualizará el inventario. ¿Está seguro?`;
 }
 
+
 async function actualizarInventario(){
   const ref = $("#editar-referencia-inventario")[0].value;
   body = {
@@ -2229,6 +2264,25 @@ async function actualizarPrestamo(){
   if (body != -1) {
     alert(`El préstamo ${registroPrestamo} se editó satisfactoriamente`);
     $("#modal_editarPrestamo").modal("hide");
+  }
+}
+
+async function actualizarPrestamo2(){
+
+  const idPrestamo = $("#eliminar-id-prestamo")[0].value;
+  const estado = $("#eliminar-estado-prestamo option:selected").attr(
+    "id"
+  );
+  const prestamo = prestamos.find(p=>p.id == idPrestamo);
+  body = await doFetch(
+    "put",
+    `loans/status/${idPrestamo}?state=${estado}`,
+    [`No se puede actualizar el estado del préstamo porque este ya es ${prestamo.estado}.`],
+    200
+    );
+  if (body != -1) {
+    alert(`Se actualizó el estado del préstamo ${idPrestamo} satisfactoriamente`);
+    $("#modal_actualizarPrestamo").modal("hide");
   }
 }
 
@@ -2712,6 +2766,7 @@ function validarCamposEditarPrestamo() {
 
   return fecha && hora && titular && local;
 }
+
 
 function validarCamposCrearIngreso() {
   const proveedor = $("#crear-proveedor-ingreso")[0].value;

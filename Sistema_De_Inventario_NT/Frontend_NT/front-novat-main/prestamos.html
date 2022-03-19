@@ -329,22 +329,37 @@
     </div>
   </div>
 
-  <!-- Modal eliminar ingreso-->
-  <div class="modal fade" id="modal_eliminarIngreso" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <!-- Modal eliminar prestamo-->
+  <div class="modal fade" id="modal_actualizarPrestamo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modalActualizar">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="Eliminar">ELIMINAR INGRESO</h5>
-          <button type="button" class="close" onclick="$('#modal_eliminarIngreso').modal('hide');" aria-label="Close">
+          <h5 class="modal-title" id="ActualizarEstado">ACTUALIZAR ESTADO DEL PRÉSTAMO</h5>
+          <button type="button" class="close" onclick="$('#modal_actualizarPrestamo').modal('hide');" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body text-center">
-          <h5 id="confirmacion-del-ingreso"></h5>
+          <div class="form-group row text-left">
+            <label for="staticEmail" class="col-sm-2 col-form-label ">ID</label>
+            <div class="col-sm-10">
+              <input class="form-control ml-0 idPrestamo" type="text" id="eliminar-id-prestamo" placeholder="informacion" readonly>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-2 col-form-label">Estado</label>
+            <div class="col-sm-10">
+
+              <select id="eliminar-estado-prestamo" class="form-control form-control-lg mr-sm-2 selectCategory font_initial">
+              </select>
+            </div>
+          </div>
+
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="$('#modal_eliminarIngreso').modal('hide');" id="btn_cancelarEliminarIngreso">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btn_aceptarEliminarIngreso">Aceptar</button>
+          <button type="button" class="btn btn-secondary" onclick="$('#modal_actualizarPrestamo').modal('hide');" id="btn_cancelarEliminarIngreso">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn_aceptarActualizarPrestamo">Aceptar</button>
         </div>
       </div>
     </div>
